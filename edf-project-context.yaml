@@ -1,0 +1,23 @@
+schema_version: "1.0.0"
+
+repository_role: engineering-project
+
+disciplines:
+  - unknown
+
+activities:
+  - research
+
+authority:
+  governed_scope: "Project documentation under docs/ and root identity documents; reference imagery preserved under Docs/Reference/."
+  decision_authority: "Project owner (to be named in PROJECT_CHARTER.md)."
+  canonicalization_policy: "EDF Core layout for documentation; do not relocate existing Docs/ content without ADR and explicit approval."
+
+capabilities: []
+
+legacy_profile: core
+
+extensions:
+  - artifact_class: reference-imagery
+    location: Docs/Reference/
+    rationale: "Pre-bootstrap reference photographs at non-canonical path; preserved in place per ADR-0006."
