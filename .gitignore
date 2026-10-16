@@ -1,2 +1,8 @@
 .DS_Store
 reports/conformance/
+
+# Obsidan
+.obsidian
+
+# Cursor
+.cursor
