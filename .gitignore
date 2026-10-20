@@ -6,3 +6,16 @@ reports/conformance/
 
 # Cursor
 .cursor
+
+# Firebase local secrets (add after FlutterFire configure)
+sibol_app/android/app/google-services.json
+sibol_app/ios/Runner/GoogleService-Info.plist
+**/service-account*.json
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+
+# Node (Cloud Functions)
+shared/functions/node_modules/
+shared/provisioning/node_modules/
+shared/functions/lib/

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SibolFictionalCase",
+  "type": "object",
+  "required": [
+    "demoName",
+    "age",
+    "barangay",
+    "caseStatus",
+    "registeredAt",
+    "createdAt",
+    "updatedAt",
+    "reportStatus"
+  ],
+  "properties": {
+    "demoName": { "type": "string", "minLength": 2 },
+    "age": { "type": "integer", "minimum": 13, "maximum": 19 },
+    "barangay": { "type": "string", "minLength": 1 },
+    "caseStatus": {
+      "enum": ["active", "followUpScheduled", "followUpCompleted", "closed"]
+    },
+    "registeredAt": { "type": "string", "format": "date-time" },
+    "nextFollowUpAt": { "type": "string", "format": "date-time" },
+    "notes": { "type": "string" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "reportStatus": {
+      "enum": ["notSubmitted", "pendingSubmit", "submitted", "submitFailed"]
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,16 @@
+{
+  "name": "sibol-provisioning",
+  "description": "SIBOL demonstration provisioning (Admin SDK); install dependencies here",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "seed": "node seed_tranche1_demo.mjs",
+    "test": "node --test test/*.mjs"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}

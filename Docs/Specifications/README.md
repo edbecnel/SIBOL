@@ -1,24 +1,16 @@
 # Specifications
 
-> **Documentation path:** [Project Index](../../PROJECT_INDEX.md) → Specifications
+> **Status:** Active  
+> **Last Reviewed:** 2026-10-20
 
-## Purpose
+## Documents
 
-Functional requirements, non-functional requirements, feature specifications, and acceptance criteria.
-
-## Authoritative Documents
-
-- Add links to authoritative documents in this domain.
-
-## What Belongs Here
-
-Add documents whose primary responsibility matches this domain.
+| Document | Description |
+|----------|-------------|
+| [CASE_AND_REPORTING_MODEL.md](CASE_AND_REPORTING_MODEL.md) | Provisional fictional case, follow-up, and reporting fields |
+| Product-owner proposal | [SIBOL.docx](../Reference/SIBOL.docx) |
 
 ## Navigation
 
 - [Project Index](../../PROJECT_INDEX.md)
-- [Project README](../../README.md)
-
-## Maintenance
-
-Update this index whenever a major document in this domain is created, moved, renamed, or retired.
+- [Architecture ADRs](../Architecture/ADRs/README.md)

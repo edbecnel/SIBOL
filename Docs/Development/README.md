@@ -2,25 +2,51 @@
 
 > **Documentation path:** [Project Index](../../PROJECT_INDEX.md) → Development
 
+> **Status:** Active (software discipline adopted Tranche 1)  
+> **Last Reviewed:** 2026-10-20
+
 ## Purpose
 
-Framework adoption engineering: documentation-first policies, migration and validation tooling, and engineering practices for maintaining documentation alongside code.
+Engineering practices, tooling, and environment setup for the SIBOL software deliverable.
 
-This repository uses EDF profile `core`. Software Engineering handbook paths are not created until that profile is adopted.
+## Authoritative documents
 
-## Authoritative Documents
+| Document | Description |
+|----------|-------------|
+| [WORK_ITEM_REGISTER.md](WORK_ITEM_REGISTER.md) | Index of engineering work items |
+| [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md) | EDF-aligned work-item doc discipline |
+| [TRANCHE_1_EXECUTION_REPORT.md](TRANCHE_1_EXECUTION_REPORT.md) | SIBOL-IMP-001 engineering delivery |
+| [TRANCHE_1_ACCEPTANCE_REPORT.md](TRANCHE_1_ACCEPTANCE_REPORT.md) | Tranche 1 functional acceptance |
+| [TRANCHE_1_VERIFICATION.md](../Verification/TRANCHE_1_VERIFICATION.md) | Tranche 1 verification summary |
+| [SIBOL_IMP_002_PLAN.md](SIBOL_IMP_002_PLAN.md) | Tranche 2 plan (not authorized) |
+| [TRANCHE_2_IMPLEMENTATION_GATE.md](TRANCHE_2_IMPLEMENTATION_GATE.md) | T2 implementation gate |
+| [FIREBASE_SETUP.md](FIREBASE_SETUP.md) | SIBOL Firebase project setup |
+| [SIBOL_FB_001_EXECUTION_REPORT.md](SIBOL_FB_001_EXECUTION_REPORT.md) | Firebase options fix |
+| [SIBOL_FB_002_PHASE_A_EXECUTION_REPORT.md](SIBOL_FB_002_PHASE_A_EXECUTION_REPORT.md) | Provisioning infrastructure |
+| [SIBOL_FB_002_EXECUTION_REPORT.md](SIBOL_FB_002_EXECUTION_REPORT.md) | Live seed addendum |
+| [SIBOL_FB_003_EXECUTION_REPORT.md](SIBOL_FB_003_EXECUTION_REPORT.md) | Startup / profile loading |
+| [SIBOL_FB_004_EXECUTION_REPORT.md](SIBOL_FB_004_EXECUTION_REPORT.md) | Login widget tests |
+| [SIBOL_FB_005_EXECUTION_REPORT.md](SIBOL_FB_005_EXECUTION_REPORT.md) | Case tap investigation |
+| [SIBOL_GOV_001_EXECUTION_REPORT.md](SIBOL_GOV_001_EXECUTION_REPORT.md) | Governance recovery |
+| [shared/docs/DEMO_ACCOUNTS.md](../../shared/docs/DEMO_ACCOUNTS.md) | Fictional demonstration accounts |
+| [shared/docs/PROVISIONING.md](../../shared/docs/PROVISIONING.md) | Demo seed procedure |
+| [shared/docs/OFFLINE_SYNC_MODEL.md](../../shared/docs/OFFLINE_SYNC_MODEL.md) | Offline/sync design |
+| [shared/docs/REPORTING_CONTRACT.md](../../shared/docs/REPORTING_CONTRACT.md) | Server reporting contract (Tranche 2) |
 
-- Add links to authoritative documents in this domain.
+## Application
 
-## What Belongs Here
+- Flutter app: [`sibol_app/`](../../sibol_app/)
+- Run: `cd sibol_app && flutter pub get && flutter run`
+- Analyze: `cd sibol_app && flutter analyze`
+- Test: `cd sibol_app && flutter test`
 
-Add documents whose primary responsibility matches this domain.
+## EDF validation
+
+```bash
+/Users/edbecnel/Development/GitHub/Engineering-Documentation-Framework/scripts/adopt-edf.sh validate "/Users/edbecnel/Development/GitHub/SIBOL"
+```
 
 ## Navigation
 
 - [Project Index](../../PROJECT_INDEX.md)
-- [Project README](../../README.md)
-
-## Maintenance
-
-Update this index whenever a major document in this domain is created, moved, renamed, or retired.
+- [Specifications](../Specifications/CASE_AND_REPORTING_MODEL.md)

@@ -1,0 +1,33 @@
+# SIBOL work-item register
+
+> **Last updated:** 2026-10-20  
+> **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
+
+| ID | Title | Status | Primary record |
+|----|-------|--------|----------------|
+| SIBOL-IMP-001 | Tranche 1 mobile prototype | **Closed (accepted)** | [TRANCHE_1_EXECUTION_REPORT.md](TRANCHE_1_EXECUTION_REPORT.md) |
+| SIBOL-T1-CLOSE | Tranche 1 acceptance and verification | **Closed** | [TRANCHE_1_ACCEPTANCE_REPORT.md](TRANCHE_1_ACCEPTANCE_REPORT.md), [TRANCHE_1_VERIFICATION.md](../Verification/TRANCHE_1_VERIFICATION.md) |
+| SIBOL-FB-001 | Firebase options / iOS duplicate-app | **Closed** | [SIBOL_FB_001_EXECUTION_REPORT.md](SIBOL_FB_001_EXECUTION_REPORT.md) |
+| SIBOL-FB-002 | Demo provisioning and seed | **Closed (ops)** | [SIBOL_FB_002_PHASE_A_EXECUTION_REPORT.md](SIBOL_FB_002_PHASE_A_EXECUTION_REPORT.md), [SIBOL_FB_002_EXECUTION_REPORT.md](SIBOL_FB_002_EXECUTION_REPORT.md) |
+| SIBOL-FB-003 | Startup / profile loading | **Closed** | [SIBOL_FB_003_EXECUTION_REPORT.md](SIBOL_FB_003_EXECUTION_REPORT.md) |
+| SIBOL-FB-004 | Sign-in input (widget tests Phase A) | **Closed (Phase A)** | [SIBOL_FB_004_EXECUTION_REPORT.md](SIBOL_FB_004_EXECUTION_REPORT.md) |
+| SIBOL-FB-005 | Case list tap investigation | **Closed (deferred T2)** | [SIBOL_FB_005_EXECUTION_REPORT.md](SIBOL_FB_005_EXECUTION_REPORT.md) |
+| SIBOL-GOV-001 | EDF governance traceability audit | **Closed (recovery)** | [SIBOL_GOV_001_EXECUTION_REPORT.md](SIBOL_GOV_001_EXECUTION_REPORT.md) |
+| SIBOL-GOV-002 | Git baseline preservation | **Closed (local commit)** | [SIBOL_GOV_002_EXECUTION_REPORT.md](SIBOL_GOV_002_EXECUTION_REPORT.md) |
+| SIBOL-IMP-002 | Tranche 2 implementation | **Planned — not authorized** | [SIBOL_IMP_002_PLAN.md](SIBOL_IMP_002_PLAN.md) |
+
+## Tranche 2 implementation gate
+
+**Tranche 2 code, Firebase deploy, and rules changes remain blocked** until:
+
+1. P0 + P1 governance recovery is complete (this register, acceptance, verification, FB retrospectives).
+2. Project Architect issues a **separate** Tranche 2 implementation handover.
+
+See [TRANCHE_2_IMPLEMENTATION_GATE.md](TRANCHE_2_IMPLEMENTATION_GATE.md).
+
+## Open environment / process issues
+
+| Issue | Work item | Status |
+|-------|-----------|--------|
+| iOS Xcode Device Hub pointer/keyboard | FB-004 | Open — environment; widget tests pass |
+| GitHub push of local baseline | GOV-002 | **Open** — local commit only; push not authorized |

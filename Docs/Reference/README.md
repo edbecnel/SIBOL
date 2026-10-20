@@ -24,6 +24,12 @@ These JPEG files predate EDF bootstrap and remain in this directory per [ADR-000
 
 ## Authoritative Documents
 
+| Document | Description |
+|----------|-------------|
+| `SIBOL.docx` | Product-owner research innovation proposal (requirements baseline) |
+
+## Authoritative Documents (future)
+
 - Add links to glossaries, standards, and external references as they are created.
 
 ## Navigation
