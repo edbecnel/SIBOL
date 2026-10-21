@@ -14,7 +14,9 @@
 | SIBOL-FB-005 | Case list tap investigation | **Closed (deferred T2)** | [SIBOL_FB_005_EXECUTION_REPORT.md](SIBOL_FB_005_EXECUTION_REPORT.md) |
 | SIBOL-GOV-001 | EDF governance traceability audit | **Closed (recovery)** | [SIBOL_GOV_001_EXECUTION_REPORT.md](SIBOL_GOV_001_EXECUTION_REPORT.md) |
 | SIBOL-GOV-002 | Git baseline preservation and publication | **Closed** | [SIBOL_GOV_002_EXECUTION_REPORT.md](SIBOL_GOV_002_EXECUTION_REPORT.md) |
-| SIBOL-IMP-002 | Tranche 2 implementation | **In progress (T2-1 accepted; T2-2+ gated)** | [SIBOL_IMP_002_PLAN.md](SIBOL_IMP_002_PLAN.md), [SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md) |
+| SIBOL-IMP-002 / T2-1 | Read-only case detail | **Closed (published `8480c1a`)** | [SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md) |
+| SIBOL-IMP-002 / T2-2 | Follow-up timeline | **Closed (published)** | [SIBOL_IMP_002_T2_2_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_2_EXECUTION_REPORT.md) |
+| SIBOL-IMP-002 / T2-3 | Case create/edit | **Planned — not authorized** | [SIBOL_IMP_002_T2_3_PLAN.md](SIBOL_IMP_002_T2_3_PLAN.md) |
 
 ## Tranche 2 implementation gate
 

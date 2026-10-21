@@ -49,6 +49,7 @@ class CaseRepositoryImpl implements CaseRepository {
 
   @override
   Stream<List<FollowUp>> watchFollowUps(String caseId) {
+    // Chronological timeline: earliest scheduledAt first.
     return _firestore
         .collection(FirestorePaths.cases)
         .doc(caseId)

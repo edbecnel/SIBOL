@@ -59,7 +59,10 @@ Implementation authorized for T2-1 (`c8d42a91-…`). Publication and formal acce
 
 ## 6. Git publication
 
-Recorded in EA completion report after `git push origin main` (T2-1-only commit).
+| Field | Value |
+|-------|--------|
+| **Commit** | `8480c1a` — `feat(imp-002): T2-1 read-only barangay case detail` |
+| **Push** | `origin/main` — success (`304156a..8480c1a`) |
 
 ## 7. Traceability
 

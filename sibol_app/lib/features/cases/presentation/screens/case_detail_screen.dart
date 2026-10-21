@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/presentation/providers/case_providers.dart';
+import 'package:sibol_app/features/cases/presentation/widgets/case_follow_up_timeline.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
@@ -41,7 +42,7 @@ class CaseDetailScreen extends ConsumerWidget {
                     ),
                   );
                 }
-                return CaseDetailBody(record: record);
+                return CaseDetailBody(record: record, caseId: caseId);
               },
             ),
           ),
@@ -53,9 +54,14 @@ class CaseDetailScreen extends ConsumerWidget {
 
 /// Read-only case fields for barangay review (T2-1).
 class CaseDetailBody extends StatelessWidget {
-  const CaseDetailBody({super.key, required this.record});
+  const CaseDetailBody({
+    super.key,
+    required this.record,
+    required this.caseId,
+  });
 
   final CaseRecord record;
+  final String caseId;
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +105,13 @@ class CaseDetailBody extends StatelessWidget {
           label: 'Last updated',
           value: dateTimeFmt.format(record.updatedAt),
         ),
+        const SizedBox(height: 24),
+        Text(
+          'Follow-ups (earliest scheduled first)',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        CaseFollowUpTimeline(caseId: caseId),
         const SizedBox(height: 24),
         Text(
           'Read-only view. Case editing is not available in this release.',
