@@ -1,0 +1,40 @@
+import 'package:equatable/equatable.dart';
+import 'package:sibol_app/features/teenager/domain/assistance_request_category.dart';
+import 'package:sibol_app/features/teenager/domain/assistance_request_status.dart';
+
+class AssistanceRequest extends Equatable {
+  const AssistanceRequest({
+    required this.requestId,
+    required this.teenUid,
+    required this.barangay,
+    required this.category,
+    required this.description,
+    required this.status,
+    required this.createdAt,
+    this.acknowledgedAt,
+    this.acknowledgedByUid,
+  });
+
+  final String requestId;
+  final String teenUid;
+  final String barangay;
+  final AssistanceRequestCategory category;
+  final String description;
+  final AssistanceRequestStatus status;
+  final DateTime createdAt;
+  final DateTime? acknowledgedAt;
+  final String? acknowledgedByUid;
+
+  @override
+  List<Object?> get props => [
+        requestId,
+        teenUid,
+        barangay,
+        category,
+        description,
+        status,
+        createdAt,
+        acknowledgedAt,
+        acknowledgedByUid,
+      ];
+}

@@ -7,6 +7,8 @@ import 'package:sibol_app/features/auth/domain/repositories/auth_repository.dart
 import 'package:sibol_app/features/auth/domain/repositories/user_profile_repository.dart';
 import 'package:sibol_app/features/cases/data/repositories/case_repository_impl.dart';
 import 'package:sibol_app/features/cases/domain/repositories/case_repository.dart';
+import 'package:sibol_app/features/teenager/data/repositories/assistance_request_repository_impl.dart';
+import 'package:sibol_app/features/teenager/domain/repositories/assistance_request_repository.dart';
 
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) {
   return FirebaseAuth.instance;
@@ -26,4 +28,9 @@ final userProfileRepositoryProvider = Provider<UserProfileRepository>((ref) {
 
 final caseRepositoryProvider = Provider<CaseRepository>((ref) {
   return CaseRepositoryImpl(ref.watch(firestoreProvider));
+});
+
+final assistanceRequestRepositoryProvider =
+    Provider<AssistanceRequestRepository>((ref) {
+  return AssistanceRequestRepositoryImpl(ref.watch(firestoreProvider));
 });

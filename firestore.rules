@@ -61,6 +61,67 @@ service cloud.firestore {
       ];
     }
 
+    function isValidAssistanceCategory(category) {
+      return category in [
+        'generalSupport',
+        'healthInformation',
+        'counselingReferral',
+        'barangayServices'
+      ];
+    }
+
+    function teenProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function hasAssignedBarangay(data) {
+      return 'assignedBarangay' in data
+          && data.assignedBarangay is string
+          && data.assignedBarangay.size() >= 1;
+    }
+
+    function assistanceRequestCreateValid(data) {
+      return data.keys().hasAll([
+            'teenUid', 'barangay', 'category', 'description', 'status', 'createdAt'
+          ])
+          && data.keys().hasOnly([
+            'teenUid', 'barangay', 'category', 'description', 'status', 'createdAt'
+          ])
+          && data.teenUid is string
+          && data.teenUid == request.auth.uid
+          && hasAssignedBarangay(teenProfile())
+          && data.barangay == teenProfile().assignedBarangay
+          && isValidAssistanceCategory(data.category)
+          && data.description is string
+          && data.description.size() >= 10
+          && data.description.size() <= 500
+          && data.status == 'submitted'
+          && data.createdAt is timestamp;
+    }
+
+    function barangayCanAccessAssistanceRequest() {
+      return isBarangay()
+          && hasAssignedBarangay(userDoc())
+          && resource.data.barangay == userDoc().assignedBarangay;
+    }
+
+    function assistanceRequestAcknowledgeUpdate() {
+      return barangayCanAccessAssistanceRequest()
+          && resource.data.status == 'submitted'
+          && request.resource.data.status == 'acknowledged'
+          && request.resource.data.teenUid == resource.data.teenUid
+          && request.resource.data.barangay == resource.data.barangay
+          && request.resource.data.category == resource.data.category
+          && request.resource.data.description == resource.data.description
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.acknowledgedAt is timestamp
+          && request.resource.data.acknowledgedByUid == request.auth.uid
+          && request.resource.data.keys().hasAll([
+            'teenUid', 'barangay', 'category', 'description', 'status', 'createdAt',
+            'acknowledgedAt', 'acknowledgedByUid'
+          ]);
+    }
+
     function caseCoreFieldsValid(data) {
       return data.keys().hasAll([
             'demoName', 'age', 'barangay', 'caseStatus', 'registeredAt',
@@ -116,6 +177,19 @@ service cloud.firestore {
         allow read, create, update: if isBarangay();
         allow delete: if false;
       }
+    }
+
+    match /teenAssistanceRequests/{requestId} {
+      allow read: if (isTeen()
+          && resource.data.teenUid == request.auth.uid)
+          || barangayCanAccessAssistanceRequest();
+
+      allow create: if isTeen()
+          && assistanceRequestCreateValid(request.resource.data);
+
+      allow update: if assistanceRequestAcknowledgeUpdate();
+
+      allow delete: if false;
     }
 
     match /reports/{reportId} {

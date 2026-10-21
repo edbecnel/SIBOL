@@ -34,6 +34,14 @@ class BarangayHomeScreen extends ConsumerWidget {
       body: Column(
         children: [
           const FictionalDataBanner(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: OutlinedButton.icon(
+              onPressed: () => context.push(Routes.barangayIncomingRequests),
+              icon: const Icon(Icons.inbox),
+              label: const Text('Incoming requests'),
+            ),
+          ),
           Expanded(
             child: casesAsync.when(
               loading: () => const AppLoadingIndicator(message: 'Loading fictional cases…'),

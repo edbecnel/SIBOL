@@ -12,6 +12,11 @@ import 'package:sibol_app/features/cases/presentation/screens/case_detail_screen
 import 'package:sibol_app/features/cases/presentation/screens/case_edit_screen.dart';
 import 'package:sibol_app/features/moph/presentation/screens/moph_home_screen.dart';
 import 'package:sibol_app/features/settings/presentation/screens/settings_screen.dart';
+import 'package:sibol_app/features/teenager/presentation/screens/barangay_incoming_request_detail_screen.dart';
+import 'package:sibol_app/features/teenager/presentation/screens/barangay_incoming_requests_screen.dart';
+import 'package:sibol_app/features/teenager/presentation/screens/assistance_request_detail_screen.dart';
+import 'package:sibol_app/features/teenager/presentation/screens/assistance_request_form_screen.dart';
+import 'package:sibol_app/features/teenager/presentation/screens/assistance_request_list_screen.dart';
 import 'package:sibol_app/features/teenager/presentation/screens/teen_home_screen.dart';
 import 'package:sibol_app/features/auth/presentation/screens/unauthorized_screen.dart';
 
@@ -43,11 +48,47 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.teenHome,
         builder: (context, state) => const TeenHomeScreen(),
+        routes: [
+          GoRoute(
+            path: Routes.teenAssistanceSegment,
+            builder: (context, state) => const AssistanceRequestListScreen(),
+            routes: [
+              GoRoute(
+                path: 'new',
+                builder: (context, state) =>
+                    const AssistanceRequestFormScreen(),
+              ),
+              GoRoute(
+                path: ':requestId',
+                builder: (context, state) {
+                  final requestId = state.pathParameters['requestId']!;
+                  return AssistanceRequestDetailScreen(requestId: requestId);
+                },
+              ),
+            ],
+          ),
+        ],
       ),
       GoRoute(
         path: Routes.barangayHome,
         builder: (context, state) => const BarangayHomeScreen(),
         routes: [
+          GoRoute(
+            path: Routes.barangayIncomingRequestsSegment,
+            builder: (context, state) =>
+                const BarangayIncomingRequestsScreen(),
+            routes: [
+              GoRoute(
+                path: ':requestId',
+                builder: (context, state) {
+                  final requestId = state.pathParameters['requestId']!;
+                  return BarangayIncomingRequestDetailScreen(
+                    requestId: requestId,
+                  );
+                },
+              ),
+            ],
+          ),
           GoRoute(
             path: '${Routes.barangayCaseSegment}/new',
             builder: (context, state) => const CaseEditScreen(),

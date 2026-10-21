@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-21 (T2-1)  
+> **Last updated:** 2026-10-21 (SIBOL-DEMO-001)  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -16,7 +16,11 @@
 | SIBOL-GOV-002 | Git baseline preservation and publication | **Closed** | [SIBOL_GOV_002_EXECUTION_REPORT.md](SIBOL_GOV_002_EXECUTION_REPORT.md) |
 | SIBOL-IMP-002 / T2-1 | Read-only case detail | **Closed (published `8480c1a`)** | [SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md) |
 | SIBOL-IMP-002 / T2-2 | Follow-up timeline | **Closed (published)** | [SIBOL_IMP_002_T2_2_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_2_EXECUTION_REPORT.md) |
-| SIBOL-IMP-002 / T2-3 | Case create/edit | **Published to Git — pending PA acceptance; rules not deployed** | [SIBOL_IMP_002_T2_3_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_3_EXECUTION_REPORT.md) |
+| SIBOL-IMP-002 / T2-3 | Case create/edit | **Rules deployed; Git published; Android write QA pending PA** | [SIBOL_IMP_002_T2_3_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_3_EXECUTION_REPORT.md) |
+| SIBOL-UI-001 | Official launcher icon (Android/iOS) | **Delivered locally — pending PA acceptance** | [SIBOL_UI_001_EXECUTION_REPORT.md](SIBOL_UI_001_EXECUTION_REPORT.md) |
+| SIBOL-DEMO-001 | Physical Android demo; Teen inspection and PO requirements | **In progress** (device install; Barangay/MOPH demo) | [SIBOL_DEMO_001_EXECUTION_REPORT.md](SIBOL_DEMO_001_EXECUTION_REPORT.md) |
+| SIBOL-DEMO-002 | Teen assistance request workflow (demo) | **Live emulator QA pass (MVR-0003); PO phone install pending** | [SIBOL_DEMO_002_EXECUTION_REPORT.md](SIBOL_DEMO_002_EXECUTION_REPORT.md), [MVR-0003](../Verification/Records/MVR-0003-demo-002-teen-assistance-emulator.md) |
+| SIBOL-DEMO-003 | Barangay incoming + acknowledge teen requests | **Live E2E Pass (14/14); teen detail copy corrected (re-verify on device)** | [SIBOL_DEMO_003_EXECUTION_REPORT.md](SIBOL_DEMO_003_EXECUTION_REPORT.md) |
 
 ## Tranche 2 implementation gate
 

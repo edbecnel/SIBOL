@@ -21,7 +21,7 @@ Planning artifacts ([SIBOL_IMP_002_PLAN.md](SIBOL_IMP_002_PLAN.md)) do **not** c
 | Gate | Status |
 |------|--------|
 | P0 + P1 documentation recovery | **Complete** (GOV-001 remediation, 2026-10-20) |
-| PA Tranche 2 implementation authorization | **T2-1/T2-2/T2-3 published to Git** (`f3a7c219-…`); **Firestore rules deploy / T2-4+ not granted** |
+| PA Tranche 2 implementation authorization | **T2-3 rules live** (`a4e71d39-…`); **live case write QA / T2-4+ not granted** |
 
 ## Related
 

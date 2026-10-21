@@ -166,6 +166,61 @@ void main() {
       );
     });
 
+    test('teen on assistance list → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.teenAssistanceList,
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.teen)),
+        ),
+        isNull,
+      );
+    });
+
+    test('teen on assistance new → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.teenAssistanceNew,
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.teen)),
+        ),
+        isNull,
+      );
+    });
+
+    test('barangay on incoming requests → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.barangayIncomingRequests,
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.barangay)),
+        ),
+        isNull,
+      );
+    });
+
+    test('teen on barangay incoming requests → teen home', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.barangayIncomingRequests,
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.teen)),
+        ),
+        Routes.teenHome,
+      );
+    });
+
+    test('barangay on teen assistance → barangay home', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.teenAssistanceList,
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.barangay)),
+        ),
+        Routes.barangayHome,
+      );
+    });
+
     test('teen on barangay case detail → teen home', () {
       expect(
         resolveAppRedirect(

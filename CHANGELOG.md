@@ -26,6 +26,14 @@ All notable changes to this repository are documented here.
 
 - SIBOL-IMP-002 T2-3: barangay case create/edit, write policy, hardened `firestore.rules`, emulator tests (local only; not committed/deployed per PA).
 
+### Added
+
+- SIBOL-UI-001: official SIBOL launcher icon for Android (adaptive) and iOS via `flutter_launcher_icons` (local; not committed per PA).
+
+### Changed
+
+- SIBOL-DEMO-003: Firestore rules (barangay-scoped teen assistance + acknowledge) and `barangay`+`createdAt` index deployed to `sibol-286d0` (authorization `e8d2b614-…`; local repo not committed per PA).
+
 ### Changed
 
 - Tranche 1 execution report test evidence updated to 28/28; live Firebase `sibol-286d0` status documented.

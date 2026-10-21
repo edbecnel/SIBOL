@@ -8,6 +8,7 @@ class UserProfile extends Equatable {
     required this.displayName,
     required this.active,
     required this.createdAt,
+    this.assignedBarangay,
   });
 
   final String uid;
@@ -16,6 +17,10 @@ class UserProfile extends Equatable {
   final bool active;
   final DateTime createdAt;
 
+  /// Provisioned demo site label; used for teen assistance routing (not client-writable).
+  final String? assignedBarangay;
+
   @override
-  List<Object?> get props => [uid, role, displayName, active, createdAt];
+  List<Object?> get props =>
+      [uid, role, displayName, active, createdAt, assignedBarangay];
 }

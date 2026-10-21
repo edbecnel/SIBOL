@@ -1,0 +1,164 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Deny-by-default: only explicit paths below are reachable.
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function userRole() {
+      return userDoc().role;
+    }
+
+    function isActiveUser() {
+      return isSignedIn()
+          && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+          && userDoc().active == true;
+    }
+
+    function isTeen() {
+      return isActiveUser() && userRole() == 'teen';
+    }
+
+    function isBarangay() {
+      return isActiveUser() && userRole() == 'barangay';
+    }
+
+    function isMoph() {
+      return isActiveUser() && userRole() == 'moph';
+    }
+
+    function roleUnchanged() {
+      return !('role' in request.resource.data)
+          || request.resource.data.role == resource.data.role;
+    }
+
+    function profileCreateValid() {
+      return request.resource.data.keys().hasAll(['role', 'displayName', 'active', 'createdAt'])
+          && request.resource.data.role in ['teen', 'barangay', 'moph']
+          && request.resource.data.active is bool
+          && request.resource.data.displayName is string;
+    }
+
+    function isValidCaseStatus(status) {
+      return status in ['active', 'followUpScheduled', 'followUpCompleted', 'closed'];
+    }
+
+    function isValidClientReportStatus(status) {
+      return status in ['notSubmitted', 'pendingSubmit'];
+    }
+
+    function caseAllowedKeys() {
+      return [
+        'demoName', 'age', 'barangay', 'caseStatus', 'registeredAt',
+        'nextFollowUpAt', 'notes', 'createdAt', 'updatedAt', 'reportStatus'
+      ];
+    }
+
+    function isValidAssistanceCategory(category) {
+      return category in [
+        'generalSupport',
+        'healthInformation',
+        'counselingReferral',
+        'barangayServices'
+      ];
+    }
+
+    function assistanceRequestCreateValid(data) {
+      return data.keys().hasAll(['teenUid', 'category', 'description', 'status', 'createdAt'])
+          && data.keys().hasOnly(['teenUid', 'category', 'description', 'status', 'createdAt'])
+          && data.teenUid is string
+          && data.teenUid == request.auth.uid
+          && isValidAssistanceCategory(data.category)
+          && data.description is string
+          && data.description.size() >= 10
+          && data.description.size() <= 500
+          && data.status == 'submitted'
+          && data.createdAt is timestamp;
+    }
+
+    function caseCoreFieldsValid(data) {
+      return data.keys().hasAll([
+            'demoName', 'age', 'barangay', 'caseStatus', 'registeredAt',
+            'createdAt', 'updatedAt', 'reportStatus'
+          ])
+          && data.keys().hasOnly(caseAllowedKeys())
+          && data.demoName is string
+          && data.demoName.size() >= 2
+          && data.age is int
+          && data.age >= 13
+          && data.age <= 19
+          && data.barangay is string
+          && data.barangay.size() >= 1
+          && isValidCaseStatus(data.caseStatus)
+          && data.registeredAt is timestamp
+          && data.createdAt is timestamp
+          && data.updatedAt is timestamp
+          && isValidClientReportStatus(data.reportStatus)
+          && (!('nextFollowUpAt' in data) || data.nextFollowUpAt is timestamp)
+          && (!('notes' in data) || data.notes is string);
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+
+      allow create: if false;
+
+      allow update: if isSignedIn()
+          && request.auth.uid == userId
+          && roleUnchanged()
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['displayName']);
+
+      allow delete: if false;
+    }
+
+    match /cases/{caseId} {
+      allow read: if isBarangay();
+
+      allow create: if isBarangay()
+          && caseCoreFieldsValid(request.resource.data)
+          && request.resource.data.reportStatus == 'notSubmitted';
+
+      allow update: if isBarangay()
+          && caseCoreFieldsValid(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.reportStatus == resource.data.reportStatus;
+
+      allow delete: if false;
+
+      match /followUps/{followUpId} {
+        allow read, create, update: if isBarangay();
+        allow delete: if false;
+      }
+    }
+
+    match /teenAssistanceRequests/{requestId} {
+      allow read: if isTeen()
+          && resource.data.teenUid == request.auth.uid;
+
+      allow create: if isTeen()
+          && assistanceRequestCreateValid(request.resource.data);
+
+      allow update, delete: if false;
+    }
+
+    match /reports/{reportId} {
+      allow read: if isMoph()
+          && resource.data.acceptedAt != null
+          && resource.data.reportStatus == 'submitted';
+      allow create, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

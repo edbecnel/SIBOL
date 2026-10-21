@@ -63,7 +63,12 @@ before(async () => {
   });
   await testEnv.withSecurityRulesDisabled(async (context) => {
     const db = context.firestore();
-    const userBase = { displayName: "Demo", active: true, createdAt: new Date() };
+    const userBase = {
+      displayName: "Demo",
+      active: true,
+      createdAt: new Date(),
+      assignedBarangay: "Barangay Tres, Balingasag",
+    };
     await db.collection("users").doc(barangayUid).set({
       ...userBase,
       role: "barangay",

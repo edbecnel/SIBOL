@@ -1,0 +1,19 @@
+{
+  "workItem": "SIBOL-DEMO-002",
+  "handoverUuid": "c3e72a91-6f48-4d05-b2a9-81e6c740d35f",
+  "purpose": "Proposed Firestore rules for predeployment verification (not yet deployed)",
+  "targetProject": "sibol-286d0",
+  "baselineLiveRuleset": {
+    "reference": "Docs/Verification/Artifacts/firestore.rules.post-t2-3-deploy-2026-10-21.metadata.json",
+    "rulesetName": "projects/sibol-286d0/rulesets/3f65a5f3-19c1-4134-98d3-d5e420864afc",
+    "gitBaselineCommit": "f1f7c76",
+    "note": "Live rules at predeploy time match repo firestore.rules at f1f7c76 (T2-3 hardened cases; no teenAssistanceRequests)."
+  },
+  "proposedDelta": "Adds teenAssistanceRequests match + assistanceRequestCreateValid helpers only (verified via diff against f1f7c76:firestore.rules).",
+  "artifactRulesFile": "firestore.rules.pre-demo-002-deploy-2026-10-21.rules",
+  "emulatorTests": {
+    "package": "shared/firestore-rules-test",
+    "result": "23/23 pass",
+    "verifiedAt": "2026-10-21"
+  }
+}

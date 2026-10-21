@@ -9,6 +9,7 @@ class UserProfileModel {
     required this.displayName,
     required this.active,
     required this.createdAt,
+    this.assignedBarangay,
   });
 
   final String uid;
@@ -16,6 +17,7 @@ class UserProfileModel {
   final String displayName;
   final bool active;
   final DateTime createdAt;
+  final String? assignedBarangay;
 
   factory UserProfileModel.fromFirestore(String uid, Map<String, dynamic> data) {
     final created = data['createdAt'];
@@ -25,6 +27,7 @@ class UserProfileModel {
       displayName: data['displayName'] as String? ?? '',
       active: data['active'] as bool? ?? false,
       createdAt: created is Timestamp ? created.toDate() : DateTime.now(),
+      assignedBarangay: data['assignedBarangay'] as String?,
     );
   }
 
@@ -39,6 +42,7 @@ class UserProfileModel {
       displayName: displayName,
       active: active,
       createdAt: createdAt,
+      assignedBarangay: assignedBarangay,
     );
   }
 }

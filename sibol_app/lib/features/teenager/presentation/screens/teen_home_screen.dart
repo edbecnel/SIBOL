@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
 
 class TeenHomeScreen extends ConsumerWidget {
@@ -36,22 +37,32 @@ class TeenHomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'This dashboard demonstrates adolescent health information and support resources. '
-                  'It does not create official patient records.',
+                  'Submit and track fictional demonstration assistance requests. '
+                  'This is not an emergency service and does not access barangay case records.',
                 ),
                 const SizedBox(height: 24),
-                _ResourceCard(
+                AppButton.primary(
+                  label: 'New support request',
+                  onPressed: () => context.push(Routes.teenAssistanceNew),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton(
+                  onPressed: () => context.push(Routes.teenAssistanceList),
+                  child: const Text('My requests'),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Educational resources (demo)',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                const _ResourceCard(
                   title: 'Maternal health information',
                   body: 'General education about seeking care from qualified health professionals.',
                 ),
-                _ResourceCard(
+                const _ResourceCard(
                   title: 'Support resources',
                   body: 'Illustrative links to barangay health services (fictional for demo).',
-                ),
-                _ResourceCard(
-                  title: 'Request for assistance (demo)',
-                  body: 'A future tranche may persist illustrative assistance requests. '
-                      'Tranche 1 does not store teen-submitted case records.',
                 ),
               ],
             ),

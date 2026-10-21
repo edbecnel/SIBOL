@@ -1,7 +1,7 @@
-# Firestore rules — T2-3 hardening (proposed, not deployed)
+# Firestore rules — T2-3 hardening
 
-> **Handover:** `b72d5c94-…` (implementation), `f3a7c219-…` (security verification)  
-> **Status:** Published in Git; **not deployed** to `sibol-286d0` without PA authorization
+> **Handover:** `b72d5c94-…` (implementation), `f3a7c219-…` (verification/Git), `a4e71d39-…` (deploy)  
+> **Status:** **Deployed** to `sibol-286d0` (2026-10-21); ruleset `3f65a5f3-19c1-4134-98d3-d5e420864afc`
 
 ## Rationale
 
@@ -52,11 +52,13 @@ Provisioning uses `reportStatus: "notSubmitted"` and schema fields only (`shared
 | MOPH | Denied | Denied | Read accepted submitted only |
 | Unauthenticated | Denied | Denied | Denied |
 
-### Deploy command (when authorized)
+### Deploy (executed 2026-10-21)
 
 ```bash
 firebase deploy --only firestore:rules --project sibol-286d0
 ```
+
+Pre-deploy rollback copy: `Docs/Verification/Artifacts/firestore.rules.pre-t2-3-deploy-2026-10-21.rules`.
 
 ### Rollback
 
@@ -82,6 +84,11 @@ Keep a copy of the pre-deploy rules in the Firebase console revision history as 
 2. Create new fictional case — success; verify in list.
 3. Edit case notes/status — success.
 4. Sign in as teen — confirm no case routes/data.
+
+## Teen assistance requests (SIBOL-DEMO-002, local rules — deploy pending PA)
+
+- Collection `teenAssistanceRequests`: teen create/read own only; no client update/delete.
+- See [`SIBOL_DEMO_002_EXECUTION_REPORT.md`](SIBOL_DEMO_002_EXECUTION_REPORT.md) and `assistance_requests.rules.test.mjs`.
 5. Sign in as MOPH — confirm dashboard without case list; reports behavior unchanged.
 
 **Do not use real PII until org-scoped authorization exists.**

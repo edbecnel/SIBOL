@@ -1,0 +1,17 @@
+{
+  "name": "projects/sibol-286d0/rulesets/276bb8c1-a3ac-403f-82ed-2075519eaa77",
+  "source": {
+    "files": [
+      {
+        "content": "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n\n    // Deny-by-default: only explicit paths below are reachable.\n\n    function isSignedIn() {\n      return request.auth != null;\n    }\n\n    function userDoc() {\n      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;\n    }\n\n    function userRole() {\n      return userDoc().role;\n    }\n\n    function isActiveUser() {\n      return isSignedIn()\n          && exists(/databases/$(database)/documents/users/$(request.auth.uid))\n          && userDoc().active == true;\n    }\n\n    function isTeen() {\n      return isActiveUser() && userRole() == 'teen';\n    }\n\n    function isBarangay() {\n      return isActiveUser() && userRole() == 'barangay';\n    }\n\n    function isMoph() {\n      return isActiveUser() && userRole() == 'moph';\n    }\n\n    function roleUnchanged() {\n      return !('role' in request.resource.data)\n          || request.resource.data.role == resource.data.role;\n    }\n\n    function profileCreateValid() {\n      return request.resource.data.keys().hasAll(['role', 'displayName', 'active', 'createdAt'])\n          && request.resource.data.role in ['teen', 'barangay', 'moph']\n          && request.resource.data.active is bool\n          && request.resource.data.displayName is string;\n    }\n\n    match /users/{userId} {\n      allow read: if isSignedIn() && request.auth.uid == userId;\n\n      // Users may update display fields only; role is provisioned by trusted scripts/admin.\n      allow create: if false;\n\n      allow update: if isSignedIn()\n          && request.auth.uid == userId\n          && roleUnchanged()\n          && request.resource.data.role == resource.data.role\n          && request.resource.data.diff(resource.data).affectedKeys()\n              .hasOnly(['displayName']);\n\n      allow delete: if false;\n    }\n\n    match /cases/{caseId} {\n      allow read, create, update: if isBarangay();\n      allow delete: if false;\n\n      match /followUps/{followUpId} {\n        allow read, create, update: if isBarangay();\n        allow delete: if false;\n      }\n    }\n\n    // MOPH reads only server-accepted reports (Tranche 2 submit function writes here).\n    match /reports/{reportId} {\n      allow read: if isMoph()\n          && resource.data.acceptedAt != null\n          && resource.data.reportStatus == 'submitted';\n      allow create, update, delete: if false;\n    }\n\n    match /{document=**} {\n      allow read, write: if false;\n    }\n  }\n}\n",
+        "name": "firestore.rules"
+      }
+    ]
+  },
+  "createTime": "2026-10-20T06:27:47.293839Z",
+  "metadata": {
+    "services": [
+      "cloud.firestore"
+    ]
+  }
+}

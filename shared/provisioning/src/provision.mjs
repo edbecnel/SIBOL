@@ -39,15 +39,24 @@ export async function executeProvisioning({ auth, db, users, logger = console })
           `Skipping profile update for ${user.email}; existing role=${data.role} active=${data.active}`,
         );
       } else {
-        logger.log(`User profile already present for ${user.email}`);
+        if (user.assignedBarangay && !data.assignedBarangay) {
+          await profileRef.update({ assignedBarangay: user.assignedBarangay });
+          logger.log(`Set assignedBarangay for ${user.email}`);
+        } else {
+          logger.log(`User profile already present for ${user.email}`);
+        }
       }
     } else {
-      await profileRef.set({
+      const profile = {
         role: user.role,
         displayName: user.displayName,
         active: true,
         createdAt: now,
-      });
+      };
+      if (user.assignedBarangay) {
+        profile.assignedBarangay = user.assignedBarangay;
+      }
+      await profileRef.set(profile);
       logger.log(`Created user profile: ${user.email} role=${user.role}`);
     }
   }

@@ -24,6 +24,15 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   mocktail: ^1.0.4
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/branding/sibol_app_icon_source.png
+  remove_alpha_ios: true
+  adaptive_icon_background: "#5BC8F5"
+  adaptive_icon_foreground: assets/branding/sibol_app_icon_source.png
 
 flutter:
   uses-material-design: true

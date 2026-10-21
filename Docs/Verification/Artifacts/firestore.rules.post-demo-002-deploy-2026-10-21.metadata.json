@@ -1,0 +1,19 @@
+{
+  "workItem": "SIBOL-DEMO-002",
+  "handoverUuid": "d5b8e31a-7c42-4f96-9a10-2e63f087bc54",
+  "targetProject": "sibol-286d0",
+  "deployCommand": "firebase deploy --only firestore:rules,firestore:indexes --project sibol-286d0",
+  "deployResult": "success",
+  "deployCompletedAtUtc": "2026-10-21T12:42:00Z",
+  "rulesSourceFile": "firestore.rules",
+  "rulesSha256": "f5c743fe5e4b53d6d33ae2a9a956501af22a3cc6b60e5c5f38949e454445f3a7",
+  "priorLiveRuleset": "projects/sibol-286d0/rulesets/3f65a5f3-19c1-4134-98d3-d5e420864afc",
+  "compositeIndex": {
+    "collectionGroup": "teenAssistanceRequests",
+    "fields": ["teenUid ASC", "createdAt DESC"],
+    "gcloudIndexId": "CICAgOjXh4EK",
+    "state": "READY",
+    "readyObservedAtUtc": "2026-10-21T12:46:45Z"
+  },
+  "notes": "Rules release ruleset UUID not retrieved via API (ADC quota); deploy CLI confirmed release to cloud.firestore."
+}

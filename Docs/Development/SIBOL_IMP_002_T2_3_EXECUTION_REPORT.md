@@ -2,10 +2,11 @@
 
 > **Implementation handover:** `b72d5c94-13f6-4a82-9e05-8c6f241da739`  
 > **Security verification & publication handover:** `f3a7c219-6b48-4e91-8d35-20c6f74ab582`  
+> **Rules deployment handover:** `a4e71d39-2c86-4b05-91f3-6d80a2e47c19`  
 > **Phase:** T2-3 — case creation and editing  
 > **Date:** 2026-10-21  
-> **Firestore rules deploy:** **Not authorized** (Git publication authorized; deploy is separate)  
-> **Live Firestore writes (T2-3 testing):** **Not authorized**  
+> **Firestore rules deploy:** **Executed** on `sibol-286d0` (rules only)  
+> **Live Firestore writes (case create/edit QA):** **Not authorized**  
 > **PA acceptance:** Pending
 
 ## 1. PA authorization
@@ -14,8 +15,9 @@
 |----------|--------|
 | `b72d5c94-…` | Local T2-3 implementation and emulator verification |
 | `f3a7c219-…` | Security verification, EDF updates, conditional Git publication |
+| `a4e71d39-…` | Controlled Firestore **rules** deploy + read-only verification; Android QA prep |
 
-T2-4+, **live Firebase deploy**, and live case writes require separate handover.
+T2-4+ and **live case create/edit QA** require separate handover.
 
 ## 2. Implementation summary
 
@@ -94,9 +96,47 @@ cd shared/firestore-rules-test && npm ci && npm test
 | Tests | `case_write_policy_test.dart`, `case_edit_screen_test.dart`, `app_redirect_test.dart`, `fake_case_repository.dart`, `cases.rules.test.mjs` |
 | Docs | This report, [FIRESTORE_RULES_T2_3.md](FIRESTORE_RULES_T2_3.md) |
 
-## 7. Deployment readiness (analysis only — not executed)
+## 7. Firestore rules deployment (`a4e71d39-…`)
 
-See [FIRESTORE_RULES_T2_3.md](FIRESTORE_RULES_T2_3.md) § Deployment readiness.
+### Predeployment (2026-10-21)
+
+| Check | Result |
+|-------|--------|
+| Active Firebase project | `sibol-286d0` (`firebase use sibol-286d0`) |
+| Git HEAD | `f1f7c76`; working tree clean at deploy start |
+| Rollback artifact | [`Docs/Verification/Artifacts/firestore.rules.pre-t2-3-deploy-2026-10-21.rules`](../Verification/Artifacts/firestore.rules.pre-t2-3-deploy-2026-10-21.rules) (ruleset `276bb8c1-a3ac-403f-82ed-2075519eaa77`, retrieved via Rules API — not assumed from Git) |
+| Live vs proposed diff | Pre-deploy lacked `caseCoreFieldsValid` / case write constraints; proposed matches repo `firestore.rules` |
+| Emulator parity | `shared/firestore-rules-test` reads repo `firestore.rules`; **14/14** pass immediately before deploy |
+| Deploy scope | `--only firestore:rules` (no functions, indexes, auth, or data changes) |
+| Demo cases readable (expectation) | Provisioned `demo-case-001`…`005` schema-compatible |
+
+### Deploy
+
+```bash
+firebase deploy --only firestore:rules --project sibol-286d0
+```
+
+| Result | **Success** — `✔ firestore: released rules firestore.rules to cloud.firestore` |
+| Post-deploy ruleset | `projects/sibol-286d0/rulesets/3f65a5f3-19c1-4134-98d3-d5e420864afc` |
+| Content vs repo | **Byte-identical** to `firestore.rules` at `f1f7c76` |
+| Metadata | [`firestore.rules.post-t2-3-deploy-2026-10-21.metadata.json`](../Verification/Artifacts/firestore.rules.post-t2-3-deploy-2026-10-21.metadata.json) |
+
+### Post-deploy read-only verification
+
+| Check | Method | Result |
+|-------|--------|--------|
+| Project | CLI / API | `sibol-286d0` |
+| Deployed rules match reviewed file | Rules API body vs repo | **Match** |
+| `demo-case-001`…`005` present | Firestore REST `GET` (Cloud IAM; **not** security-rules simulation) | **HTTP 200** each |
+| Follow-ups on `demo-case-002` | REST list subcollection | **1** document |
+| Barangay rules-enforced reads | Firebase Auth + client SDK | **Not run** — `SIBOL_DEMO_PASSWORD_*` not available in EA environment |
+| Teen/MOPH deny (rules-enforced) | Client SDK | **Not run** (same constraint) |
+
+No create, update, or delete operations were performed on live Firestore during this handover.
+
+Rollback: [Artifacts README](../Verification/Artifacts/README.md).
+
+Android manual QA (including live writes when authorized): [MVR-0002](../Verification/Records/MVR-0002-t2-3-android-case-writes.md).
 
 ## 8. Publication record
 
@@ -104,7 +144,7 @@ See [FIRESTORE_RULES_T2_3.md](FIRESTORE_RULES_T2_3.md) § Deployment readiness.
 |-------|--------|
 | Git commit | `41272a5` on `main` |
 | Push | `origin/main` (handover `f3a7c219-…`) |
-| Firebase deploy | **Not performed** |
+| Rules deploy | 2026-10-21 (`a4e71d39-…`) |
 
 ## 9. Traceability
 
