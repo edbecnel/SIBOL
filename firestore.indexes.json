@@ -31,6 +31,23 @@
         { "fieldPath": "barangay", "order": "ASCENDING" },
         { "fieldPath": "submittedAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "reports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "reportStatus", "order": "ASCENDING" },
+        { "fieldPath": "acceptedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "reports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "barangay", "order": "ASCENDING" },
+        { "fieldPath": "reportStatus", "order": "ASCENDING" },
+        { "fieldPath": "acceptedAt", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

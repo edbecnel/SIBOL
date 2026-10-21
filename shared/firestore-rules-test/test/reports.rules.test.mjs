@@ -7,7 +7,7 @@ import {
   assertFails,
   assertSucceeds,
 } from "@firebase/rules-unit-testing";
-import { serverTimestamp } from "firebase/firestore";
+import { serverTimestamp, Timestamp } from "firebase/firestore";
 
 const rulesPath = resolve(
   fileURLToPath(new URL(".", import.meta.url)),
@@ -22,6 +22,32 @@ const mophUid = "moph-user-1";
 const site = "Barangay Tres, Balingasag";
 
 let testEnv;
+
+const minAcceptedAt = Timestamp.fromMillis(1);
+
+function mophProductionListQuery(db) {
+  return db
+    .collection("reports")
+    .where("reportStatus", "==", "submitted")
+    .where("acceptedAt", ">", minAcceptedAt)
+    .orderBy("acceptedAt", "desc");
+}
+
+function mophLegacyListQuery(db) {
+  return db
+    .collection("reports")
+    .where("reportStatus", "==", "submitted")
+    .orderBy("submittedAt", "desc");
+}
+
+function barangayProductionListQuery(db, barangay) {
+  return db
+    .collection("reports")
+    .where("barangay", "==", barangay)
+    .where("reportStatus", "==", "submitted")
+    .where("acceptedAt", ">", minAcceptedAt)
+    .orderBy("acceptedAt", "desc");
+}
 
 function validAggregateReport(overrides = {}) {
   return {
@@ -136,6 +162,57 @@ describe("reports collection (DEMO-004 aggregate)", () => {
   it("denies MOPH read of cases collection", async () => {
     const mophDb = testEnv.authenticatedContext(mophUid).firestore();
     await assertFails(mophDb.collection("cases").doc("any-case").get());
+  });
+
+  it("allows MOPH production list query; denies legacy list query shape", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const now = new Date();
+      const db = context.firestore();
+      await db.collection("reports").doc("good-report").set({
+        barangay: site,
+        submittedAt: now,
+        submittedByUid: barangayUid,
+        totalCaseCount: 1,
+        activeCaseCount: 1,
+        followUpScheduledCount: 0,
+        followUpCompletedCount: 0,
+        closedCaseCount: 0,
+        reportStatus: "submitted",
+        acceptedAt: now,
+      });
+      await db.collection("reports").doc("legacy-no-accepted").set({
+        reportStatus: "submitted",
+        caseId: "legacy",
+      });
+    });
+    const mophDb = testEnv.authenticatedContext(mophUid).firestore();
+    await assertSucceeds(mophProductionListQuery(mophDb).get());
+    await assertFails(mophLegacyListQuery(mophDb).get());
+  });
+
+  it("allows barangay production list query for assigned site", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const now = new Date();
+      await context.firestore().collection("reports").doc("brgy-list").set({
+        barangay: site,
+        submittedAt: now,
+        submittedByUid: barangayUid,
+        totalCaseCount: 1,
+        activeCaseCount: 1,
+        followUpScheduledCount: 0,
+        followUpCompletedCount: 0,
+        closedCaseCount: 0,
+        reportStatus: "submitted",
+        acceptedAt: now,
+      });
+    });
+    const barangayDb = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertSucceeds(barangayProductionListQuery(barangayDb, site).get());
+  });
+
+  it("denies teen MOPH production list query", async () => {
+    const teenDb = testEnv.authenticatedContext(teenUid).firestore();
+    await assertFails(mophProductionListQuery(teenDb).get());
   });
 
   it("denies barangay update on reports", async () => {

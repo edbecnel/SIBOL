@@ -127,7 +127,45 @@ Restore [`firestore.rules.pre-demo-004-deploy-2026-10-22.rules`](../Verification
 
 ## 10. Manual verification
 
-**Status:** Not started. Suggested script: Barangay submit aggregate → sign in MOPH → list + detail. Record in MVR when executed.
+**Status:** Blocked during live test by defect §12; re-test after app + index deploy. Suggested script: Barangay submit aggregate → sign in MOPH → list + detail. Record in MVR when executed.
+
+## 12. Defect — MOPH list `permission-denied` (handover `c5f8a219-…`)
+
+### 12.1 Symptom
+
+Live operator test: MOPH dashboard briefly showed a submitted report, then  
+`[cloud_firestore/permission-denied]` on the list stream.
+
+### 12.2 Cause
+
+`watchSubmittedReportsForMoph()` queried `reportStatus == submitted` + `orderBy(submittedAt)` only. Deployed rules also require `acceptedAt != null`. Firestore rejects the **collection query** as insecure (not merely filtering rows). Single-document reads could still succeed.
+
+### 12.3 Correction (2026-10-22, no rules change)
+
+**File:** [`report_repository_impl.dart`](../../sibol_app/lib/features/reporting/data/repositories/report_repository_impl.dart)
+
+- MOPH list: add `where('acceptedAt', isGreaterThan: _minAcceptedAt)` and `orderBy('acceptedAt', descending: true)` (submission ordering preserved in practice — `acceptedAt` and `submittedAt` are set together via server timestamp on create).
+- Barangay list (`watchReportsForBarangay`): same `acceptedAt` + `reportStatus` constraints for rules parity.
+
+**Indexes** (added in [`firestore.indexes.json`](../../firestore.indexes.json); prior four composites retained):
+
+- `reports`: `reportStatus` + `acceptedAt` (MOPH)
+- `reports`: `barangay` + `reportStatus` + `acceptedAt` (barangay)
+
+### 12.4 Regression evidence
+
+| Check | Result |
+|-------|--------|
+| `shared/firestore-rules-test` | **34/34** (incl. MOPH production vs legacy list query, legacy doc in collection, barangay list, teen deny) |
+| `flutter test` | **55 passed** |
+| `flutter analyze` | **0 errors**; 1 existing warning |
+| `flutter build apk --debug` | **Success** |
+
+### 12.5 Outstanding deployment
+
+**Indexes only** (rules unchanged):  
+`firebase deploy --only firestore:indexes --project sibol-286d0`  
+(await PA authorization). App rebuild/install required for query fix.
 
 ## 11. PA acceptance
 

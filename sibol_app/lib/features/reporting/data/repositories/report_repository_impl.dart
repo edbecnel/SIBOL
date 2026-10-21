@@ -10,6 +10,9 @@ class ReportRepositoryImpl implements ReportRepository {
 
   final FirebaseFirestore _firestore;
 
+  /// Matches rules requiring `acceptedAt != null` for MOPH/barangay list reads.
+  static final Timestamp _minAcceptedAt = Timestamp.fromMillisecondsSinceEpoch(1);
+
   CollectionReference<Map<String, dynamic>> get _collection =>
       _firestore.collection(FirestorePaths.reports);
 
@@ -17,7 +20,8 @@ class ReportRepositoryImpl implements ReportRepository {
   Stream<List<MophAggregateReport>> watchSubmittedReportsForMoph() {
     return _collection
         .where('reportStatus', isEqualTo: 'submitted')
-        .orderBy('submittedAt', descending: true)
+        .where('acceptedAt', isGreaterThan: _minAcceptedAt)
+        .orderBy('acceptedAt', descending: true)
         .snapshots()
         .map(
           (snap) => snap.docs
@@ -45,7 +49,9 @@ class ReportRepositoryImpl implements ReportRepository {
   Stream<List<MophAggregateReport>> watchReportsForBarangay(String barangay) {
     return _collection
         .where('barangay', isEqualTo: barangay)
-        .orderBy('submittedAt', descending: true)
+        .where('reportStatus', isEqualTo: 'submitted')
+        .where('acceptedAt', isGreaterThan: _minAcceptedAt)
+        .orderBy('acceptedAt', descending: true)
         .snapshots()
         .map(
           (snap) => snap.docs
