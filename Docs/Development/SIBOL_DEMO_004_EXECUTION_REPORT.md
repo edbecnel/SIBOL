@@ -62,8 +62,8 @@ Barangay counts are computed from in-app case list filtered to `users.assignedBa
 
 | Milestone | Commit | Notes |
 |-----------|--------|-------|
-| Implementation + rules + tests | *(see EA completion report)* | Pushed to `main` |
-| EDF register / CHANGELOG | *(same or follow-up commit)* | This document |
+| Implementation + rules + tests | `1d4f012` | Pushed to `origin/main` |
+| EDF register / CHANGELOG | `3db1f9c` | This document |
 
 ## 8. Required Firebase deployment (PA authorization pending)
 
