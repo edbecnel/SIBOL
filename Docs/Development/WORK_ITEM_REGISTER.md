@@ -22,7 +22,7 @@
 | SIBOL-DEMO-002 | Teen assistance request workflow (demo) | **Live emulator QA pass (MVR-0003); PO phone install pending** | [SIBOL_DEMO_002_EXECUTION_REPORT.md](SIBOL_DEMO_002_EXECUTION_REPORT.md), [MVR-0003](../Verification/Records/MVR-0003-demo-002-teen-assistance-emulator.md) |
 | SIBOL-DEMO-003 | Barangay incoming + acknowledge teen requests | **Baseline tagged** `sibol-demo-003-working-baseline` @ `c06fd2b` (see execution report §12) | [SIBOL_DEMO_003_EXECUTION_REPORT.md](SIBOL_DEMO_003_EXECUTION_REPORT.md) |
 | SIBOL-DEMO-004 | Barangay-to-MOPH aggregate reporting (demo) | **MOPH live verification Pass (MVR-0005)** | [SIBOL_DEMO_004_EXECUTION_REPORT.md](SIBOL_DEMO_004_EXECUTION_REPORT.md) |
-| SIBOL-DEMO-005 | Barangay submission receipt and report history | **Implemented locally; operator QA pending** | [SIBOL_DEMO_005_EXECUTION_REPORT.md](SIBOL_DEMO_005_EXECUTION_REPORT.md) |
+| SIBOL-DEMO-005 | Barangay submission receipt and report history | **Operator Pass (MVR-0006); post-submit nav untested** | [SIBOL_DEMO_005_EXECUTION_REPORT.md](SIBOL_DEMO_005_EXECUTION_REPORT.md) |
 
 ## Tranche 2 implementation gate
 

@@ -1,9 +1,9 @@
 # SIBOL-DEMO-005 — Execution report (Barangay submission receipt and history)
 
-> **Handover UUID:** `a7c39e42-6d81-4b50-9f23-e5a16d7084bc`  
+> **Handover UUIDs:** `a7c39e42-…` (implementation); `f4b29c61-…` (operator acceptance)  
 > **Date:** 2026-10-22  
 > **Firebase deploy:** **Not authorized** — no rules/index changes required  
-> **Operator manual QA:** **Not executed** (await operator)
+> **Operator manual QA:** **Pass (7/7 observed)** — MVR-0006; post-submit navigation **not tested**
 
 ## 1. PA authorization
 
@@ -47,17 +47,32 @@ Barangay **Submitted reports** history and persistent **submission receipt** aft
 
 **None required** for this work item (indexes and rules already support queries).
 
-## 7. Operator manual QA script (not yet executed)
+## 7. Operator manual verification (operator-observed, 2026-10-22)
 
-| Step | Action | Expected observation |
-|------|--------|----------------------|
-| 1 | Sign in as `barangay.demo@sibol.local` | Barangay dashboard loads |
-| 2 | Tap **Submitted reports** | List shows prior aggregate report(s) for Barangay Tres; empty state if none |
-| 3 | Open a report | Receipt shows reference ID, barangay, date/time, status, total and status counts; no individual case names |
-| 4 | Sign out; sign in again; reopen **Submitted reports** → same receipt | Receipt still available |
-| 5 | **Submit report to MOPH** (if appropriate) | After confirm, lands on **Submission receipt** (not only snackbar); back does not return to submit form |
-| 6 | Sign in as `moph.demo@sibol.local` | MOPH list/detail still works (DEMO-004 regression) |
+**Record:** [MVR-0006](../Verification/Records/MVR-0006-demo-005-barangay-report-history-emulator.md)  
+**Handover:** `f4b29c61-8e35-4a70-b216-9d83e5c047fa`  
+**Outcome:** **Pass (7/7)** on Android emulator, live `sibol-286d0`
+
+| # | Observation | Result |
+|---|-------------|--------|
+| 1 | **Submitted reports** on Barangay dashboard | **Pass** |
+| 2 | History shows existing Barangay Tres report | **Pass** |
+| 3 | Receipt reference `8hCkusDPRacAWEiMZyPK` | **Pass** |
+| 4 | Submitted ~2026-10-22 05:28 (local) | **Pass** |
+| 5 | Counts: Active 3, FU scheduled 1, FU completed 1, Closed 1 (total 6) | **Pass** |
+| 6 | No individual case details on receipt | **Pass** |
+| 7 | Receipt still accessible after sign-out / sign-in | **Pass** |
+
+### 7.1 Not manually verified
+
+| Item | Notes |
+|------|--------|
+| Auto-navigation to receipt after **new** submit | No additional live report created; step 5 of §7 script **not executed** |
 
 ## 8. PA acceptance
 
-Pending operator manual QA.
+| Gate | Status |
+|------|--------|
+| Implementation + local automated verification (`a7c39e42-…`) | **Accepted** |
+| Operator history/receipt/persistence (`f4b29c61-…`) | **Pass** — MVR-0006 |
+| Post-submit receipt navigation (new submission) | **Untested** — optional follow-up |

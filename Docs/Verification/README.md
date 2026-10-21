@@ -19,6 +19,7 @@ Planning artifacts in `Docs/Development/` declare what was verified; this domain
 | [Records/MVR-0003-demo-002-teen-assistance-emulator.md](Records/MVR-0003-demo-002-teen-assistance-emulator.md) | SIBOL-DEMO-002 Teen assistance — live Firebase, Android emulator (**Pass 10/10**, 2026-10-21) |
 | [Records/MVR-0004-demo-003-barangay-ack-emulator.md](Records/MVR-0004-demo-003-barangay-ack-emulator.md) | SIBOL-DEMO-003 Barangay acknowledgment — live Firebase, Android emulator (**Pass 14/14**, 2026-10-21) |
 | [Records/MVR-0005-demo-004-moph-reporting-emulator.md](Records/MVR-0005-demo-004-moph-reporting-emulator.md) | SIBOL-DEMO-004 MOPH aggregate reporting — live Firebase, Android emulator (**Pass 7/7**, 2026-10-22) |
+| [Records/MVR-0006-demo-005-barangay-report-history-emulator.md](Records/MVR-0006-demo-005-barangay-report-history-emulator.md) | SIBOL-DEMO-005 Barangay report history/receipt — live Firebase, Android emulator (**Pass 7/7**, 2026-10-22) |
 
 ## Navigation
 
