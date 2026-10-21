@@ -52,6 +52,14 @@ See [SIBOL_DEMO_003_EXECUTION_REPORT.md](../../Development/SIBOL_DEMO_003_EXECUT
 
 See [SIBOL_DEMO_004_EXECUTION_REPORT.md](../../Development/SIBOL_DEMO_004_EXECUTION_REPORT.md) §9.
 
+## SIBOL-DEMO-004 query-fix index deploy (2026-10-22)
+
+| File | Purpose |
+|------|---------|
+| `firestore.indexes.post-demo-004-query-fix-deploy-2026-10-22.metadata.json` | Six composite indexes; new `acceptedAt` reporting indexes |
+
+See [SIBOL_DEMO_004_EXECUTION_REPORT.md](../../Development/SIBOL_DEMO_004_EXECUTION_REPORT.md) §12.5.
+
 ## SIBOL-DEMO-004 predeploy (2026-10-22)
 
 | File | Purpose |

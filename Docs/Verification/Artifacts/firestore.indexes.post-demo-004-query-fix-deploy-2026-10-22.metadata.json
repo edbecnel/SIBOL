@@ -1,0 +1,56 @@
+{
+  "workItem": "SIBOL-DEMO-004",
+  "handoverUuid": "e6a2f917-4d83-49b0-a75c-2f31d8e604ba",
+  "targetProject": "sibol-286d0",
+  "deployCommand": "firebase deploy --only firestore:indexes --project sibol-286d0",
+  "deployResult": "success",
+  "deployCompletedAtUtc": "2026-10-21T21:40:00Z",
+  "indexesSourceFile": "firestore.indexes.json",
+  "indexesSha256": "4536d3f020d36bd32449906a31ed2e4158e81b893babfa52dcb4f57142b802a7",
+  "gitCommit": "6e95734c4a6b22ee2977365bcca59f37e4d8f423",
+  "activeRulesetUnchanged": "projects/sibol-286d0/rulesets/c5b24ed9-aebf-44a9-af28-e9b2ff0d8c9c",
+  "compositeIndexes": [
+    {
+      "collectionGroup": "teenAssistanceRequests",
+      "fields": ["teenUid ASC", "createdAt DESC"],
+      "gcloudIndexId": "CICAgOjXh4EK",
+      "state": "READY"
+    },
+    {
+      "collectionGroup": "teenAssistanceRequests",
+      "fields": ["barangay ASC", "createdAt DESC"],
+      "gcloudIndexId": "CICAgJiUpoMK",
+      "state": "READY"
+    },
+    {
+      "collectionGroup": "reports",
+      "fields": ["reportStatus ASC", "submittedAt DESC"],
+      "gcloudIndexId": "CICAgJim14AK",
+      "state": "READY",
+      "notes": "Prior DEMO-004 deploy; retained"
+    },
+    {
+      "collectionGroup": "reports",
+      "fields": ["barangay ASC", "submittedAt DESC"],
+      "gcloudIndexId": "CICAgJim14AJ",
+      "state": "READY",
+      "notes": "Prior DEMO-004 deploy; retained"
+    },
+    {
+      "collectionGroup": "reports",
+      "fields": ["reportStatus ASC", "acceptedAt DESC"],
+      "gcloudIndexId": "CICAgJjF9oIK",
+      "state": "READY",
+      "readyObservedAtUtc": "2026-10-21T21:45:47Z",
+      "notes": "MOPH list query fix"
+    },
+    {
+      "collectionGroup": "reports",
+      "fields": ["barangay ASC", "reportStatus ASC", "acceptedAt DESC"],
+      "gcloudIndexId": "CICAgJj7z4EK",
+      "state": "READY",
+      "readyObservedAtUtc": "2026-10-21T21:45:47Z",
+      "notes": "Barangay list query fix"
+    }
+  ]
+}

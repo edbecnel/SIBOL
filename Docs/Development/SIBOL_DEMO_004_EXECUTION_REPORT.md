@@ -161,11 +161,19 @@ Live operator test: MOPH dashboard briefly showed a submitted report, then
 | `flutter analyze` | **0 errors**; 1 existing warning |
 | `flutter build apk --debug` | **Success** |
 
-### 12.5 Outstanding deployment
+### 12.5 Index deployment — query fix (handover `e6a2f917-…`)
 
-**Indexes only** (rules unchanged):  
-`firebase deploy --only firestore:indexes --project sibol-286d0`  
-(await PA authorization). App rebuild/install required for query fix.
+| Item | Evidence |
+|------|----------|
+| Command | `firebase deploy --only firestore:indexes --project sibol-286d0` |
+| Result | **Success** |
+| Indexes file SHA-256 | `4536d3f020d36bd32449906a31ed2e4158e81b893babfa52dcb4f57142b802a7` (commit `6e95734`) |
+| Rules deploy | **Not executed** — active ruleset unchanged `c5b24ed9-aebf-44a9-af28-e9b2ff0d8c9c` |
+| Metadata | [`firestore.indexes.post-demo-004-query-fix-deploy-2026-10-22.metadata.json`](../Verification/Artifacts/firestore.indexes.post-demo-004-query-fix-deploy-2026-10-22.metadata.json) |
+
+**Six composites (all READY):** `CICAgOjXh4EK`, `CICAgJiUpoMK`, `CICAgJim14AK`, `CICAgJim14AJ`, `CICAgJjF9oIK`, `CICAgJj7z4EK`.
+
+**App:** rebuild/install debug APK (`6e95734` or later) for corrected MOPH list query. Manual E2E still pending.
 
 ## 11. PA acceptance
 
