@@ -9,5 +9,10 @@ abstract class CaseRepository {
   /// Live case document; `null` when the document does not exist.
   Stream<CaseRecord?> watchCase(String caseId);
 
+  /// Creates a case document; returns the generated document id.
+  Future<String> createCase(CaseRecord record);
+
+  Future<void> updateCase(CaseRecord record);
+
   Stream<List<FollowUp>> watchFollowUps(String caseId);
 }

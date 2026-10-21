@@ -26,6 +26,11 @@ class BarangayHomeScreen extends ConsumerWidget {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push(Routes.barangayCaseCreate),
+        icon: const Icon(Icons.add),
+        label: const Text('New case'),
+      ),
       body: Column(
         children: [
           const FictionalDataBanner(),

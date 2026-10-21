@@ -4,6 +4,7 @@ import 'package:sibol_app/features/cases/data/models/case_record_model.dart';
 import 'package:sibol_app/features/cases/data/models/follow_up_model.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
+import 'package:sibol_app/features/cases/domain/case_write_policy.dart';
 import 'package:sibol_app/features/cases/domain/repositories/case_repository.dart';
 
 class CaseRepositoryImpl implements CaseRepository {
@@ -45,6 +46,55 @@ class CaseRepositoryImpl implements CaseRepository {
       if (data == null) return null;
       return CaseRecordModel.fromFirestore(snap.id, data).toEntity();
     });
+  }
+
+  @override
+  Future<String> createCase(CaseRecord record) async {
+    final policyError = CaseWritePolicy.validateForCreate(record);
+    if (policyError != null) {
+      throw FormatException(policyError);
+    }
+    CaseRecordModel.assertValidForWrite(record);
+    final ref = _firestore.collection(FirestorePaths.cases).doc();
+    final model = CaseRecordModel.fromEntity(
+      CaseRecord(
+        caseId: ref.id,
+        demoName: record.demoName,
+        age: record.age,
+        barangay: record.barangay,
+        caseStatus: record.caseStatus,
+        registeredAt: record.registeredAt,
+        nextFollowUpAt: record.nextFollowUpAt,
+        notes: record.notes,
+        createdAt: record.createdAt,
+        updatedAt: record.updatedAt,
+        reportStatus: record.reportStatus,
+      ),
+    );
+    await ref.set(model.toFirestoreCreate());
+    return ref.id;
+  }
+
+  @override
+  Future<void> updateCase(CaseRecord record) async {
+    final ref = _firestore.collection(FirestorePaths.cases).doc(record.caseId);
+    final existingSnap = await ref.get();
+    if (!existingSnap.exists || existingSnap.data() == null) {
+      throw StateError('Case not found.');
+    }
+    final existing =
+        CaseRecordModel.fromFirestore(record.caseId, existingSnap.data()!)
+            .toEntity();
+    final policyError = CaseWritePolicy.validateForUpdate(
+      updated: record,
+      existing: existing,
+    );
+    if (policyError != null) {
+      throw FormatException(policyError);
+    }
+    CaseRecordModel.assertValidForWrite(record);
+    final model = CaseRecordModel.fromEntity(record);
+    await ref.update(model.toFirestoreUpdate(createdAt: existing.createdAt));
   }
 
   @override

@@ -177,6 +177,28 @@ void main() {
       );
     });
 
+    test('barangay on case create route → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.barangayCaseCreate,
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.barangay)),
+        ),
+        isNull,
+      );
+    });
+
+    test('barangay on case edit route → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.barangayCaseEdit('demo-case-001'),
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.barangay)),
+        ),
+        isNull,
+      );
+    });
+
     test('moph on barangay case detail → moph home', () {
       expect(
         resolveAppRedirect(

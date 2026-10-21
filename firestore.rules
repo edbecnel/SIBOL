@@ -46,10 +46,46 @@ service cloud.firestore {
           && request.resource.data.displayName is string;
     }
 
+    function isValidCaseStatus(status) {
+      return status in ['active', 'followUpScheduled', 'followUpCompleted', 'closed'];
+    }
+
+    function isValidClientReportStatus(status) {
+      return status in ['notSubmitted', 'pendingSubmit'];
+    }
+
+    function caseAllowedKeys() {
+      return [
+        'demoName', 'age', 'barangay', 'caseStatus', 'registeredAt',
+        'nextFollowUpAt', 'notes', 'createdAt', 'updatedAt', 'reportStatus'
+      ];
+    }
+
+    function caseCoreFieldsValid(data) {
+      return data.keys().hasAll([
+            'demoName', 'age', 'barangay', 'caseStatus', 'registeredAt',
+            'createdAt', 'updatedAt', 'reportStatus'
+          ])
+          && data.keys().hasOnly(caseAllowedKeys())
+          && data.demoName is string
+          && data.demoName.size() >= 2
+          && data.age is int
+          && data.age >= 13
+          && data.age <= 19
+          && data.barangay is string
+          && data.barangay.size() >= 1
+          && isValidCaseStatus(data.caseStatus)
+          && data.registeredAt is timestamp
+          && data.createdAt is timestamp
+          && data.updatedAt is timestamp
+          && isValidClientReportStatus(data.reportStatus)
+          && (!('nextFollowUpAt' in data) || data.nextFollowUpAt is timestamp)
+          && (!('notes' in data) || data.notes is string);
+    }
+
     match /users/{userId} {
       allow read: if isSignedIn() && request.auth.uid == userId;
 
-      // Users may update display fields only; role is provisioned by trusted scripts/admin.
       allow create: if false;
 
       allow update: if isSignedIn()
@@ -63,7 +99,17 @@ service cloud.firestore {
     }
 
     match /cases/{caseId} {
-      allow read, create, update: if isBarangay();
+      allow read: if isBarangay();
+
+      allow create: if isBarangay()
+          && caseCoreFieldsValid(request.resource.data)
+          && request.resource.data.reportStatus == 'notSubmitted';
+
+      allow update: if isBarangay()
+          && caseCoreFieldsValid(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.reportStatus == resource.data.reportStatus;
+
       allow delete: if false;
 
       match /followUps/{followUpId} {
@@ -72,7 +118,6 @@ service cloud.firestore {
       }
     }
 
-    // MOPH reads only server-accepted reports (Tranche 2 submit function writes here).
     match /reports/{reportId} {
       allow read: if isMoph()
           && resource.data.acceptedAt != null

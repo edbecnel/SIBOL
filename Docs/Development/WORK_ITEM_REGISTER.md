@@ -16,7 +16,7 @@
 | SIBOL-GOV-002 | Git baseline preservation and publication | **Closed** | [SIBOL_GOV_002_EXECUTION_REPORT.md](SIBOL_GOV_002_EXECUTION_REPORT.md) |
 | SIBOL-IMP-002 / T2-1 | Read-only case detail | **Closed (published `8480c1a`)** | [SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md) |
 | SIBOL-IMP-002 / T2-2 | Follow-up timeline | **Closed (published)** | [SIBOL_IMP_002_T2_2_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_2_EXECUTION_REPORT.md) |
-| SIBOL-IMP-002 / T2-3 | Case create/edit | **Planned — not authorized** | [SIBOL_IMP_002_T2_3_PLAN.md](SIBOL_IMP_002_T2_3_PLAN.md) |
+| SIBOL-IMP-002 / T2-3 | Case create/edit | **Published to Git — pending PA acceptance; rules not deployed** | [SIBOL_IMP_002_T2_3_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_3_EXECUTION_REPORT.md) |
 
 ## Tranche 2 implementation gate
 

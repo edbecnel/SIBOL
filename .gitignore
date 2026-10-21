@@ -18,4 +18,6 @@ firebase-debug.*.log
 # Node (Cloud Functions)
 shared/functions/node_modules/
 shared/provisioning/node_modules/
+shared/firestore-rules-test/node_modules/
+shared/firestore-rules-test/firestore-debug.log
 shared/functions/lib/

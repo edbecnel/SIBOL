@@ -22,7 +22,9 @@ Engineering practices, tooling, and environment setup for the SIBOL software del
 | [SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md) | T2-1 read-only case detail (accepted, published) |
 | [SIBOL_IMP_002_T2_2_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_2_EXECUTION_REPORT.md) | T2-2 follow-up timeline (accepted) |
 | [SIBOL_IMP_002_CROSS_PROJECT_ARCHITECTURE_ASSESSMENT.md](SIBOL_IMP_002_CROSS_PROJECT_ARCHITECTURE_ASSESSMENT.md) | SpeakUp / platform assessment (planning) |
-| [SIBOL_IMP_002_T2_3_PLAN.md](SIBOL_IMP_002_T2_3_PLAN.md) | T2-3 plan (not authorized) |
+| [SIBOL_IMP_002_T2_3_PLAN.md](SIBOL_IMP_002_T2_3_PLAN.md) | T2-3 plan |
+| [SIBOL_IMP_002_T2_3_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_3_EXECUTION_REPORT.md) | T2-3 case create/edit (pending acceptance) |
+| [FIRESTORE_RULES_T2_3.md](FIRESTORE_RULES_T2_3.md) | T2-3 rules hardening (not deployed) |
 | [TRANCHE_2_IMPLEMENTATION_GATE.md](TRANCHE_2_IMPLEMENTATION_GATE.md) | T2 implementation gate |
 | [FIREBASE_SETUP.md](FIREBASE_SETUP.md) | SIBOL Firebase project setup |
 | [SIBOL_FB_001_EXECUTION_REPORT.md](SIBOL_FB_001_EXECUTION_REPORT.md) | Firebase options fix |

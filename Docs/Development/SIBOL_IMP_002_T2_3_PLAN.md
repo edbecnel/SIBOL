@@ -1,7 +1,7 @@
 # SIBOL-IMP-002 T2-3 — Plan (case create/edit)
 
 > **Handover UUID:** `9b26f80d-4e71-4b35-8c62-d741a9f305be`  
-> **Status:** **Planning only — NOT authorized for implementation**  
+> **Status:** **Published to Git** (handover `f3a7c219-…`); Firestore rules deploy not authorized  
 > **Date:** 2026-10-21  
 > **Depends on:** T2-1/T2-2 published; [CROSS_PROJECT_ARCHITECTURE_ASSESSMENT.md](SIBOL_IMP_002_CROSS_PROJECT_ARCHITECTURE_ASSESSMENT.md)
 

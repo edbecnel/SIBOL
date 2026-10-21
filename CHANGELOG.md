@@ -24,6 +24,10 @@ All notable changes to this repository are documented here.
 
 ### Changed
 
+- SIBOL-IMP-002 T2-3: barangay case create/edit, write policy, hardened `firestore.rules`, emulator tests (local only; not committed/deployed per PA).
+
+### Changed
+
 - Tranche 1 execution report test evidence updated to 28/28; live Firebase `sibol-286d0` status documented.
 - SIBOL-IMP-002 T2-2: read-only follow-up timeline on case detail (SIBOL-IMP-002).
 - T2-3 case create/edit plan and cross-project architecture assessment (planning only).

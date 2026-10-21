@@ -65,6 +65,56 @@ class CaseRecordModel {
     };
   }
 
+  /// Firestore payload for client create (server timestamps for audit fields).
+  Map<String, dynamic> toFirestoreCreate() {
+    return {
+      'demoName': demoName,
+      'age': age,
+      'barangay': barangay,
+      'caseStatus': caseStatus,
+      'registeredAt': Timestamp.fromDate(registeredAt),
+      if (nextFollowUpAt != null)
+        'nextFollowUpAt': Timestamp.fromDate(nextFollowUpAt!),
+      'notes': notes,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+      'reportStatus': reportStatus,
+    };
+  }
+
+  /// Firestore payload for client update (preserves [createdAt]).
+  Map<String, dynamic> toFirestoreUpdate({required DateTime createdAt}) {
+    return {
+      'demoName': demoName,
+      'age': age,
+      'barangay': barangay,
+      'caseStatus': caseStatus,
+      'registeredAt': Timestamp.fromDate(registeredAt),
+      if (nextFollowUpAt != null)
+        'nextFollowUpAt': Timestamp.fromDate(nextFollowUpAt!),
+      'notes': notes,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': FieldValue.serverTimestamp(),
+      'reportStatus': reportStatus,
+    };
+  }
+
+  factory CaseRecordModel.fromEntity(CaseRecord record) {
+    return CaseRecordModel(
+      caseId: record.caseId,
+      demoName: record.demoName,
+      age: record.age,
+      barangay: record.barangay,
+      caseStatus: record.caseStatus.firestoreValue,
+      registeredAt: record.registeredAt,
+      nextFollowUpAt: record.nextFollowUpAt,
+      notes: record.notes,
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
+      reportStatus: record.reportStatus.firestoreValue,
+    );
+  }
+
   CaseRecord toEntity() {
     final status = CaseStatus.fromFirestore(caseStatus);
     final report = ReportStatus.fromFirestore(reportStatus);

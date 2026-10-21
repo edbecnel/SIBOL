@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/presentation/providers/case_providers.dart';
@@ -20,6 +22,14 @@ class CaseDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Case details'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            tooltip: 'Edit case',
+            onPressed: () =>
+                context.push(Routes.barangayCaseEdit(caseId)),
+          ),
+        ],
       ),
       body: Column(
         children: [

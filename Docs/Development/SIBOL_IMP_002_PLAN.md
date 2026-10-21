@@ -1,7 +1,7 @@
 # SIBOL-IMP-002 — Tranche 2 implementation plan (proposed)
 
 > **Handover UUID (T1-CLOSE / planning):** `f71b8c62-2e49-4d03-a615-9c7e82b4d390`  
-> **Status:** T2-1 **published** (`8480c1a`); T2-2 **published**; T2-3 **planned only** (handover `9b26f80d-…`)  
+> **Status:** T2-1 **published** (`8480c1a`); T2-2 **published** (`308d8c2`); T2-3 **published to Git** (handover `f3a7c219-…`)  
 > **Date:** 2026-10-20 (plan); T2-1 delivery 2026-10-21  
 > **Gate:** [TRANCHE_2_IMPLEMENTATION_GATE.md](TRANCHE_2_IMPLEMENTATION_GATE.md)
 
@@ -29,7 +29,7 @@ Define traceable Tranche 2 engineering scope derived from [TRANCHE_1_EXECUTION_R
 |-------|-------------|---------|
 | T2-1 | Case detail (read-only) + `ListTile.onTap` + routes + tests | **Complete** — [SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md) |
 | T2-2 | Follow-up timeline on detail | **Complete** — [SIBOL_IMP_002_T2_2_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_2_EXECUTION_REPORT.md) |
-| T2-3 | Case create/edit + repository writes | **Planned** — [SIBOL_IMP_002_T2_3_PLAN.md](SIBOL_IMP_002_T2_3_PLAN.md) (not authorized) |
+| T2-3 | Case create/edit + repository writes | **Delivered** — [SIBOL_IMP_002_T2_3_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_3_EXECUTION_REPORT.md) |
 | T2-4 | Implement `submitReport` in `shared/functions/src/index.ts` | **Functions deploy** |
 | T2-5 | Barangay submit UI + offline pending handling | — |
 | T2-6 | MOPH reports list | Sample `reports` seed decision |
