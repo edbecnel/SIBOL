@@ -102,8 +102,8 @@ See [FIRESTORE_RULES_T2_3.md](FIRESTORE_RULES_T2_3.md) § Deployment readiness.
 
 | Field | Value |
 |-------|--------|
-| Git commit | *(recorded after push in §9)* |
-| Branch | `main` |
+| Git commit | `41272a5` on `main` |
+| Push | `origin/main` (handover `f3a7c219-…`) |
 | Firebase deploy | **Not performed** |
 
 ## 9. Traceability
