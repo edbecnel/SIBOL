@@ -30,6 +30,13 @@ abstract final class Routes {
       '$barangayHome/$barangayCaseSegment/$caseId/edit';
 
   static const mophHome = '/moph';
+  static const mophReportsSegment = 'reports';
+
+  static String mophReportDetail(String reportId) =>
+      '$mophHome/$mophReportsSegment/$reportId';
+
+  static const barangaySubmitReport = '$barangayHome/reports/submit';
+
   static const settings = '/settings';
   static const unauthorized = '/unauthorized';
 }

@@ -36,10 +36,21 @@ class BarangayHomeScreen extends ConsumerWidget {
           const FictionalDataBanner(),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: OutlinedButton.icon(
-              onPressed: () => context.push(Routes.barangayIncomingRequests),
-              icon: const Icon(Icons.inbox),
-              label: const Text('Incoming requests'),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () => context.push(Routes.barangayIncomingRequests),
+                  icon: const Icon(Icons.inbox),
+                  label: const Text('Incoming requests'),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: () => context.push(Routes.barangaySubmitReport),
+                  icon: const Icon(Icons.upload_file),
+                  label: const Text('Submit report to MOPH'),
+                ),
+              ],
             ),
           ),
           Expanded(

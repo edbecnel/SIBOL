@@ -192,11 +192,62 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    function barangayReportStatusCountsValid(data) {
+      return data.activeCaseCount is int
+          && data.followUpScheduledCount is int
+          && data.followUpCompletedCount is int
+          && data.closedCaseCount is int
+          && data.activeCaseCount >= 0
+          && data.followUpScheduledCount >= 0
+          && data.followUpCompletedCount >= 0
+          && data.closedCaseCount >= 0
+          && data.activeCaseCount + data.followUpScheduledCount
+              + data.followUpCompletedCount + data.closedCaseCount
+              == data.totalCaseCount;
+    }
+
+    function barangayReportCreateValid(data) {
+      return data.keys().hasAll([
+            'barangay', 'submittedAt', 'submittedByUid', 'totalCaseCount',
+            'activeCaseCount', 'followUpScheduledCount', 'followUpCompletedCount',
+            'closedCaseCount', 'reportStatus', 'acceptedAt'
+          ])
+          && data.keys().hasOnly([
+            'barangay', 'submittedAt', 'submittedByUid', 'totalCaseCount',
+            'activeCaseCount', 'followUpScheduledCount', 'followUpCompletedCount',
+            'closedCaseCount', 'reportStatus', 'acceptedAt'
+          ])
+          && data.barangay is string
+          && data.barangay.size() >= 1
+          && hasAssignedBarangay(userDoc())
+          && data.barangay == userDoc().assignedBarangay
+          && data.submittedByUid == request.auth.uid
+          && data.reportStatus == 'submitted'
+          && data.submittedAt == request.time
+          && data.acceptedAt == request.time
+          && data.totalCaseCount is int
+          && data.totalCaseCount >= 0
+          && barangayReportStatusCountsValid(data);
+    }
+
+    function barangayCanReadSubmittedReport() {
+      return isBarangay()
+          && hasAssignedBarangay(userDoc())
+          && resource.data.barangay == userDoc().assignedBarangay
+          && resource.data.reportStatus == 'submitted'
+          && resource.data.acceptedAt != null;
+    }
+
     match /reports/{reportId} {
-      allow read: if isMoph()
+      allow read: if (isMoph()
           && resource.data.acceptedAt != null
-          && resource.data.reportStatus == 'submitted';
-      allow create, update, delete: if false;
+          && resource.data.reportStatus == 'submitted')
+          || barangayCanReadSubmittedReport();
+
+      allow create: if isBarangay()
+          && barangayReportCreateValid(request.resource.data);
+
+      allow update, delete: if false;
     }
 
     match /{document=**} {

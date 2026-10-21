@@ -8,4 +8,4 @@ npm ci
 npm test
 ```
 
-14 security scenarios (roles, immutability, schema parity, reports boundary). Requires Firebase CLI. Emulator port is configured in root [`firebase.json`](../../firebase.json) (`8195`).
+31 security scenarios (cases, teen assistance, aggregate reports). Requires Firebase CLI. Emulator port is configured in root [`firebase.json`](../../firebase.json) (`8195`).

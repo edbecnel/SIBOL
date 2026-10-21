@@ -2,4 +2,5 @@
 
 Tranche 1: `domain/report_status.dart` and [REPORTING_CONTRACT.md](../../../../shared/docs/REPORTING_CONTRACT.md).
 
-Tranche 2: callable `submitReport`, barangay submit UI, MOPH accepted-reports list.
+SIBOL-DEMO-004: barangay aggregate submit UI and MOPH submitted-reports list (client create
+with rules-validated schema; Cloud Function `submitReport` remains future hardening).

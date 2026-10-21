@@ -274,8 +274,8 @@ describe("cases collection", () => {
   });
 });
 
-describe("reports collection (client cannot author reports)", () => {
-  it("denies barangay and MOPH client create on reports", async () => {
+describe("reports collection (legacy per-case client payload denied)", () => {
+  it("denies barangay create with non-aggregate schema", async () => {
     const barangayDb = testEnv.authenticatedContext(barangayUid).firestore();
     const mophDb = testEnv.authenticatedContext(mophUid).firestore();
     const payload = {

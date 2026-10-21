@@ -11,6 +11,8 @@ import 'package:sibol_app/features/cases/presentation/screens/barangay_home_scre
 import 'package:sibol_app/features/cases/presentation/screens/case_detail_screen.dart';
 import 'package:sibol_app/features/cases/presentation/screens/case_edit_screen.dart';
 import 'package:sibol_app/features/moph/presentation/screens/moph_home_screen.dart';
+import 'package:sibol_app/features/moph/presentation/screens/moph_report_detail_screen.dart';
+import 'package:sibol_app/features/reporting/presentation/screens/barangay_submit_report_screen.dart';
 import 'package:sibol_app/features/settings/presentation/screens/settings_screen.dart';
 import 'package:sibol_app/features/teenager/presentation/screens/barangay_incoming_request_detail_screen.dart';
 import 'package:sibol_app/features/teenager/presentation/screens/barangay_incoming_requests_screen.dart';
@@ -107,11 +109,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               return CaseDetailScreen(caseId: caseId);
             },
           ),
+          GoRoute(
+            path: 'reports/submit',
+            builder: (context, state) => const BarangaySubmitReportScreen(),
+          ),
         ],
       ),
       GoRoute(
         path: Routes.mophHome,
         builder: (context, state) => const MophHomeScreen(),
+        routes: [
+          GoRoute(
+            path: '${Routes.mophReportsSegment}/:reportId',
+            builder: (context, state) {
+              final reportId = state.pathParameters['reportId']!;
+              return MophReportDetailScreen(reportId: reportId);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: Routes.settings,
