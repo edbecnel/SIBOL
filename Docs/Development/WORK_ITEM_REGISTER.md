@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-21 (SIBOL-DEMO-001)  
+> **Last updated:** 2026-10-22 (pre-MOPH restore point)  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -20,7 +20,7 @@
 | SIBOL-UI-001 | Official launcher icon (Android/iOS) | **Delivered locally — pending PA acceptance** | [SIBOL_UI_001_EXECUTION_REPORT.md](SIBOL_UI_001_EXECUTION_REPORT.md) |
 | SIBOL-DEMO-001 | Physical Android demo; Teen inspection and PO requirements | **In progress** (device install; Barangay/MOPH demo) | [SIBOL_DEMO_001_EXECUTION_REPORT.md](SIBOL_DEMO_001_EXECUTION_REPORT.md) |
 | SIBOL-DEMO-002 | Teen assistance request workflow (demo) | **Live emulator QA pass (MVR-0003); PO phone install pending** | [SIBOL_DEMO_002_EXECUTION_REPORT.md](SIBOL_DEMO_002_EXECUTION_REPORT.md), [MVR-0003](../Verification/Records/MVR-0003-demo-002-teen-assistance-emulator.md) |
-| SIBOL-DEMO-003 | Barangay incoming + acknowledge teen requests | **Live E2E Pass (14/14); teen detail copy corrected (re-verify on device)** | [SIBOL_DEMO_003_EXECUTION_REPORT.md](SIBOL_DEMO_003_EXECUTION_REPORT.md) |
+| SIBOL-DEMO-003 | Barangay incoming + acknowledge teen requests | **Baseline tagged** `sibol-demo-003-working-baseline` @ `c06fd2b` (see execution report §12) | [SIBOL_DEMO_003_EXECUTION_REPORT.md](SIBOL_DEMO_003_EXECUTION_REPORT.md) |
 
 ## Tranche 2 implementation gate
 

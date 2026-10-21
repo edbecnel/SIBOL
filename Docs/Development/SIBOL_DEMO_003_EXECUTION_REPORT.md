@@ -165,3 +165,28 @@ Copy clarifies acknowledgment is fictional receipt only (not counseling/emergenc
 |-------|--------|
 | `flutter analyze` | **0 errors**; 1 pre-existing **warning** (`duplicate_import` in `assistance_request_form_screen.dart`); 9 info lints |
 | `flutter test` | **54 passed** |
+
+## 12. GitHub restore point — pre-MOPH (2026-10-22)
+
+Established before **SIBOL-DEMO-004** per Project Architect instruction (no application or Firebase changes in this step).
+
+| Item | Value |
+|------|--------|
+| Branch | `main` |
+| Commit (full SHA) | `c06fd2bb12c050850761eaccae8f6054c5c8314a` |
+| Commit (short) | `c06fd2b` |
+| Annotated tag | `sibol-demo-003-working-baseline` |
+| Remote | `origin` → `https://github.com/edbecnel/SIBOL.git` |
+| Tag pushed | **Yes** (2026-10-22) |
+
+### 12.1 Verification evidence
+
+| Check | Result |
+|-------|--------|
+| Working tree clean | **PASS** |
+| `HEAD` == `origin/main` | **PASS** (`c06fd2b`) |
+| DEMO-003 code, EDF (§11), MVR-0004, teen detail copy fix present at tag commit | **PASS** (`git show c06fd2b:…/assistance_request_detail_screen.dart`) |
+| Operator visual verification of corrected teen detail footer | **Not performed** (unchanged from §11.1) |
+| Remote tag `refs/tags/sibol-demo-003-working-baseline` → same commit | **PASS** (`git ls-remote`; tag object `84c3cad…`, peel `c06fd2b`) |
+
+**Checkout for recovery:** `git checkout sibol-demo-003-working-baseline` (or `git checkout c06fd2b`).
