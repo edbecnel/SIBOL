@@ -1,0 +1,27 @@
+{
+  "workItem": "SIBOL-DEMO-004",
+  "purpose": "Pre-deploy rollback snapshot of live Firestore rules and indexes",
+  "targetProject": "sibol-286d0",
+  "capturedAtUtc": "2026-10-22T21:05:00Z",
+  "liveRuleset": "projects/sibol-286d0/rulesets/251bc159-efc3-446b-92e3-deae2c5f7719",
+  "liveRulesReleaseUpdatedAtUtc": "2026-10-21T14:00:21Z",
+  "rulesRollbackFile": "Docs/Verification/Artifacts/firestore.rules.pre-demo-004-deploy-2026-10-22.rules",
+  "rulesSha256": "2feec126f6e63cb88ec054f227ce230b99ae66e077061989d2f9937c7df424ae",
+  "rulesCaptureMethod": "Verified against post-DEMO-003 deploy metadata and byte-identical to git c06fd2b firestore.rules; release API ruleset 251bc159 active at verification",
+  "indexesRollbackFile": "Docs/Verification/Artifacts/firestore.indexes.pre-demo-004-deploy-2026-10-22.json",
+  "liveCompositeIndexes": [
+    {
+      "collectionGroup": "teenAssistanceRequests",
+      "fields": ["teenUid ASC", "createdAt DESC"],
+      "gcloudIndexId": "CICAgOjXh4EK",
+      "state": "READY"
+    },
+    {
+      "collectionGroup": "teenAssistanceRequests",
+      "fields": ["barangay ASC", "createdAt DESC"],
+      "gcloudIndexId": "CICAgJiUpoMK",
+      "state": "READY"
+    }
+  ],
+  "priorWorkItemReference": "Docs/Verification/Artifacts/firestore.rules.post-demo-003-deploy-2026-10-21.metadata.json"
+}

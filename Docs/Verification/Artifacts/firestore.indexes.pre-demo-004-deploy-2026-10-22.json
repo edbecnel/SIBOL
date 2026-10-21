@@ -1,0 +1,21 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "teenAssistanceRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "teenUid", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "teenAssistanceRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "barangay", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

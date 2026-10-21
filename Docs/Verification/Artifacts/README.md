@@ -42,3 +42,13 @@ Local rollback and deployment evidence files. **Do not commit secrets.**
 | `firestore.indexes.pre-demo-002-deploy-2026-10-21.json` | Pre-DEMO-003 index snapshot (teen composite only) |
 
 See [SIBOL_DEMO_003_EXECUTION_REPORT.md](../../Development/SIBOL_DEMO_003_EXECUTION_REPORT.md) §8.
+
+## SIBOL-DEMO-004 predeploy (2026-10-22, not yet deployed)
+
+| File | Purpose |
+|------|---------|
+| `firestore.rules.pre-demo-004-deploy-2026-10-22.rules` | **Current live** rollback (ruleset `251bc159-…`, SHA `2feec126…`) |
+| `firestore.rules.pre-demo-004-deploy-2026-10-22.metadata.json` | Capture record + live index IDs |
+| `firestore.indexes.pre-demo-004-deploy-2026-10-22.json` | Two READY `teenAssistanceRequests` composites only |
+
+See [SIBOL_DEMO_004_EXECUTION_REPORT.md](../../Development/SIBOL_DEMO_004_EXECUTION_REPORT.md) §8.

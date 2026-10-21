@@ -65,7 +65,30 @@ Barangay counts are computed from in-app case list filtered to `users.assignedBa
 | Implementation + rules + tests | `1d4f012` | Pushed to `origin/main` |
 | EDF register / CHANGELOG | `3db1f9c` | This document |
 
-## 8. Required Firebase deployment (PA authorization pending)
+## 8. Final predeployment verification (2026-10-22)
+
+| # | Check | Result |
+|---|--------|--------|
+| 1 | Firebase target `sibol-286d0`; active ruleset `projects/sibol-286d0/rulesets/251bc159-efc3-446b-92e3-deae2c5f7719` (release updated 2026-10-21T14:00:21Z) | **PASS** |
+| 2 | Proposed `firestore.rules` vs **live** (SHA `2feec126…`, ruleset `251bc159-…`) — `cases` and `teenAssistanceRequests` blocks **unchanged**; delta limited to `reports` (barangay aggregate create + barangay read own submitted) | **PASS** |
+| 3 | Proposed `firestore.indexes.json` retains both live `teenAssistanceRequests` composites (`CICAgOjXh4EK`, `CICAgJiUpoMK`, READY); **adds** two `reports` composites (`reportStatus`+`submittedAt`, `barangay`+`submittedAt`) | **PASS** |
+| 4 | Aggregate schema compatible with live fiction: **6** cases, all `barangay == Barangay Tres, Balingasag` (matches demo `assignedBarangay` and app filter) | **PASS** |
+| 5 | Demo profiles (read-only Admin SDK): teen `Zgw0Kon5…` and barangay `Nki7S2Q…` → `assignedBarangay` **Barangay Tres, Balingasag**; `moph.demo@sibol.local` → uid `eZNb99Ji…`, `role` **moph**, `active` **true** | **PASS** |
+| 6 | `shared/firestore-rules-test` on repo `firestore.rules` | **PASS** (31/31) |
+| 7 | Rollback artifacts for **current** live config captured/verified | **PASS** — see §8.1 |
+
+**Proposed rules SHA-256:** `497df6e50fbcfbb1e6a2951df3aa9d0fae86841b8ed2e6a69329e9c2adfd4082`  
+**Deploy not executed** — await PA authorization.
+
+### 8.1 Rollback references (pre-DEMO-004 live)
+
+| Artifact | Path |
+|----------|------|
+| Rules file | [`firestore.rules.pre-demo-004-deploy-2026-10-22.rules`](../Verification/Artifacts/firestore.rules.pre-demo-004-deploy-2026-10-22.rules) |
+| Rules metadata | [`firestore.rules.pre-demo-004-deploy-2026-10-22.metadata.json`](../Verification/Artifacts/firestore.rules.pre-demo-004-deploy-2026-10-22.metadata.json) |
+| Indexes snapshot | [`firestore.indexes.pre-demo-004-deploy-2026-10-22.json`](../Verification/Artifacts/firestore.indexes.pre-demo-004-deploy-2026-10-22.json) |
+
+## 9. Required Firebase deployment (PA authorization pending)
 
 ```bash
 firebase deploy --only firestore:rules,firestore:indexes --project sibol-286d0
@@ -73,10 +96,10 @@ firebase deploy --only firestore:rules,firestore:indexes --project sibol-286d0
 
 Until deploy, live `sibol-286d0` retains DEMO-003 rules (barangay **cannot** create `reports`; MOPH list will stay empty/error on query).
 
-## 9. Manual verification
+## 10. Manual verification
 
 **Status:** Not started. Suggested script: Barangay submit aggregate → sign in MOPH → list + detail. Record in MVR when executed.
 
-## 10. PA acceptance
+## 11. PA acceptance
 
 Pending manual demo verification and Firebase deploy authorization.
