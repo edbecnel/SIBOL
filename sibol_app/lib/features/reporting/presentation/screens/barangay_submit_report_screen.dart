@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/reporting/domain/barangay_report_aggregate.dart';
 import 'package:sibol_app/features/reporting/presentation/providers/report_providers.dart';
@@ -35,10 +36,7 @@ class _BarangaySubmitReportScreenState
             counts: counts,
           );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Report submitted to MOPH (ref: $reportId).')),
-      );
-      context.pop();
+      context.pushReplacement(Routes.barangayReportReceipt(reportId));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

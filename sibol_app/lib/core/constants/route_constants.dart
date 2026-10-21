@@ -36,6 +36,13 @@ abstract final class Routes {
       '$mophHome/$mophReportsSegment/$reportId';
 
   static const barangaySubmitReport = '$barangayHome/reports/submit';
+  static const barangaySubmittedReportsSegment = 'submitted-reports';
+
+  static const barangaySubmittedReports =
+      '$barangayHome/$barangaySubmittedReportsSegment';
+
+  static String barangayReportReceipt(String reportId) =>
+      '$barangayHome/$barangaySubmittedReportsSegment/$reportId';
 
   static const settings = '/settings';
   static const unauthorized = '/unauthorized';

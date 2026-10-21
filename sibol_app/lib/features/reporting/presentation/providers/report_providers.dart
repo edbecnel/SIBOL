@@ -21,6 +21,30 @@ final mophReportDetailProvider =
   return ref.watch(reportRepositoryProvider).watchReportForMoph(reportId);
 });
 
+final barangaySubmittedReportsProvider =
+    StreamProvider<List<MophAggregateReport>>((ref) {
+  final profile = ref.watch(userProfileProvider).value;
+  final barangay = profile?.assignedBarangay;
+  if (barangay == null || barangay.isEmpty) {
+    return Stream.error(
+      StateError('Barangay site is not configured on your profile.'),
+    );
+  }
+  return ref.watch(reportRepositoryProvider).watchReportsForBarangay(barangay);
+});
+
+final barangayReportReceiptProvider =
+    StreamProvider.family<MophAggregateReport?, String>((ref, reportId) {
+  final profile = ref.watch(userProfileProvider).value;
+  final barangay = profile?.assignedBarangay;
+  if (barangay == null || barangay.isEmpty) {
+    return const Stream.empty();
+  }
+  return ref
+      .watch(reportRepositoryProvider)
+      .watchReportForBarangay(reportId, barangay);
+});
+
 final barangayReportAggregateProvider =
     Provider<AsyncValue<BarangayReportAggregateCounts?>>((ref) {
   final profile = ref.watch(userProfileProvider);

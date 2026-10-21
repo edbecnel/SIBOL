@@ -35,6 +35,7 @@ All notable changes to this repository are documented here.
 - SIBOL-DEMO-004: Barangay aggregate submit-to-MOPH UI, MOPH submitted-reports list/detail, rules-validated `reports` client create, and composite indexes (rules/indexes deployed to `sibol-286d0`, authorization `a9e4d271-…`).
 - SIBOL-DEMO-004: fix MOPH/barangay report list queries to match `acceptedAt` security rules; composite indexes deployed (`e6a2f917-…`; rules unchanged).
 - SIBOL-DEMO-004: operator live MOPH reporting verification Pass on emulator (`b82f6c41-…`; MVR-0005).
+- SIBOL-DEMO-005: Barangay submitted-reports history, submission receipt screen, post-submit navigation (`a7c39e42-…`).
 
 ### Changed
 

@@ -64,6 +64,23 @@ class ReportRepositoryImpl implements ReportRepository {
   }
 
   @override
+  Stream<MophAggregateReport?> watchReportForBarangay(
+    String reportId,
+    String barangay,
+  ) {
+    return _collection.doc(reportId).snapshots().map((snap) {
+      if (!snap.exists) return null;
+      final data = snap.data();
+      if (data == null) return null;
+      final model = MophAggregateReportModel.fromFirestore(snap.id, data);
+      if (model.barangay != barangay || model.reportStatus != 'submitted') {
+        return null;
+      }
+      return model.toEntity();
+    });
+  }
+
+  @override
   Future<String> submitBarangayAggregateReport({
     required String submittedByUid,
     required BarangayReportAggregateCounts counts,

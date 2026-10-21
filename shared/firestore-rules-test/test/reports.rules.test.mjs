@@ -17,9 +17,11 @@ const rules = readFileSync(rulesPath, "utf8");
 
 const projectId = "demo-sibol-rules";
 const barangayUid = "barangay-user-1";
+const barangayUid2 = "barangay-user-2";
 const teenUid = "teen-user-1";
 const mophUid = "moph-user-1";
 const site = "Barangay Tres, Balingasag";
+const otherSite = "Other Demo Barangay";
 
 let testEnv;
 
@@ -92,6 +94,12 @@ before(async () => {
       ...userBase,
       role: "moph",
       displayName: "MOPH Demo",
+    });
+    await db.collection("users").doc(barangayUid2).set({
+      ...userBase,
+      role: "barangay",
+      displayName: "Other Barangay Demo",
+      assignedBarangay: otherSite,
     });
   });
 });
@@ -213,6 +221,51 @@ describe("reports collection (DEMO-004 aggregate)", () => {
   it("denies teen MOPH production list query", async () => {
     const teenDb = testEnv.authenticatedContext(teenUid).firestore();
     await assertFails(mophProductionListQuery(teenDb).get());
+  });
+
+  it("denies other barangay read of submitted report (single doc and list)", async () => {
+    const reportId = "demo-report-site-scope";
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const now = new Date();
+      await context.firestore().collection("reports").doc(reportId).set({
+        barangay: site,
+        submittedAt: now,
+        submittedByUid: barangayUid,
+        totalCaseCount: 1,
+        activeCaseCount: 1,
+        followUpScheduledCount: 0,
+        followUpCompletedCount: 0,
+        closedCaseCount: 0,
+        reportStatus: "submitted",
+        acceptedAt: now,
+      });
+    });
+    const otherBarangayDb = testEnv.authenticatedContext(barangayUid2).firestore();
+    await assertFails(otherBarangayDb.collection("reports").doc(reportId).get());
+    await assertSucceeds(
+      barangayProductionListQuery(otherBarangayDb, otherSite).get(),
+    );
+  });
+
+  it("denies teen read of barangay submitted report document", async () => {
+    const reportId = "demo-report-teen-deny";
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const now = new Date();
+      await context.firestore().collection("reports").doc(reportId).set({
+        barangay: site,
+        submittedAt: now,
+        submittedByUid: barangayUid,
+        totalCaseCount: 1,
+        activeCaseCount: 1,
+        followUpScheduledCount: 0,
+        followUpCompletedCount: 0,
+        closedCaseCount: 0,
+        reportStatus: "submitted",
+        acceptedAt: now,
+      });
+    });
+    const teenDb = testEnv.authenticatedContext(teenUid).firestore();
+    await assertFails(teenDb.collection("reports").doc(reportId).get());
   });
 
   it("denies barangay update on reports", async () => {

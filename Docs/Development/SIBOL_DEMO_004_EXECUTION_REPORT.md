@@ -141,7 +141,7 @@ Restore [`firestore.rules.pre-demo-004-deploy-2026-10-22.rules`](../Verification
 | Detail | Aggregate fields only; no per-case records |
 | Stability | Dashboard remained stable ~15s after return; no `PERMISSION_DENIED` |
 
-**Not verified in this session:** Barangay **submission receipt / submitted-reports history** UI (repository `watchReportsForBarangay` implemented; no barangay dashboard screen — future enhancement).
+**Barangay receipt/history:** delivered in SIBOL-DEMO-005 (separate operator QA).
 
 ## 12. Defect — MOPH list `permission-denied` (handover `c5f8a219-…`)
 
@@ -196,5 +196,5 @@ Live operator test: MOPH dashboard briefly showed a submitted report, then
 | Predeploy verification | **Accepted** |
 | Firebase rules/indexes deploy (`a9e4d271-…`) | **Complete** (§9) |
 | Operator MOPH reporting verification (list + detail + stability) | **Pass** — MVR-0005 (`b82f6c41-…`) |
-| Barangay submission receipt / history UI | **Outstanding** (not in DEMO-004 scope delivered) |
+| Barangay submission receipt / history UI | **Delivered** under SIBOL-DEMO-005 |
 | Live report creation by EA | **Not performed** (operator/baranagay session) |

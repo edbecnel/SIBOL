@@ -8,6 +8,11 @@ abstract class ReportRepository {
 
   Stream<List<MophAggregateReport>> watchReportsForBarangay(String barangay);
 
+  Stream<MophAggregateReport?> watchReportForBarangay(
+    String reportId,
+    String barangay,
+  );
+
   Future<String> submitBarangayAggregateReport({
     required String submittedByUid,
     required BarangayReportAggregateCounts counts,

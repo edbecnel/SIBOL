@@ -50,6 +50,12 @@ class BarangayHomeScreen extends ConsumerWidget {
                   icon: const Icon(Icons.upload_file),
                   label: const Text('Submit report to MOPH'),
                 ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: () => context.push(Routes.barangaySubmittedReports),
+                  icon: const Icon(Icons.history),
+                  label: const Text('Submitted reports'),
+                ),
               ],
             ),
           ),
