@@ -1,6 +1,6 @@
 # SIBOL-DEMO-004 — Execution report (Barangay-to-MOPH reporting)
 
-> **Handover UUID:** `7d4e9a21-3c85-4f16-b2a0-6e97d14c582f`  
+> **Handover UUIDs:** `7d4e9a21-…` (implementation); `b82f6c41-…` (live MOPH verification record)  
 > **Date:** 2026-10-22  
 > **Git restore point:** tag `sibol-demo-003-working-baseline` @ `c06fd2b`  
 > **Firebase deploy:** **Executed** 2026-10-22 — see §9 (handover `a9e4d271-…`)  
@@ -125,9 +125,23 @@ No unexpected index removals observed.
 
 Restore [`firestore.rules.pre-demo-004-deploy-2026-10-22.rules`](../Verification/Artifacts/firestore.rules.pre-demo-004-deploy-2026-10-22.rules) when PA authorizes, **or** release prior ruleset `251bc159-efc3-446b-92e3-deae2c5f7719`.
 
-## 10. Manual verification
+## 10. Manual verification — MOPH reporting (operator-observed, 2026-10-22)
 
-**Status:** Blocked during live test by defect §12; re-test after app + index deploy. Suggested script: Barangay submit aggregate → sign in MOPH → list + detail. Record in MVR when executed.
+**Record:** [MVR-0005](../Verification/Records/MVR-0005-demo-004-moph-reporting-emulator.md)  
+**Handover:** `b82f6c41-9d35-4e70-a216-5f93c0d847ab`  
+**Outcome:** **Pass (7/7)** on Android emulator, live `sibol-286d0` (post query-fix app + indexes)
+
+| Evidence item | Operator observation |
+|---------------|-------------------|
+| MOPH dashboard | Submitted **Barangay Tres** report visible |
+| Reference | `8hCkusDPRacAWEiMZyPK` |
+| Submitted | 2026-10-22, ~05:28 (local) |
+| Status | `submitted` |
+| Aggregates | Total **6** — Active **3**, Follow-up scheduled **1**, Follow-up completed **1**, Closed **1** |
+| Detail | Aggregate fields only; no per-case records |
+| Stability | Dashboard remained stable ~15s after return; no `PERMISSION_DENIED` |
+
+**Not verified in this session:** Barangay **submission receipt / submitted-reports history** UI (repository `watchReportsForBarangay` implemented; no barangay dashboard screen — future enhancement).
 
 ## 12. Defect — MOPH list `permission-denied` (handover `c5f8a219-…`)
 
@@ -173,7 +187,7 @@ Live operator test: MOPH dashboard briefly showed a submitted report, then
 
 **Six composites (all READY):** `CICAgOjXh4EK`, `CICAgJiUpoMK`, `CICAgJim14AK`, `CICAgJim14AJ`, `CICAgJjF9oIK`, `CICAgJj7z4EK`.
 
-**App:** rebuild/install debug APK (`6e95734` or later) for corrected MOPH list query. Manual E2E still pending.
+**App:** rebuild/install debug APK (`6e95734` or later) for corrected MOPH list query.
 
 ## 11. PA acceptance
 
@@ -181,5 +195,6 @@ Live operator test: MOPH dashboard briefly showed a submitted report, then
 |------|--------|
 | Predeploy verification | **Accepted** |
 | Firebase rules/indexes deploy (`a9e4d271-…`) | **Complete** (§9) |
-| Operator manual E2E (barangay submit → MOPH list/detail) | **Pending** |
-| Live report creation by EA | **Not performed** (per authorization) |
+| Operator MOPH reporting verification (list + detail + stability) | **Pass** — MVR-0005 (`b82f6c41-…`) |
+| Barangay submission receipt / history UI | **Outstanding** (not in DEMO-004 scope delivered) |
+| Live report creation by EA | **Not performed** (operator/baranagay session) |
