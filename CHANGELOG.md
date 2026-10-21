@@ -30,6 +30,10 @@ All notable changes to this repository are documented here.
 
 - SIBOL-UI-001: official SIBOL launcher icon for Android (adaptive) and iOS via `flutter_launcher_icons` (local; not committed per PA).
 
+### Added
+
+- SIBOL-DEMO-004: Barangay aggregate submit-to-MOPH UI, MOPH submitted-reports list/detail, rules-validated `reports` client create, and composite indexes (local; not deployed).
+
 ### Changed
 
 - SIBOL-DEMO-003: Firestore rules (barangay-scoped teen assistance + acknowledge) and `barangay`+`createdAt` index deployed to `sibol-286d0` (authorization `e8d2b614-…`; local repo not committed per PA).
