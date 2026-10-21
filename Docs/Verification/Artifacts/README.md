@@ -43,7 +43,16 @@ Local rollback and deployment evidence files. **Do not commit secrets.**
 
 See [SIBOL_DEMO_003_EXECUTION_REPORT.md](../../Development/SIBOL_DEMO_003_EXECUTION_REPORT.md) §8.
 
-## SIBOL-DEMO-004 predeploy (2026-10-22, not yet deployed)
+## SIBOL-DEMO-004 deploy (2026-10-22)
+
+| File | Purpose |
+|------|---------|
+| `firestore.rules.post-demo-004-deploy-2026-10-22.metadata.json` | Post-deploy ruleset `c5b24ed9-…`, four composite indexes |
+| `firestore.rules.pre-demo-004-deploy-2026-10-22.rules` | **Pre-DEMO-004 live** rollback (ruleset `251bc159-…`) |
+
+See [SIBOL_DEMO_004_EXECUTION_REPORT.md](../../Development/SIBOL_DEMO_004_EXECUTION_REPORT.md) §9.
+
+## SIBOL-DEMO-004 predeploy (2026-10-22)
 
 | File | Purpose |
 |------|---------|

@@ -3,7 +3,7 @@
 > **Handover UUID:** `7d4e9a21-3c85-4f16-b2a0-6e97d14c582f`  
 > **Date:** 2026-10-22  
 > **Git restore point:** tag `sibol-demo-003-working-baseline` @ `c06fd2b`  
-> **Firebase deploy:** **Not authorized** — rules/indexes changed locally only  
+> **Firebase deploy:** **Executed** 2026-10-22 — see §9 (handover `a9e4d271-…`)  
 > **Manual QA:** **Not executed** (await operator)
 
 ## 1. PA authorization
@@ -78,7 +78,7 @@ Barangay counts are computed from in-app case list filtered to `users.assignedBa
 | 7 | Rollback artifacts for **current** live config captured/verified | **PASS** — see §8.1 |
 
 **Proposed rules SHA-256:** `497df6e50fbcfbb1e6a2951df3aa9d0fae86841b8ed2e6a69329e9c2adfd4082`  
-**Deploy not executed** — await PA authorization.
+**Predeploy accepted** — deploy authorized separately (§9).
 
 ### 8.1 Rollback references (pre-DEMO-004 live)
 
@@ -88,13 +88,42 @@ Barangay counts are computed from in-app case list filtered to `users.assignedBa
 | Rules metadata | [`firestore.rules.pre-demo-004-deploy-2026-10-22.metadata.json`](../Verification/Artifacts/firestore.rules.pre-demo-004-deploy-2026-10-22.metadata.json) |
 | Indexes snapshot | [`firestore.indexes.pre-demo-004-deploy-2026-10-22.json`](../Verification/Artifacts/firestore.indexes.pre-demo-004-deploy-2026-10-22.json) |
 
-## 9. Required Firebase deployment (PA authorization pending)
+## 9. Live Firebase deployment (handover `a9e4d271-6b35-4c80-9f12-7d6e23b50a41`)
 
-```bash
-firebase deploy --only firestore:rules,firestore:indexes --project sibol-286d0
-```
+### 9.1 Pre-deploy safeguards
 
-Until deploy, live `sibol-286d0` retains DEMO-003 rules (barangay **cannot** create `reports`; MOPH list will stay empty/error on query).
+| Safeguard | Result |
+|-----------|--------|
+| `firebase use` → `sibol-286d0` | **PASS** |
+| `firestore.rules` SHA `497df6e…` | **PASS** |
+| Indexes file: 2 existing teen + 2 new `reports` | **PASS** |
+| Rollback artifact SHA `2feec126…` / ruleset `251bc159-…` | **PASS** |
+
+### 9.2 Deploy
+
+| Item | Evidence |
+|------|----------|
+| Command | `firebase deploy --only firestore:rules,firestore:indexes --project sibol-286d0` |
+| Result | **Success** |
+| Rules SHA-256 (source) | `497df6e50fbcfbb1e6a2951df3aa9d0fae86841b8ed2e6a69329e9c2adfd4082` |
+| Active ruleset | `projects/sibol-286d0/rulesets/c5b24ed9-aebf-44a9-af28-e9b2ff0d8c9c` (release updated **2026-10-21T21:07:19Z**) |
+| Prior live ruleset (rollback) | `projects/sibol-286d0/rulesets/251bc159-efc3-446b-92e3-deae2c5f7719` |
+| Post-deploy metadata | [`firestore.rules.post-demo-004-deploy-2026-10-22.metadata.json`](../Verification/Artifacts/firestore.rules.post-demo-004-deploy-2026-10-22.metadata.json) |
+
+### 9.3 Index verification (gcloud)
+
+| Collection | Fields | ID | State |
+|------------|--------|-----|--------|
+| `teenAssistanceRequests` | `teenUid` + `createdAt` | `CICAgOjXh4EK` | **READY** |
+| `teenAssistanceRequests` | `barangay` + `createdAt` | `CICAgJiUpoMK` | **READY** |
+| `reports` | `reportStatus` + `submittedAt` | `CICAgJim14AK` | **READY** (~21:12:25Z) |
+| `reports` | `barangay` + `submittedAt` | `CICAgJim14AJ` | **READY** (~21:12:24Z) |
+
+No unexpected index removals observed.
+
+### 9.4 Rollback after DEMO-004 deploy
+
+Restore [`firestore.rules.pre-demo-004-deploy-2026-10-22.rules`](../Verification/Artifacts/firestore.rules.pre-demo-004-deploy-2026-10-22.rules) when PA authorizes, **or** release prior ruleset `251bc159-efc3-446b-92e3-deae2c5f7719`.
 
 ## 10. Manual verification
 
@@ -102,4 +131,9 @@ Until deploy, live `sibol-286d0` retains DEMO-003 rules (barangay **cannot** cre
 
 ## 11. PA acceptance
 
-Pending manual demo verification and Firebase deploy authorization.
+| Gate | Status |
+|------|--------|
+| Predeploy verification | **Accepted** |
+| Firebase rules/indexes deploy (`a9e4d271-…`) | **Complete** (§9) |
+| Operator manual E2E (barangay submit → MOPH list/detail) | **Pending** |
+| Live report creation by EA | **Not performed** (per authorization) |

@@ -1,0 +1,45 @@
+{
+  "workItem": "SIBOL-DEMO-004",
+  "handoverUuid": "a9e4d271-6b35-4c80-9f12-7d6e23b50a41",
+  "targetProject": "sibol-286d0",
+  "deployCommand": "firebase deploy --only firestore:rules,firestore:indexes --project sibol-286d0",
+  "deployResult": "success",
+  "deployCompletedAtUtc": "2026-10-21T21:07:19Z",
+  "rulesSourceFile": "firestore.rules",
+  "rulesSha256": "497df6e50fbcfbb1e6a2951df3aa9d0fae86841b8ed2e6a69329e9c2adfd4082",
+  "priorLiveRuleset": "projects/sibol-286d0/rulesets/251bc159-efc3-446b-92e3-deae2c5f7719",
+  "priorLiveRulesSha256": "2feec126f6e63cb88ec054f227ce230b99ae66e077061989d2f9937c7df424ae",
+  "priorLiveRulesRollbackArtifact": "Docs/Verification/Artifacts/firestore.rules.pre-demo-004-deploy-2026-10-22.rules",
+  "priorLiveIndexesRollbackArtifact": "Docs/Verification/Artifacts/firestore.indexes.pre-demo-004-deploy-2026-10-22.json",
+  "postDeployRuleset": "projects/sibol-286d0/rulesets/c5b24ed9-aebf-44a9-af28-e9b2ff0d8c9c",
+  "compositeIndexes": [
+    {
+      "collectionGroup": "teenAssistanceRequests",
+      "fields": ["teenUid ASC", "createdAt DESC"],
+      "gcloudIndexId": "CICAgOjXh4EK",
+      "state": "READY",
+      "notes": "Unchanged"
+    },
+    {
+      "collectionGroup": "teenAssistanceRequests",
+      "fields": ["barangay ASC", "createdAt DESC"],
+      "gcloudIndexId": "CICAgJiUpoMK",
+      "state": "READY",
+      "notes": "Unchanged"
+    },
+    {
+      "collectionGroup": "reports",
+      "fields": ["reportStatus ASC", "submittedAt DESC"],
+      "gcloudIndexId": "CICAgJim14AK",
+      "state": "READY",
+      "readyObservedAtUtc": "2026-10-21T21:12:25Z"
+    },
+    {
+      "collectionGroup": "reports",
+      "fields": ["barangay ASC", "submittedAt DESC"],
+      "gcloudIndexId": "CICAgJim14AJ",
+      "state": "READY",
+      "readyObservedAtUtc": "2026-10-21T21:12:24Z"
+    }
+  ]
+}

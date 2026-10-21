@@ -21,7 +21,7 @@
 | SIBOL-DEMO-001 | Physical Android demo; Teen inspection and PO requirements | **In progress** (device install; Barangay/MOPH demo) | [SIBOL_DEMO_001_EXECUTION_REPORT.md](SIBOL_DEMO_001_EXECUTION_REPORT.md) |
 | SIBOL-DEMO-002 | Teen assistance request workflow (demo) | **Live emulator QA pass (MVR-0003); PO phone install pending** | [SIBOL_DEMO_002_EXECUTION_REPORT.md](SIBOL_DEMO_002_EXECUTION_REPORT.md), [MVR-0003](../Verification/Records/MVR-0003-demo-002-teen-assistance-emulator.md) |
 | SIBOL-DEMO-003 | Barangay incoming + acknowledge teen requests | **Baseline tagged** `sibol-demo-003-working-baseline` @ `c06fd2b` (see execution report §12) | [SIBOL_DEMO_003_EXECUTION_REPORT.md](SIBOL_DEMO_003_EXECUTION_REPORT.md) |
-| SIBOL-DEMO-004 | Barangay-to-MOPH aggregate reporting (demo) | **Predeploy verification PASS; Firebase deploy + manual QA pending** | [SIBOL_DEMO_004_EXECUTION_REPORT.md](SIBOL_DEMO_004_EXECUTION_REPORT.md) |
+| SIBOL-DEMO-004 | Barangay-to-MOPH aggregate reporting (demo) | **Rules/indexes deployed; manual E2E pending** | [SIBOL_DEMO_004_EXECUTION_REPORT.md](SIBOL_DEMO_004_EXECUTION_REPORT.md) |
 
 ## Tranche 2 implementation gate
 
