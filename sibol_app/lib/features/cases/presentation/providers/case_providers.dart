@@ -7,6 +7,11 @@ final casesStreamProvider = StreamProvider<List<CaseRecord>>((ref) {
   return ref.watch(caseRepositoryProvider).watchCases();
 });
 
+final caseDetailStreamProvider =
+    StreamProvider.family<CaseRecord?, String>((ref, caseId) {
+  return ref.watch(caseRepositoryProvider).watchCase(caseId);
+});
+
 final followUpsStreamProvider =
     StreamProvider.family<List<FollowUp>, String>((ref, caseId) {
   return ref.watch(caseRepositoryProvider).watchFollowUps(caseId);

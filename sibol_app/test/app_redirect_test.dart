@@ -154,5 +154,38 @@ void main() {
         isNull,
       );
     });
+
+    test('barangay on case detail route → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.barangayCaseDetail('demo-case-001'),
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.barangay)),
+        ),
+        isNull,
+      );
+    });
+
+    test('teen on barangay case detail → teen home', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.barangayCaseDetail('demo-case-001'),
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.teen)),
+        ),
+        Routes.teenHome,
+      );
+    });
+
+    test('moph on barangay case detail → moph home', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.barangayCaseDetail('demo-case-001'),
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.moph)),
+        ),
+        Routes.mophHome,
+      );
+    });
   });
 }

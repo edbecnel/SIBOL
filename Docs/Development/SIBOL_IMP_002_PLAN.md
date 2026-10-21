@@ -1,8 +1,8 @@
 # SIBOL-IMP-002 — Tranche 2 implementation plan (proposed)
 
 > **Handover UUID (T1-CLOSE / planning):** `f71b8c62-2e49-4d03-a615-9c7e82b4d390`  
-> **Status:** **Not authorized for implementation**  
-> **Date:** 2026-10-20  
+> **Status:** **T2-1 authorized and implemented** (handover `c8d42a91-…`); T2-2+ not authorized  
+> **Date:** 2026-10-20 (plan); T2-1 delivery 2026-10-21  
 > **Gate:** [TRANCHE_2_IMPLEMENTATION_GATE.md](TRANCHE_2_IMPLEMENTATION_GATE.md)
 
 ## 1. Purpose
@@ -27,7 +27,7 @@ Define traceable Tranche 2 engineering scope derived from [TRANCHE_1_EXECUTION_R
 
 | Phase | Deliverable | PA gate |
 |-------|-------------|---------|
-| T2-1 | Case detail (read-only) + `ListTile.onTap` + routes + tests | T2 umbrella auth |
+| T2-1 | Case detail (read-only) + `ListTile.onTap` + routes + tests | **Complete** — [SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md) |
 | T2-2 | Follow-up timeline on detail | — |
 | T2-3 | Case create/edit + repository writes | — |
 | T2-4 | Implement `submitReport` in `shared/functions/src/index.ts` | **Functions deploy** |

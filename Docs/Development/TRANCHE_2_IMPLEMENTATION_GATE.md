@@ -21,7 +21,7 @@ Planning artifacts ([SIBOL_IMP_002_PLAN.md](SIBOL_IMP_002_PLAN.md)) do **not** c
 | Gate | Status |
 |------|--------|
 | P0 + P1 documentation recovery | **Complete** (GOV-001 remediation, 2026-10-20) |
-| PA Tranche 2 implementation authorization | **Not granted** |
+| PA Tranche 2 implementation authorization | **T2-1 only** (`c8d42a91-…`); T2-2+ **not granted** |
 
 ## Related
 

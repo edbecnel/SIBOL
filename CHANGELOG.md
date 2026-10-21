@@ -18,6 +18,10 @@ All notable changes to this repository are documented here.
 
 - Tranche 1 and EDF governance baseline commit `fbba213` pushed to public GitHub `edbecnel/SIBOL` on `main` (SIBOL-GOV-002; authorization `e7c4192a-…`).
 
+### Added
+
+- SIBOL-IMP-002 T2-1: barangay read-only case detail navigation, screen, and tests (SIBOL-IMP-002).
+
 ### Changed
 
 - Tranche 1 execution report test evidence updated to 28/28; live Firebase `sibol-286d0` status documented.

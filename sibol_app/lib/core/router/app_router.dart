@@ -8,6 +8,7 @@ import 'package:sibol_app/features/auth/presentation/providers/auth_providers.da
 import 'package:sibol_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:sibol_app/features/auth/presentation/screens/splash_screen.dart';
 import 'package:sibol_app/features/cases/presentation/screens/barangay_home_screen.dart';
+import 'package:sibol_app/features/cases/presentation/screens/case_detail_screen.dart';
 import 'package:sibol_app/features/moph/presentation/screens/moph_home_screen.dart';
 import 'package:sibol_app/features/settings/presentation/screens/settings_screen.dart';
 import 'package:sibol_app/features/teenager/presentation/screens/teen_home_screen.dart';
@@ -45,6 +46,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.barangayHome,
         builder: (context, state) => const BarangayHomeScreen(),
+        routes: [
+          GoRoute(
+            path: '${Routes.barangayCaseSegment}/:caseId',
+            builder: (context, state) {
+              final caseId = state.pathParameters['caseId']!;
+              return CaseDetailScreen(caseId: caseId);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: Routes.mophHome,

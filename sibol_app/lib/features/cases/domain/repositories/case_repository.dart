@@ -6,5 +6,8 @@ abstract class CaseRepository {
 
   Future<List<CaseRecord>> fetchCases();
 
+  /// Live case document; `null` when the document does not exist.
+  Stream<CaseRecord?> watchCase(String caseId);
+
   Stream<List<FollowUp>> watchFollowUps(String caseId);
 }

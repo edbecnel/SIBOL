@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-21  
+> **Last updated:** 2026-10-21 (T2-1)  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -14,7 +14,7 @@
 | SIBOL-FB-005 | Case list tap investigation | **Closed (deferred T2)** | [SIBOL_FB_005_EXECUTION_REPORT.md](SIBOL_FB_005_EXECUTION_REPORT.md) |
 | SIBOL-GOV-001 | EDF governance traceability audit | **Closed (recovery)** | [SIBOL_GOV_001_EXECUTION_REPORT.md](SIBOL_GOV_001_EXECUTION_REPORT.md) |
 | SIBOL-GOV-002 | Git baseline preservation and publication | **Closed** | [SIBOL_GOV_002_EXECUTION_REPORT.md](SIBOL_GOV_002_EXECUTION_REPORT.md) |
-| SIBOL-IMP-002 | Tranche 2 implementation | **Planned — not authorized** | [SIBOL_IMP_002_PLAN.md](SIBOL_IMP_002_PLAN.md) |
+| SIBOL-IMP-002 | Tranche 2 implementation | **In progress (T2-1 accepted; T2-2+ gated)** | [SIBOL_IMP_002_PLAN.md](SIBOL_IMP_002_PLAN.md), [SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md](SIBOL_IMP_002_T2_1_EXECUTION_REPORT.md) |
 
 ## Tranche 2 implementation gate
 

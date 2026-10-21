@@ -34,6 +34,20 @@ class CaseRepositoryImpl implements CaseRepository {
   }
 
   @override
+  Stream<CaseRecord?> watchCase(String caseId) {
+    return _firestore
+        .collection(FirestorePaths.cases)
+        .doc(caseId)
+        .snapshots()
+        .map((snap) {
+      if (!snap.exists) return null;
+      final data = snap.data();
+      if (data == null) return null;
+      return CaseRecordModel.fromFirestore(snap.id, data).toEntity();
+    });
+  }
+
+  @override
   Stream<List<FollowUp>> watchFollowUps(String caseId) {
     return _firestore
         .collection(FirestorePaths.cases)

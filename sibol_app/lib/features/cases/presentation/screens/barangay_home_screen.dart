@@ -57,6 +57,10 @@ class BarangayHomeScreen extends ConsumerWidget {
                           'Report: ${caseRecord.reportStatus.firestoreValue}',
                         ),
                         isThreeLine: true,
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => context.push(
+                          Routes.barangayCaseDetail(caseRecord.caseId),
+                        ),
                       ),
                     );
                   },
