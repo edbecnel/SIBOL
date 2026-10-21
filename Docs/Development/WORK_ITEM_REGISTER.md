@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-20  
+> **Last updated:** 2026-10-21  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -13,7 +13,7 @@
 | SIBOL-FB-004 | Sign-in input (widget tests Phase A) | **Closed (Phase A)** | [SIBOL_FB_004_EXECUTION_REPORT.md](SIBOL_FB_004_EXECUTION_REPORT.md) |
 | SIBOL-FB-005 | Case list tap investigation | **Closed (deferred T2)** | [SIBOL_FB_005_EXECUTION_REPORT.md](SIBOL_FB_005_EXECUTION_REPORT.md) |
 | SIBOL-GOV-001 | EDF governance traceability audit | **Closed (recovery)** | [SIBOL_GOV_001_EXECUTION_REPORT.md](SIBOL_GOV_001_EXECUTION_REPORT.md) |
-| SIBOL-GOV-002 | Git baseline preservation | **Closed (local commit)** | [SIBOL_GOV_002_EXECUTION_REPORT.md](SIBOL_GOV_002_EXECUTION_REPORT.md) |
+| SIBOL-GOV-002 | Git baseline preservation and publication | **Closed** | [SIBOL_GOV_002_EXECUTION_REPORT.md](SIBOL_GOV_002_EXECUTION_REPORT.md) |
 | SIBOL-IMP-002 | Tranche 2 implementation | **Planned — not authorized** | [SIBOL_IMP_002_PLAN.md](SIBOL_IMP_002_PLAN.md) |
 
 ## Tranche 2 implementation gate
@@ -30,4 +30,3 @@ See [TRANCHE_2_IMPLEMENTATION_GATE.md](TRANCHE_2_IMPLEMENTATION_GATE.md).
 | Issue | Work item | Status |
 |-------|-----------|--------|
 | iOS Xcode Device Hub pointer/keyboard | FB-004 | Open — environment; widget tests pass |
-| GitHub push of local baseline | GOV-002 | **Open** — local commit only; push not authorized |
