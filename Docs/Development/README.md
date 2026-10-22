@@ -14,6 +14,7 @@ Engineering practices, tooling, and environment setup for the SIBOL software del
 | Document | Description |
 |----------|-------------|
 | [WORK_ITEM_REGISTER.md](WORK_ITEM_REGISTER.md) | Index of engineering work items |
+| [SIBOL_v0.5.0_RELEASE_MILESTONE.md](SIBOL_v0.5.0_RELEASE_MILESTONE.md) | **v0.5.0** Android & iOS demonstration milestone (published 2026-10-22) |
 | [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md) | EDF-aligned work-item doc discipline |
 | [TRANCHE_1_EXECUTION_REPORT.md](TRANCHE_1_EXECUTION_REPORT.md) | SIBOL-IMP-001 engineering delivery |
 | [TRANCHE_1_ACCEPTANCE_REPORT.md](TRANCHE_1_ACCEPTANCE_REPORT.md) | Tranche 1 functional acceptance |

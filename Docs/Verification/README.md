@@ -9,6 +9,8 @@ Canonical **verification evidence** for SIBOL engineering work: automated test s
 
 Planning artifacts in `Docs/Development/` declare what was verified; this domain holds the verification record or pointer to MVRs under `Records/`.
 
+**Release milestone (cross-domain):** [SIBOL v0.5.0 demonstration milestone](../Development/SIBOL_v0.5.0_RELEASE_MILESTONE.md) — aggregates MVR and execution-report references for DEMO-002–005.
+
 ## Documents
 
 | Document | Description |
