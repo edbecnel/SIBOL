@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-24 (SIBOL-REG-001 REG-B repository)  
+> **Last updated:** 2026-10-24 (SIBOL-REG-001 REG-C repository)  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -25,7 +25,7 @@
 | SIBOL-DEMO-005 | Barangay submission receipt and report history | **Operator Pass (MVR-0006); post-submit nav untested** | [SIBOL_DEMO_005_EXECUTION_REPORT.md](SIBOL_DEMO_005_EXECUTION_REPORT.md) |
 | SIBOL-REL-005 | EDF documentation — v0.5.0 demo milestone | **Published** (handover `0f3e8b29-…`) | [SIBOL_REL_005_EXECUTION_REPORT.md](SIBOL_REL_005_EXECUTION_REPORT.md), [SIBOL_v0.5.0_RELEASE_MILESTONE.md](SIBOL_v0.5.0_RELEASE_MILESTONE.md) |
 | SIBOL-CASE-COORD-001 | Individual teen case coordination (Barangay–MOPH) | **Increment B + B-HISTORY accepted**; registry rules v2 **deployed** 2026-10-24; **Increment C not started** | [Registry v2 deploy report](SIBOL_CASE_COORD_001_REGISTRY_RULES_V2_DEPLOY_EXECUTION_REPORT.md), [operator closure](SIBOL_CASE_COORD_001_REGISTRY_RULES_V2_OPERATOR_CLOSURE.md) |
-| SIBOL-REG-001 | User registration and organization authorization | **REG-B repo complete** (`f3c8a271-6b49-4d0e-9a52-7e14c6b8d903`); M1/M2 + cutover in tree; **deploy / MVR NOT RUN** | [REG-B execution report](SIBOL_REG_001_REG_B_EXECUTION_REPORT.md), [REG-B matrix](../Verification/Records/MVR-REG-001-REG-B-Authorization-Matrix.md), [M1/M2 execution report](SIBOL_REG_001_M1_M2_EXECUTION_REPORT.md), [CONTRACT-REG-001](../../shared/docs/CONTRACT-REG-001-Registration-and-Administration-Services.md) |
+| SIBOL-REG-001 | User registration and organization authorization | **REG-C teen onboarding in repo** (`c6f18a42-9e73-4b05-a2d8-61f0c9e735ab`); REG-B/M1/M2 in tree; **deploy / MVR NOT RUN** | [REG-C execution report](SIBOL_REG_001_REG_C_EXECUTION_REPORT.md), [REG-C matrix](../Verification/Records/MVR-REG-001-REG-C-Registration-Privacy-Matrix.md), [REG-B execution report](SIBOL_REG_001_REG_B_EXECUTION_REPORT.md), [CONTRACT-REG-C](../../shared/docs/CONTRACT-REG-C-Teen-Registration.md) |
 
 ## Tranche 2 implementation gate
 
