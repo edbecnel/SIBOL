@@ -67,6 +67,15 @@ export async function applyMigrationPlan(db, plan, { dryRun }) {
       preview.push({ action: "skip-orgId-present", path: ref.path });
       continue;
     }
+    if (current && current !== d.set.orgId) {
+      preview.push({
+        action: "skip-orgId-conflict",
+        path: ref.path,
+        existingOrgId: current,
+        plannedOrgId: d.set.orgId,
+      });
+      continue;
+    }
     preview.push({ action: "backfill-orgId", path: ref.path, orgId: d.set.orgId });
     if (!dryRun) {
       await ref.set(d.set, { merge: true });

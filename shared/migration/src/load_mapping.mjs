@@ -10,8 +10,15 @@ export function loadOrgMapping(mappingPath) {
     mappingPath ??
     resolve(__dirname, "../fixtures/demo_org_mapping.json");
   const raw = JSON.parse(readFileSync(path, "utf8"));
-  const barangayByLabel = new Map(Object.entries(raw.barangayLabels ?? {}));
+  const barangayEntries = Object.entries(raw.barangayLabels ?? {});
+  const barangayByLabel = new Map(barangayEntries);
   const hospitalByName = new Map(Object.entries(raw.hospital ?? {}));
+
+  const barangayOrgIds = barangayEntries.map(([, id]) => id);
+  const uniqueOrgIds = new Set(barangayOrgIds);
+  if (uniqueOrgIds.size !== barangayOrgIds.length) {
+    throw new Error("duplicate orgId across barangayLabels is not allowed");
+  }
 
   for (const [, orgId] of barangayByLabel) {
     if (!isValidOrgId(orgId)) {
