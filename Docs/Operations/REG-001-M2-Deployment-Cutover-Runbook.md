@@ -8,41 +8,51 @@
 | # | Check | Command / action |
 |---|--------|------------------|
 | 1 | Correct Firebase project | `firebase use` / console — must match approved project id |
-| 2 | Backup | Authorized export of Firestore (cases, users, assistance, reports, coordination collections) — **run only under separate PA authorization** |
-| 3 | Inventory | `cd shared/migration && GCLOUD_PROJECT=<id> npm run migrate -- --inventory` (authorized env only) |
-| 4 | Mapping approved | Review `fixtures/demo_org_mapping.json` or production mapping file; no unmapped labels in inventory |
-| 5 | Regression evidence | `shared/migration npm test`; `shared/firestore-rules-test npm test`; `shared/functions npm test`; `sibol_app flutter test` |
-| 6 | App build | Release build with M2-compatible `orgId` writes and teen `selectedBarangayOrgId` |
-| 7 | Maintenance window | Barangay case access must not rely on pre-M2 global rules during cutover |
+| 2 | Backup | Authorized export of Firestore — **separate PA authorization only** |
+| 3 | Inventory + dry-run | `cd shared/migration && GCLOUD_PROJECT=<id> npm run migrate -- --inventory` then dry-run |
+| 4 | Mapping approved | No unmapped barangay labels; no duplicate orgId in mapping file |
+| 5 | Regression evidence | migration, firestore-rules-test (incl. cutover lockdown), functions, flutter test/analyze |
+| 6 | App build | Org-scoped queries + `orgId` writes; teen `selectedBarangayOrgId` |
+| 7 | Maintenance window | Users informed; barangay workflows paused during lockdown |
 
-## Derived safe cutover sequence
+## Safe cutover sequence (no permissive interval)
 
-Old mobile clients without `orgId` on writes will **fail closed** after rules deploy. Concurrent writes during partial migration must be minimized.
+**Never** run live M1 migration while legacy global barangay case rules remain active in production.
 
-| Step | Component | Rationale |
-|------|-----------|-----------|
-| 1 | **Deploy Cloud Functions** (authz-aware callables) | Server paths enforce org before clients fully updated |
-| 2 | **Deploy Firestore indexes** | Required for membership and org-scoped list queries before traffic |
-| 3 | **Execute M1 migration** (live, PA-gated) | Orgs, memberships, `orgId` backfill, user `primaryOrgId` / teen `selectedBarangayOrgId` |
-| 4 | **Verify migration** | `npm run migrate -- --verify` + spot checks (see post-cutover) |
-| 5 | **Deploy Firestore rules (M2)** | **No interval** where rules are old-global while data is org-scoped only partially — complete step 3 first |
-| 6 | **Release mobile app** | Clients must send `orgId` / use membership-backed workflows |
-| 7 | **Post-cutover smoke** | Same-org allow, cross-org deny, teen assistance, referral, MOPH inbox |
+| Step | Action | Expected result |
+|------|--------|-----------------|
+| 1 | Announce maintenance; block routine barangay/MOPH app use | No concurrent sensitive writes |
+| 2 | **Deploy Firestore indexes** (M2 composites) | Index build complete in console |
+| 3 | **Deploy cutover lockdown rules** (`firestore.rules.cutover-lockdown` → temporary `firestore.rules` deploy) | Client case/assistance/report/coordination access **denied** (emulator: `cutover_lockdown.rules.test.mjs`) |
+| 4 | **Deploy Cloud Functions** (M2 authz callables) | New referral authz live; old app referrals may fail (acceptable in maintenance) |
+| 5 | **Execute M1 migration** (Admin SDK; bypasses rules) | Orgs, memberships, `orgId` backfill, user org fields |
+| 6 | **Verify migration** | `npm run migrate -- --verify`; zero blocking plan errors |
+| 7 | **Deploy final M2 rules** (`firestore.rules` production cutover) | Org-scoped authorization active |
+| 8 | **Release compatible mobile app** | Org-scoped queries; membership context |
+| 9 | Post-cutover smoke | Same-org allow; cross-org deny; MOPH inbox; teen assistance |
 
-**Rollback:** Revert rules to pre-M2 only if accompanied by **restored data snapshot** and app version pin. Do **not** roll back to global barangay case access as a “hotfix.”
+### Cutover lockdown artifact
 
-## Post-cutover verification (emulator or staging first when available)
+- File: `firestore.rules.cutover-lockdown` (repository root)
+- Tests: `shared/firestore-rules-test/test/cutover_lockdown.rules.test.mjs`
+- Deploy command (authorized ops only): copy/replace rules source or `firebase deploy --only firestore:rules` with lockdown file promoted per your release process.
 
-- Cross-Barangay case read/write denied (two barangay staff accounts).
-- Org admin without `case.read` denied on cases.
-- Teen assistance create with `selectedBarangayOrgId`.
-- Barangay acknowledge + referral callable.
-- MOPH thread list/read; no teen PII on thread header.
-- Aggregate report submit with `orgId`.
+### Rollback
+
+- **Forbidden:** Restoring pre-M2 global barangay case read/write rules without data restore.
+- **Allowed:** Re-deploy lockdown rules to halt access; restore Firestore from backup; redeploy prior app + rules **only** under PA-approved disaster recovery with documented security review.
+
+## Post-cutover verification
+
+- Cross-barangay case query and document deny.
+- Org-scoped Flutter queries succeed for authorized org only.
+- MOPH inbox (hospital membership + `coordination.hospital`).
+- Callable referral + duplicate prevention.
+- Demo seed idempotency (`shared/provisioning` tests).
 
 ## STOP criteria
 
-- Unmapped barangay labels in inventory.
-- Migration plan errors > 0 on dry-run.
-- Any cross-org case read succeeds in smoke tests.
-- Indexes missing for production queries (see `firestore.indexes.json`).
+- Lockdown rules not deployed before migration on production still using legacy case rules.
+- Migration plan errors > 0.
+- Cross-org case read succeeds in smoke tests.
+- Missing composite indexes for org-scoped queries.

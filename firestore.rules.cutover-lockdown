@@ -1,0 +1,69 @@
+rules_version = '2';
+// REG-001 M2 cutover lockdown — deploy ONLY during coordinated maintenance.
+// Denies client access to sensitive collections; migration uses Admin SDK (bypasses rules).
+// Do not deploy as the long-term ruleset. See Docs/Operations/REG-001-M2-Deployment-Cutover-Runbook.md
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow create, update, delete: if false;
+    }
+
+    match /organizations/{orgId} {
+      allow read, write: if false;
+    }
+
+    match /organizationMemberships/{membershipId} {
+      allow read, write: if false;
+    }
+
+    match /auditEvents/{eventId} {
+      allow read, write: if false;
+    }
+
+    match /cases/{caseId} {
+      allow read, write: if false;
+      match /followUps/{followUpId} {
+        allow read, write: if false;
+      }
+    }
+
+    match /teenAssistanceRequests/{requestId} {
+      allow read, write: if false;
+    }
+
+    match /reports/{reportId} {
+      allow read, write: if false;
+    }
+
+    match /caseCoordinationThreads/{threadId} {
+      allow read, write: if false;
+      match /private/{docId} {
+        allow read, write: if false;
+      }
+      match /staffEvents/{eventId} {
+        allow read, write: if false;
+      }
+    }
+
+    match /barangayCoordinationRegistry/{assistanceRequestId} {
+      allow read, write: if false;
+    }
+
+    match /teenCoordinationLinks/{teenUid} {
+      match /links/{assistanceRequestId} {
+        allow read, write: if false;
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
