@@ -10,7 +10,7 @@
 | Item | Value |
 |------|--------|
 | Starting HEAD | `b6fc2e5` |
-| Ending HEAD | *(set at push)* |
+| Ending HEAD | `fcc93e8` |
 
 ## Identifier contract (final)
 
