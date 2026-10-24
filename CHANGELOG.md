@@ -6,6 +6,7 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- SIBOL-QA-006: Android debug/profile network security config for Firebase emulator cleartext to `10.0.2.2`, auth error message mapping and `userErrorMessage` for registration/sign-in (`SIBOL-QA-006-AGENT-001`).
 - SIBOL-STARTUP-001: Welcome entry screen (Sign in / Register as Teen), role-aware redirect fixes, account-not-provisioned path for auth-without-profile, teen registration blank-step fix, membership query deferral for teens, membership rules `orgId` presence guard (`SIBOL-STARTUP-001-AGENT-001`).
 - SIBOL-PROTOTYPE-VERIFY-001: isolated smoke emulator ports (9315/8325), INT-001 A–F automated PASS, teen assistance Firestore create lockdown, regression and Android/iOS debug builds (`SIBOL-PROTOTYPE-VERIFY-001`).
 - SIBOL-INT-001 / SIBOL-OFFLINE-001 **AGENT-001:** extended org/assistance integration tests, identity rules tests, `regSubmitTeenAssistanceRequest` idempotency, Flutter offline pending-operation queue and sync (`SIBOL-INT-001-OFFLINE-001-AGENT-001`).

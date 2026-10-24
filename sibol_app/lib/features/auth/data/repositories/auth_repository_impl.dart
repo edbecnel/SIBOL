@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sibol_app/core/errors/app_exception.dart';
 import 'package:sibol_app/features/auth/domain/entities/auth_user.dart';
@@ -32,7 +34,14 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       return _mapUser(user)!;
     } on FirebaseAuthException catch (e) {
+      developer.log('signInWithEmail failed', name: 'AuthRepository', error: e);
       throw AuthException(message: e.message ?? 'Sign in failed', code: e.code);
+    } catch (e, st) {
+      developer.log('signInWithEmail unexpected', name: 'AuthRepository', error: e, stackTrace: st);
+      throw const AuthException(
+        message: 'Sign in failed. Check your connection or emulator.',
+        code: 'network-request-failed',
+      );
     }
   }
 
@@ -65,7 +74,14 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       return _mapUser(user)!;
     } on FirebaseAuthException catch (e) {
+      developer.log('registerWithEmail failed', name: 'AuthRepository', error: e);
       throw AuthException(message: e.message ?? 'Registration failed', code: e.code);
+    } catch (e, st) {
+      developer.log('registerWithEmail unexpected', name: 'AuthRepository', error: e, stackTrace: st);
+      throw const AuthException(
+        message: 'Registration failed. Check your connection or emulator.',
+        code: 'network-request-failed',
+      );
     }
   }
 

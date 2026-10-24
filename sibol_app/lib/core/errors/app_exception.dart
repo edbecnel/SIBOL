@@ -6,6 +6,9 @@ class AppException implements Exception {
   final String message;
   final String? code;
 
+  @override
+  String toString() => message;
+
   Failure toFailure() => UnknownFailure(message: message);
 }
 
@@ -29,7 +32,17 @@ class AuthException extends AppException {
       case 'too-many-requests':
         return 'Too many attempts. Please wait and try again.';
       case 'network-request-failed':
-        return 'Network error. Check your connection.';
+        return 'Network error. Check your connection or ensure the Firebase emulator is running.';
+      case 'email-already-in-use':
+        return 'This email is already registered. Sign in or use a different email.';
+      case 'invalid-email':
+        return 'Enter a valid email address.';
+      case 'weak-password':
+        return 'Password is too weak. Use at least 6 characters.';
+      case 'operation-not-allowed':
+        return 'This sign-in method is not enabled for this app.';
+      case 'internal-error':
+        return 'Authentication service error. If you use local emulators, ensure they are running and retry.';
       default:
         return null;
     }

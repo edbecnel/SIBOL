@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sibol_app/core/errors/failure.dart';
+import 'package:sibol_app/core/errors/user_error_message.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/app_text_field.dart';
@@ -37,7 +37,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
           );
       setState(() => _success = 'If an account exists, a reset email was sent.');
     } catch (e) {
-      setState(() => _error = e is Failure ? e.message : e.toString());
+      setState(() => _error = userErrorMessage(e));
     } finally {
       setState(() => _submitting = false);
     }

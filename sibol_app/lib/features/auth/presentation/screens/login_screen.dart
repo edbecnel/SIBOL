@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/config/app_config.dart';
-import 'package:sibol_app/core/errors/failure.dart';
+import 'package:sibol_app/core/errors/user_error_message.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/app_text_field.dart';
@@ -76,7 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   if (error != null) ...[
                     const SizedBox(height: 12),
                     Text(
-                      error is Failure ? error.message : error.toString(),
+                      userErrorMessage(error),
                       style: TextStyle(color: Theme.of(context).colorScheme.error),
                     ),
                   ],

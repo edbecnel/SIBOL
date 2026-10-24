@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
-import 'package:sibol_app/core/errors/failure.dart';
+import 'package:sibol_app/core/errors/user_error_message.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/geo/presentation/geo_providers.dart';
 import 'package:sibol_app/features/geo/presentation/psgc_geo_picker.dart';
@@ -73,7 +73,7 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
       _authCreated = true;
       setState(() => _step = 2);
     } catch (e) {
-      setState(() => _error = e is Failure ? e.message : e.toString());
+      setState(() => _error = userErrorMessage(e));
     } finally {
       setState(() => _submitting = false);
     }
@@ -113,7 +113,7 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
         if (mounted) context.go(Routes.teenRegisterComplete);
       }
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = userErrorMessage(e));
     } finally {
       setState(() => _submitting = false);
     }
