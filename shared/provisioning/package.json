@@ -8,6 +8,7 @@
   },
   "scripts": {
     "seed": "node seed_tranche1_demo.mjs",
+    "seed:emulator": "node seed_emulator_demo.mjs",
     "test": "node --test test/*.mjs"
   },
   "dependencies": {

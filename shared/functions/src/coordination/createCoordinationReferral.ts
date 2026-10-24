@@ -1,4 +1,4 @@
-import * as admin from "firebase-admin";
+import type { Firestore } from "firebase-admin/firestore";
 import { HttpsError } from "firebase-functions/v2/https";
 import { randomBytes } from "node:crypto";
 import {
@@ -59,7 +59,7 @@ function validateAssistanceRequestId(raw: unknown): string {
 }
 
 export async function runCreateCoordinationReferral(
-  db: admin.firestore.Firestore,
+  db: Firestore,
   authUid: string | undefined,
   data: CreateCoordinationReferralInput,
 ): Promise<CreateCoordinationReferralResult> {
@@ -177,7 +177,7 @@ export async function runCreateCoordinationReferral(
       throw new HttpsError("internal", "Could not generate display reference.");
     }
 
-    const now = admin.firestore.FieldValue.serverTimestamp();
+    const now = new Date();
     const eventRef = threadRef.collection("staffEvents").doc();
 
     tx.set(threadRef, {

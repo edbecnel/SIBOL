@@ -22,3 +22,8 @@ shared/firestore-rules-test/node_modules/
 shared/migration/node_modules/
 shared/firestore-rules-test/firestore-debug.log
 shared/functions/lib/
+shared/integration/node_modules/
+
+# Emulator demonstration (local only)
+.env.emulator.local
+.emulator-data/

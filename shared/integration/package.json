@@ -1,0 +1,12 @@
+{
+  "name": "sibol-integration",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/run-prototype-smoke.mjs"
+  },
+  "devDependencies": {
+    "firebase": "^11.0.0",
+    "firebase-admin": "^12.6.0"
+  }
+}
