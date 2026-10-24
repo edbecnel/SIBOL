@@ -3,7 +3,7 @@
 **Handover:** `SIBOL-REG-001-REG-B-AGENT-001`  
 **Handover UUID:** `f3c8a271-6b49-4d0e-9a52-7e14c6b8d903`  
 **Starting HEAD:** `a8dcccda027026cd65d572bab5264b8a7ef70925`  
-**Ending HEAD:** (see git log after closure commit)
+**Ending HEAD:** `d70868d3471438c044ca79a0e27b7ba24e6ff328`
 
 ## Verification (repository / emulator)
 
