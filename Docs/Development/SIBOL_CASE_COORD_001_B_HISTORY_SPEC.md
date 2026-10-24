@@ -2,7 +2,7 @@
 
 > **Requirement ID:** SIBOL-CASE-COORD-001-B-HISTORY  
 > **Priority:** Required (PA addendum)  
-> **Status:** **Implemented in repo** (handover `a4e9c2d7-…`); operator MVR-0009 pending  
+> **Status:** **Accepted** — implementation `3e18c4b`; MVR-0009 **Pass** (`f2a7c619-…`)  
 > **Authorization:** Implementation authorized; **no Firebase deploy**; **not Increment C**
 
 ## 1. PA requirement summary
