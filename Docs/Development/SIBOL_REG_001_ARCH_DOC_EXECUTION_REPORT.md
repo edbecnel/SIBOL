@@ -87,4 +87,10 @@ Contracts **REPORTING_CONTRACT**, **COORDINATION_REFERRAL_CONTRACT**, **PROVISIO
 
 ## 9. Git record
 
-Recorded at commit time in completion report (§10 of handover).
+| Field | Value |
+|-------|-------|
+| Starting HEAD | `7f5a65649b48a8a3fd828d79dcffb45a51af16e8` |
+| Ending HEAD | `1180ae62e9db3e34dfb9885073bc9e2b1e60fbd4` |
+| Commit | `docs(reg): SIBOL-REG-001 architecture and EDF traceability` |
+| Push | `origin/main` — **success** |
+| Untracked (not committed) | `shared/functions/firestore-debug.log` |
