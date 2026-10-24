@@ -24,7 +24,6 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _displayNameController = TextEditingController();
-  bool _obscurePassword = true;
   bool _consent = false;
   String? _selectedOrgId;
   bool _submitting = false;
@@ -162,24 +161,14 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
                     AppTextField(
                       controller: _passwordController,
                       label: 'Password',
-                      obscureText: _obscurePassword,
+                      isPassword: true,
                       textInputAction: TextInputAction.next,
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: !_obscurePassword,
-                          onChanged: (v) =>
-                              setState(() => _obscurePassword = !(v ?? false)),
-                        ),
-                        const Text('Show password'),
-                      ],
-                    ),
+                    const SizedBox(height: 12),
                     AppTextField(
                       controller: _confirmPasswordController,
                       label: 'Confirm password',
-                      obscureText: _obscurePassword,
+                      isPassword: true,
                     ),
                     const SizedBox(height: 16),
                     AppButton.primary(

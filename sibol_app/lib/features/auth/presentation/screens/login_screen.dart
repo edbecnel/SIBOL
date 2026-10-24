@@ -66,7 +66,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   AppTextField(
                     controller: _passwordController,
                     label: 'Password',
-                    obscureText: true,
+                    isPassword: true,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (_) => _submit(),
                   ),
