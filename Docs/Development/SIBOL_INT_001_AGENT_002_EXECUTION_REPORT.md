@@ -10,7 +10,7 @@
 | Item | Value |
 |------|--------|
 | Starting HEAD | `efb5c28` |
-| Ending HEAD | *(set at push)* |
+| Ending HEAD | `739fba1` |
 
 ## Emulator preparation
 
