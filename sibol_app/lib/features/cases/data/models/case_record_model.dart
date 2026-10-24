@@ -10,6 +10,7 @@ class CaseRecordModel {
     required this.demoName,
     required this.age,
     required this.barangay,
+    required this.orgId,
     required this.caseStatus,
     required this.registeredAt,
     this.nextFollowUpAt,
@@ -23,6 +24,7 @@ class CaseRecordModel {
   final String demoName;
   final int age;
   final String barangay;
+  final String orgId;
   final String caseStatus;
   final DateTime registeredAt;
   final DateTime? nextFollowUpAt;
@@ -37,6 +39,7 @@ class CaseRecordModel {
       demoName: data['demoName'] as String? ?? '',
       age: (data['age'] as num?)?.toInt() ?? 0,
       barangay: data['barangay'] as String? ?? '',
+      orgId: data['orgId'] as String? ?? '',
       caseStatus: data['caseStatus'] as String? ?? '',
       registeredAt: _toDate(data['registeredAt']),
       nextFollowUpAt: data['nextFollowUpAt'] == null
@@ -54,6 +57,7 @@ class CaseRecordModel {
       'demoName': demoName,
       'age': age,
       'barangay': barangay,
+      'orgId': orgId,
       'caseStatus': caseStatus,
       'registeredAt': Timestamp.fromDate(registeredAt),
       if (nextFollowUpAt != null)
@@ -71,6 +75,7 @@ class CaseRecordModel {
       'demoName': demoName,
       'age': age,
       'barangay': barangay,
+      'orgId': orgId,
       'caseStatus': caseStatus,
       'registeredAt': Timestamp.fromDate(registeredAt),
       if (nextFollowUpAt != null)
@@ -88,6 +93,7 @@ class CaseRecordModel {
       'demoName': demoName,
       'age': age,
       'barangay': barangay,
+      'orgId': orgId,
       'caseStatus': caseStatus,
       'registeredAt': Timestamp.fromDate(registeredAt),
       if (nextFollowUpAt != null)
@@ -105,6 +111,7 @@ class CaseRecordModel {
       demoName: record.demoName,
       age: record.age,
       barangay: record.barangay,
+      orgId: record.orgId,
       caseStatus: record.caseStatus.firestoreValue,
       registeredAt: record.registeredAt,
       nextFollowUpAt: record.nextFollowUpAt,
@@ -126,6 +133,7 @@ class CaseRecordModel {
       demoName: demoName,
       age: age,
       barangay: barangay,
+      orgId: orgId,
       caseStatus: status,
       registeredAt: registeredAt,
       nextFollowUpAt: nextFollowUpAt,

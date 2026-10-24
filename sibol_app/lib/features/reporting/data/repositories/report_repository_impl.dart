@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sibol_app/core/constants/demo_org_constants.dart';
 import 'package:sibol_app/core/constants/firestore_paths.dart';
 import 'package:sibol_app/features/reporting/data/models/moph_aggregate_report_model.dart';
 import 'package:sibol_app/features/reporting/domain/barangay_report_aggregate.dart';
@@ -89,6 +90,7 @@ class ReportRepositoryImpl implements ReportRepository {
     final model = MophAggregateReportModel(
       reportId: '',
       barangay: counts.barangay,
+      orgId: DemoOrgConstants.barangayTresOrgId,
       submittedAt: now,
       submittedByUid: submittedByUid,
       totalCaseCount: counts.totalCaseCount,

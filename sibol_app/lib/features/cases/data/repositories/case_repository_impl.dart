@@ -62,6 +62,7 @@ class CaseRepositoryImpl implements CaseRepository {
         demoName: record.demoName,
         age: record.age,
         barangay: record.barangay,
+        orgId: record.orgId,
         caseStatus: record.caseStatus,
         registeredAt: record.registeredAt,
         nextFollowUpAt: record.nextFollowUpAt,

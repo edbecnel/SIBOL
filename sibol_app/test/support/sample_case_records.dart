@@ -1,3 +1,4 @@
+import 'package:sibol_app/core/constants/demo_org_constants.dart';
 import 'package:sibol_app/features/cases/domain/case_status.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/reporting/domain/report_status.dart';
@@ -12,6 +13,7 @@ CaseRecord sampleCaseRecord({
     demoName: demoName,
     age: 17,
     barangay: 'Demo Barangay',
+    orgId: DemoOrgConstants.barangayTresOrgId,
     caseStatus: CaseStatus.active,
     registeredAt: registered,
     nextFollowUpAt: DateTime(2026, 4, 1, 10),

@@ -89,6 +89,7 @@ void main() {
       demoName: base.demoName,
       age: base.age,
       barangay: base.barangay,
+      orgId: base.orgId,
       caseStatus: base.caseStatus,
       registeredAt: base.registeredAt,
       nextFollowUpAt: base.nextFollowUpAt,

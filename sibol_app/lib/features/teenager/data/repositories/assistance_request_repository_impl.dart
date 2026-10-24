@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sibol_app/core/constants/demo_org_constants.dart';
 import 'package:sibol_app/core/constants/firestore_paths.dart';
 import 'package:sibol_app/features/teenager/data/models/assistance_request_model.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_category.dart';
@@ -77,6 +78,7 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
   Future<String> createRequest({
     required String teenUid,
     required String barangay,
+    String? orgId,
     required AssistanceRequestCategory category,
     required String description,
   }) async {
@@ -86,6 +88,7 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
       requestId: ref.id,
       teenUid: teenUid,
       barangay: barangay,
+      orgId: orgId ?? DemoOrgConstants.barangayTresOrgId,
       category: category.firestoreValue,
       description: description.trim(),
       status: AssistanceRequestStatus.submitted.firestoreValue,

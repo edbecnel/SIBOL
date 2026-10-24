@@ -8,6 +8,7 @@ class CaseRecord extends Equatable {
     required this.demoName,
     required this.age,
     required this.barangay,
+    required this.orgId,
     required this.caseStatus,
     required this.registeredAt,
     this.nextFollowUpAt,
@@ -21,6 +22,7 @@ class CaseRecord extends Equatable {
   final String demoName;
   final int age;
   final String barangay;
+  final String orgId;
   final CaseStatus caseStatus;
   final DateTime registeredAt;
   final DateTime? nextFollowUpAt;
@@ -35,6 +37,7 @@ class CaseRecord extends Equatable {
         demoName,
         age,
         barangay,
+        orgId,
         caseStatus,
         registeredAt,
         nextFollowUpAt,

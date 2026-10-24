@@ -6,10 +6,11 @@ All notable changes to this repository are documented here.
 
 ### Accepted
 
-- SIBOL-REG-001 **REG-A accepted with conditions** (implementation @ `4eafa5e`; closure `SIBOL-REG-001-REG-A-ACCEPT-CLOSE-001`). Outstanding: `assertActiveOrganization` tests, full Functions suite rerun before deploy, membership query indexes, separate DEPLOY-R1/M1/M2 gates; MVR-REG-001 **NOT RUN**. **Not** Firebase deployment authorization.
+- SIBOL-REG-001 **REG-A accepted with conditions** (implementation @ `4eafa5e`; closure `SIBOL-REG-001-REG-A-ACCEPT-CLOSE-001`). M1/M2 RC addresses `assertActiveOrganization` tests and membership query indexes in repo; full Functions `npm test` via isolated emulator still required before deploy; separate DEPLOY-R1/M1/M2 gates; MVR-REG-001 **NOT RUN**. **Not** Firebase deployment authorization.
 
 ### Added
 
+- SIBOL-REG-001 **M1/M2 repository RC:** `shared/migration` (dry-run/idempotent plan), org-scoped Firestore rules for cases/assistance/reports/coordination, `createCoordinationReferral` org authz, Flutter `orgId` writes, composite indexes, rules tests 82/82 (`SIBOL-REG-001-M1-M2-AGENT-001`).
 - SIBOL-REG-001 REG-A: organization/membership schemas, authz primitives, Firestore rules foundation (not deployed), rules tests (+11), Flutter read-only org repositories (`SIBOL-REG-001-REG-A-AGENT-001`).
 - SIBOL-REG-001: Architecture documentation package — SPEC-REG-001, ADR-REG-001/002, CONTRACT-REG-001, MVR-REG-001 (verification **NOT RUN**); handover `SIBOL-REG-001-ARCH-DOC-001`.
 - SIBOL-CASE-COORD-001: Registry rules v2 operator closure record (4/4 smoke attestation); MVR-0008 assistance-request-id addendum.

@@ -1,4 +1,4 @@
-import { DEMO_CASE_IDS } from "./constants.mjs";
+import { DEMO_BARANGAY_ORG_ID, DEMO_CASE_IDS } from "./constants.mjs";
 
 const FICTIONAL_NAMES = [
   "Ana Demo Reyes",
@@ -45,6 +45,7 @@ export function buildDemoCasePlans(referenceDate = new Date("2026-10-01T08:00:00
         demoName: FICTIONAL_NAMES[i],
         age: 15 + (i % 4),
         barangay: BARANGAY,
+        orgId: DEMO_BARANGAY_ORG_ID,
         caseStatus,
         registeredAt: registeredAt.toISOString(),
         nextFollowUpAt: nextFollowUpAt.toISOString(),

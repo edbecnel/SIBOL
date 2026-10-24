@@ -73,6 +73,7 @@ export async function executeProvisioning({ auth, db, users, logger = console })
       demoName: plan.case.demoName,
       age: plan.case.age,
       barangay: plan.case.barangay,
+      orgId: plan.case.orgId,
       caseStatus: plan.case.caseStatus,
       registeredAt: isoToTimestamp(plan.case.registeredAt),
       nextFollowUpAt: isoToTimestamp(plan.case.nextFollowUpAt),

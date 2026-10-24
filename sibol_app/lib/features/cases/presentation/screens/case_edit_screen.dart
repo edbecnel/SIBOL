@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sibol_app/core/constants/demo_org_constants.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/cases/domain/case_status.dart';
 import 'package:sibol_app/features/cases/domain/case_validation.dart';
@@ -77,6 +78,7 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
         demoName: _demoNameController.text.trim(),
         age: age,
         barangay: _barangayController.text.trim(),
+        orgId: DemoOrgConstants.barangayTresOrgId,
         caseStatus: _caseStatus,
         registeredAt: now,
         notes: _notesController.text.trim(),
@@ -91,6 +93,7 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
       demoName: _demoNameController.text.trim(),
       age: age,
       barangay: _barangayController.text.trim(),
+      orgId: existing.orgId,
       caseStatus: _caseStatus,
       registeredAt: existing.registeredAt,
       nextFollowUpAt: existing.nextFollowUpAt,

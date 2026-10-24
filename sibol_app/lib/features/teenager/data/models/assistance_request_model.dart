@@ -8,6 +8,7 @@ class AssistanceRequestModel {
     required this.requestId,
     required this.teenUid,
     required this.barangay,
+    required this.orgId,
     required this.category,
     required this.description,
     required this.status,
@@ -19,6 +20,7 @@ class AssistanceRequestModel {
   final String requestId;
   final String teenUid;
   final String barangay;
+  final String orgId;
   final String category;
   final String description;
   final String status;
@@ -34,6 +36,7 @@ class AssistanceRequestModel {
       requestId: id,
       teenUid: data['teenUid'] as String? ?? '',
       barangay: data['barangay'] as String? ?? '',
+      orgId: data['orgId'] as String? ?? '',
       category: data['category'] as String? ?? '',
       description: data['description'] as String? ?? '',
       status: data['status'] as String? ?? '',
@@ -49,6 +52,7 @@ class AssistanceRequestModel {
     return {
       'teenUid': teenUid,
       'barangay': barangay,
+      'orgId': orgId,
       'category': category,
       'description': description,
       'status': status,

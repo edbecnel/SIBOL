@@ -5,6 +5,7 @@ class MophAggregateReportModel {
   MophAggregateReportModel({
     required this.reportId,
     required this.barangay,
+    required this.orgId,
     required this.submittedAt,
     required this.submittedByUid,
     required this.totalCaseCount,
@@ -18,6 +19,7 @@ class MophAggregateReportModel {
 
   final String reportId;
   final String barangay;
+  final String orgId;
   final DateTime submittedAt;
   final String submittedByUid;
   final int totalCaseCount;
@@ -35,6 +37,7 @@ class MophAggregateReportModel {
     return MophAggregateReportModel(
       reportId: reportId,
       barangay: data['barangay'] as String,
+      orgId: data['orgId'] as String? ?? '',
       submittedAt: (data['submittedAt'] as Timestamp).toDate(),
       submittedByUid: data['submittedByUid'] as String,
       totalCaseCount: data['totalCaseCount'] as int,
@@ -50,6 +53,7 @@ class MophAggregateReportModel {
   Map<String, dynamic> toFirestoreCreate() {
     return {
       'barangay': barangay,
+      'orgId': orgId,
       'submittedAt': FieldValue.serverTimestamp(),
       'submittedByUid': submittedByUid,
       'totalCaseCount': totalCaseCount,
