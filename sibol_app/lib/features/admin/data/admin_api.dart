@@ -106,6 +106,16 @@ class AdminApi {
     });
   }
 
+  Future<void> updateMembershipCapabilities({
+    required String membershipId,
+    required List<String> capabilities,
+  }) async {
+    await _functions.httpsCallable('regUpdateMembershipCapabilities').call({
+      'membershipId': membershipId,
+      'capabilities': capabilities,
+    });
+  }
+
   Future<void> suspendMembership(String membershipId) async {
     await _functions.httpsCallable('regSuspendMembership').call({
       'membershipId': membershipId,

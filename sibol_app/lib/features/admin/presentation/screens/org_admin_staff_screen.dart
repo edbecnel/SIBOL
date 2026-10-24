@@ -90,6 +90,63 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
     }
   }
 
+  Future<void> _editCapabilities(Map<String, dynamic> membership) async {
+    final membershipId = membership['membershipId'] as String? ?? '';
+    final current = (membership['capabilities'] as List?)?.cast<String>() ?? [];
+    final caseRead = current.contains(OrgCapabilities.caseRead);
+    final caseWrite = current.contains(OrgCapabilities.caseWrite);
+    var read = caseRead;
+    var write = caseWrite;
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setLocal) => AlertDialog(
+          title: const Text('Staff capabilities'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CheckboxListTile(
+                value: read,
+                onChanged: (v) => setLocal(() => read = v ?? false),
+                title: const Text('case.read'),
+              ),
+              CheckboxListTile(
+                value: write,
+                onChanged: (v) => setLocal(() => write = v ?? false),
+                title: const Text('case.write'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Save')),
+          ],
+        ),
+      ),
+    );
+    if (saved != true) return;
+    final next = <String>[
+      if (read) OrgCapabilities.caseRead,
+      if (write) OrgCapabilities.caseWrite,
+    ];
+    if (next.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Select at least one capability.')),
+      );
+      return;
+    }
+    try {
+      await ref.read(adminApiProvider).updateMembershipCapabilities(
+            membershipId: membershipId,
+            capabilities: next,
+          );
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+    }
+  }
+
   Future<void> _suspend(String membershipId) async {
     final ok = await showDialog<bool>(
       context: context,
@@ -153,9 +210,18 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
                                   child: const Text('Approve'),
                                 )
                               : status == 'active'
-                                  ? TextButton(
-                                      onPressed: () => _suspend(membershipId),
-                                      child: const Text('Suspend'),
+                                  ? Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        TextButton(
+                                          onPressed: () => _editCapabilities(m),
+                                          child: const Text('Caps'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () => _suspend(membershipId),
+                                          child: const Text('Suspend'),
+                                        ),
+                                      ],
                                     )
                                   : null,
                         );
