@@ -27,6 +27,14 @@ GCLOUD_PROJECT=<project> npm run migrate -- --execute --confirm-project=<project
 GCLOUD_PROJECT=<project> npm run migrate -- --execute --confirm-project=<project> --verify
 ```
 
+## Automated verification (repository)
+
+```bash
+cd shared/migration && npm test
+```
+
+Covers mapping validation, plan idempotency, dry-run (no writes), `orgId` conflict skip, verify incomplete migration, and no document deletion.
+
 ## Idempotency and recovery
 
 - Organizations and memberships: skip if document already exists.

@@ -1,37 +1,50 @@
 # SIBOL-REG-001 — M1/M2 execution report
 
-**Handover:** SIBOL-REG-001-M1-M2-AGENT-001  
-**Starting HEAD:** `eff05cb41c0c228bd28be1cd26748793ef0255cb`  
-**Ending HEAD:** `38d7677a5c1bb4196d6771bd34ebe9e9b0ae4a03`
+**Handovers:** M1/M2 AGENT-001, M1/M2 RELEASE-READY-001  
+**Starting HEAD (release-ready):** `4812606de7029abc6d7c6dc09fb0d80ebbd69074`
 
-## Git checkpoints (pushed `origin/main`)
+## Verification summary (repository / emulator)
 
-| Commit | Summary |
-|--------|---------|
-| `ce75ac4` | M1 migration tooling |
-| `12b1646` | M2 rules, indexes, Functions coordination authz, rules tests |
-| `38d7677` | Flutter/provisioning `orgId`, EDF docs |
+| Suite | Result | Notes |
+|--------|--------|--------|
+| `shared/migration` npm test | **10/10** | Plan, mapping, apply dry-run/idempotency/conflict |
+| `shared/firestore-rules-test` npm test | **87/87** | Includes `org_scoped_security.rules.test.mjs` |
+| `shared/functions` `npm test` | **24/24** | 6 authz unit + 18 integration (coordination) |
+| `sibol_app` flutter test | **74/74** | Widget/unit |
+| MVR-REG-001 production | **NOT RUN** | See [matrix](../Verification/Records/MVR-REG-001-M1-M2-Repository-Security-Matrix.md) |
 
-## Verification summary
+## Functions regression isolation
 
-| Suite | Result |
-|--------|--------|
-| `shared/migration` npm test | 3/3 pass |
-| `shared/firestore-rules-test` npm test | 82/82 pass |
-| `shared/functions` authz unit tests | 6/6 pass |
-| `sibol_app` flutter test | 74/74 pass |
-| `shared/functions` coordination (emulator) | Run via `firebase emulators:exec` on clean port; direct rerun against stale emulator may fail duplicate-referral assertions |
+- **Config:** `firebase.emulator-functions-test.json` (Firestore **8226**, hub **4421**, logging **4521**).
+- **Runner:** `shared/functions/scripts/run-firestore-integration-tests.mjs` (invoked by `npm test`).
+- **Conflict cause:** Rules suite uses `firebase.emulator-isolated.json` (8215/4410/4510); reusing hub or stale emulator data caused hub port failures and duplicate referral flakes.
+- **Procedure:** Documented in `shared/functions/test/README.md`.
 
-## REG-A obligations addressed
+## Flutter / workflow compatibility (M2)
 
-- `assertActiveOrganization` unit tests in `shared/functions/test/authz.test.mjs`.
-- `organizationMemberships` `accountUid` + `status` composite index in `firestore.indexes.json`.
-- Org-scoped report/coordination query indexes added.
+| Workflow | M2 dependency | Demo status |
+|----------|----------------|-------------|
+| Teen assistance create | `selectedBarangayOrgId` on user + `orgId` on request | Demo org constant on write; provisioning sets teen `selectedBarangayOrgId` for canonical barangay |
+| Barangay case create | `orgId` + membership `case.write` | `DemoOrgConstants.barangayTresOrgId` on create |
+| Barangay assistance inbox | Query by `barangay` string; rules enforce `orgId` | Demo label + org on documents |
+| Aggregate report | `orgId` on submit | Demo org constant |
+| Coordination referral | Callable org authz | Emulator-tested |
+| MOPH inbox | `primaryOrgId` + `coordination.hospital` | Requires migration/provisioning of MOPH membership (not in seed script yet) |
+| Case list query | No client `orgId` filter | Rules deny cross-org per document |
+
+**Production gap (documented, not REG-B):** Full registration/membership provisioning and non-demo org resolution are out of scope; live cutover requires M1 + operator membership grants.
+
+## Indexes
+
+Verified against Flutter queries: `organizationMemberships` by `accountUid`; reports (MOPH + barangay lists); coordination phase/barangay lists; org-scoped composites added in M2. Single-field `accountUid` equality may use auto-index; composite retained for filtered membership listing.
 
 ## Deployment boundary
 
-No `firebase deploy`, no live migration executed. PA authorization required for DEPLOY-R1, M1 live, M2 live.
+No `firebase deploy`, no live migration, no production exports executed under release-ready handover.
 
-## Security matrix (rules)
+## EDF artifacts
 
-Covered in `shared/firestore-rules-test`: cross-barangay deny, forged `orgId`, missing `orgId`, org admin without case caps, immutable case `orgId`, assistance/coordination/report org scoping, MOPH hospital capability reads.
+- [M1/M2 implementation spec](SIBOL_REG_001_M1_M2_IMPLEMENTATION_SPEC.md)
+- [M1 migration runbook](../Operations/REG-001-M1-Migration-Runbook.md)
+- [M2 deployment/cutover runbook](../Operations/REG-001-M2-Deployment-Cutover-Runbook.md)
+- [Repository security matrix](../Verification/Records/MVR-REG-001-M1-M2-Repository-Security-Matrix.md)

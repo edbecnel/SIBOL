@@ -1,6 +1,7 @@
 import { Timestamp } from "firebase-admin/firestore";
 
 import { buildDemoCasePlans } from "./case_payloads.mjs";
+import { DEMO_ASSIGNED_BARANGAY, DEMO_BARANGAY_ORG_ID } from "./constants.mjs";
 import { planProvisioningOperations } from "./preflight.mjs";
 
 function isoToTimestamp(iso) {
@@ -55,6 +56,9 @@ export async function executeProvisioning({ auth, db, users, logger = console })
       };
       if (user.assignedBarangay) {
         profile.assignedBarangay = user.assignedBarangay;
+      }
+      if (user.role === "teen" && user.assignedBarangay === DEMO_ASSIGNED_BARANGAY) {
+        profile.selectedBarangayOrgId = DEMO_BARANGAY_ORG_ID;
       }
       await profileRef.set(profile);
       logger.log(`Created user profile: ${user.email} role=${user.role}`);
