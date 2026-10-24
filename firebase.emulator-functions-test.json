@@ -1,0 +1,20 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "emulators": {
+    "firestore": {
+      "port": 8226
+    },
+    "hub": {
+      "port": 4421
+    },
+    "logging": {
+      "port": 4521
+    },
+    "ui": {
+      "enabled": false
+    }
+  }
+}

@@ -6,7 +6,8 @@
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
     "lint": "eslint --ext .js,.ts .",
-    "test": "npm run build && node --test test/authz.test.mjs && firebase emulators:exec --config ../../firebase.emulator-isolated.json --only firestore --project demo-sibol-coord-fn \"node --test test/createCoordinationReferral.test.mjs\""
+    "test": "npm run build && node --test test/authz.test.mjs && node scripts/run-firestore-integration-tests.mjs",
+    "test:integration": "node scripts/run-firestore-integration-tests.mjs"
   },
   "engines": {
     "node": "20"

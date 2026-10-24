@@ -3,23 +3,28 @@ import assert from "node:assert/strict";
 import { initializeApp, deleteApp, getApps } from "firebase-admin/app";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
 import { runCreateCoordinationReferral } from "../lib/coordination/createCoordinationReferral.js";
+import {
+  membershipDoc,
+  orgId,
+  otherOrgId,
+  seedAcknowledgedAssistance,
+  seedBaseOrgs,
+  site,
+} from "./helpers/coordination_seed.mjs";
 
 const projectId = "demo-sibol-coord-fn";
-const site = "Barangay Tres, Balingasag";
-const orgId = "org0123456789012345678901";
-const otherOrgId = "org1111111111111111111111";
 const barangayUid = "barangayStaffUid123456789012";
 const teenUid = "teenUserUid123456789012345";
 const mophUid = "mophStaffUid1234567890123456";
 const otherBnsUid = "otherBarangayStaffUid12345678901";
-const assistanceId = "assist-ack-1";
+const assistanceId = "assist-ack-main";
 const assistanceUnacked = "assist-sub-1";
 
 let db;
 
 before(async () => {
   if (!process.env.FIRESTORE_EMULATOR_HOST) {
-    process.env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:8195";
+    throw new Error("FIRESTORE_EMULATOR_HOST must be set by emulators:exec");
   }
   if (getApps().length === 0) {
     initializeApp({ projectId });
@@ -44,57 +49,20 @@ before(async () => {
   await db.collection("users").doc(teenUid).set({ ...userBase, role: "teen" });
   await db.collection("users").doc(mophUid).set({ ...userBase, role: "moph" });
 
-  const nowTs = Timestamp.now();
-  await db.collection("organizations").doc(orgId).set({
-    orgId,
-    type: "barangay",
-    name: site,
-    status: "active",
-    createdAt: nowTs,
-    updatedAt: nowTs,
-  });
-  await db.collection("organizations").doc(otherOrgId).set({
-    orgId: otherOrgId,
-    type: "barangay",
-    name: "Other Demo Barangay",
-    status: "active",
-    createdAt: nowTs,
-    updatedAt: nowTs,
-  });
-  const membership = (oid, uid, caps) => ({
-    membershipId: `mbr_${oid}__${uid}`,
-    orgId: oid,
-    accountUid: uid,
-    status: "active",
-    capabilities: caps,
-    createdAt: nowTs,
-    updatedAt: nowTs,
-  });
+  await seedBaseOrgs(db);
   await db
     .collection("organizationMemberships")
     .doc(`mbr_${orgId}__${barangayUid}`)
-    .set(membership(orgId, barangayUid, ["coordination.barangay"]));
+    .set(membershipDoc(orgId, barangayUid, ["coordination.barangay"]));
   await db
     .collection("organizationMemberships")
     .doc(`mbr_${otherOrgId}__${otherBnsUid}`)
-    .set(membership(otherOrgId, otherBnsUid, ["coordination.barangay"]));
+    .set(membershipDoc(otherOrgId, otherBnsUid, ["coordination.barangay"]));
 
-  const assistanceBase = {
+  await seedAcknowledgedAssistance(db, assistanceId, { teenUid, barangayUid });
+  await seedAcknowledgedAssistance(db, assistanceUnacked, {
     teenUid,
-    barangay: site,
-    orgId,
-    category: "generalSupport",
-    description: "Teen original narrative must not appear on MOPH header.",
-    createdAt: now,
-  };
-  await db.collection("teenAssistanceRequests").doc(assistanceId).set({
-    ...assistanceBase,
-    status: "acknowledged",
-    acknowledgedAt: now,
-    acknowledgedByUid: barangayUid,
-  });
-  await db.collection("teenAssistanceRequests").doc(assistanceUnacked).set({
-    ...assistanceBase,
+    barangayUid,
     status: "submitted",
   });
 });
