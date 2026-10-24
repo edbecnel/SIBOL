@@ -48,6 +48,31 @@
         { "fieldPath": "reportStatus", "order": "ASCENDING" },
         { "fieldPath": "acceptedAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "caseCoordinationThreads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "phase", "order": "ASCENDING" },
+        { "fieldPath": "lastStaffEventAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "caseCoordinationThreads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "barangay", "order": "ASCENDING" },
+        { "fieldPath": "phase", "order": "ASCENDING" },
+        { "fieldPath": "lastStaffEventAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "barangayCoordinationRegistry",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "barangay", "order": "ASCENDING" },
+        { "fieldPath": "active", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

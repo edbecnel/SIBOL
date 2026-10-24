@@ -11,6 +11,7 @@ This directory contains individual Architecture Decision Records.
 | ID | Decision | Status | Date |
 |---|---|---|---|
 | [ADR-0001](ADR-0001-Docs-Path-and-Reference-Imagery.md) | Preserve `Docs/Reference/` imagery; document `Docs` vs `docs` on case-insensitive FS | Accepted | 2026-10-16 |
+| [ADR-0005](ADR-0005-Case-Coordination-Minimum-Information.md) | Case coordination document-path privacy (DEC-CASE-001) | Accepted | 2026-10-24 |
 
 ## Navigation
 

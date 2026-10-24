@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-22 (SIBOL-REL-005)  
+> **Last updated:** 2026-10-24 (SIBOL-CASE-COORD-001 Increment A)  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -24,6 +24,7 @@
 | SIBOL-DEMO-004 | Barangay-to-MOPH aggregate reporting (demo) | **MOPH live verification Pass (MVR-0005)** | [SIBOL_DEMO_004_EXECUTION_REPORT.md](SIBOL_DEMO_004_EXECUTION_REPORT.md) |
 | SIBOL-DEMO-005 | Barangay submission receipt and report history | **Operator Pass (MVR-0006); post-submit nav untested** | [SIBOL_DEMO_005_EXECUTION_REPORT.md](SIBOL_DEMO_005_EXECUTION_REPORT.md) |
 | SIBOL-REL-005 | EDF documentation — v0.5.0 demo milestone | **Published** (handover `0f3e8b29-…`) | [SIBOL_REL_005_EXECUTION_REPORT.md](SIBOL_REL_005_EXECUTION_REPORT.md), [SIBOL_v0.5.0_RELEASE_MILESTONE.md](SIBOL_v0.5.0_RELEASE_MILESTONE.md) |
+| SIBOL-CASE-COORD-001 | Individual teen case coordination (Barangay–MOPH) | **Increment A complete — rules/indexes local only; not deployed** | [SIBOL_CASE_COORD_001_PLAN.md](SIBOL_CASE_COORD_001_PLAN.md), [SIBOL_CASE_COORD_001_INCREMENT_A_EXECUTION_REPORT.md](SIBOL_CASE_COORD_001_INCREMENT_A_EXECUTION_REPORT.md) |
 
 ## Tranche 2 implementation gate
 

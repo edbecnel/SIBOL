@@ -250,6 +250,78 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // --- Case coordination (SIBOL-CASE-COORD-001 Increment A) ---
+    // Client referral creation and staff-event/phase writes deferred to callable (B) and rules (C).
+
+    function isValidCoordinationPhase(phase) {
+      return phase in ['referred', 'awaitingBarangay', 'awaitingMoph', 'closed'];
+    }
+
+    function coordinationThreadDoc(threadId) {
+      return get(/databases/$(database)/documents/caseCoordinationThreads/$(threadId)).data;
+    }
+
+    function barangayCanReadCoordinationThreadId(threadId) {
+      return isBarangay()
+          && hasAssignedBarangay(userDoc())
+          && coordinationThreadDoc(threadId).barangay == userDoc().assignedBarangay;
+    }
+
+    function mophCanReadCoordinationThreadId(threadId) {
+      return isMoph()
+          && isValidCoordinationPhase(coordinationThreadDoc(threadId).phase);
+    }
+
+    function barangayCanReadCoordinationThread() {
+      return isBarangay()
+          && hasAssignedBarangay(userDoc())
+          && resource.data.barangay == userDoc().assignedBarangay;
+    }
+
+    function mophCanReadCoordinationThread() {
+      return isMoph() && isValidCoordinationPhase(resource.data.phase);
+    }
+
+    match /caseCoordinationThreads/{threadId} {
+      allow read: if mophCanReadCoordinationThread() || barangayCanReadCoordinationThread();
+
+      allow create, update, delete: if false;
+
+      match /private/{docId} {
+        allow read: if docId == 'binding'
+            && barangayCanReadCoordinationThreadId(threadId);
+
+        allow create, update, delete: if false;
+      }
+
+      match /staffEvents/{eventId} {
+        allow read: if mophCanReadCoordinationThreadId(threadId)
+            || barangayCanReadCoordinationThreadId(threadId);
+
+        allow create, update, delete: if false;
+      }
+    }
+
+    function barangayCanReadCoordinationRegistry() {
+      return isBarangay()
+          && hasAssignedBarangay(userDoc())
+          && resource.data.barangay == userDoc().assignedBarangay;
+    }
+
+    match /barangayCoordinationRegistry/{assistanceRequestId} {
+      allow read: if barangayCanReadCoordinationRegistry();
+
+      allow create, update, delete: if false;
+    }
+
+    match /teenCoordinationLinks/{teenUid} {
+      match /links/{assistanceRequestId} {
+        allow read: if isTeen() && request.auth.uid == teenUid;
+
+        allow create, update, delete: if false;
+      }
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
