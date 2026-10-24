@@ -23,6 +23,7 @@ Planning artifacts in `Docs/Development/` declare what was verified; this domain
 | [Records/MVR-0005-demo-004-moph-reporting-emulator.md](Records/MVR-0005-demo-004-moph-reporting-emulator.md) | SIBOL-DEMO-004 MOPH aggregate reporting — live Firebase, Android emulator (**Pass 7/7**, 2026-10-22) |
 | [Records/MVR-0006-demo-005-barangay-report-history-emulator.md](Records/MVR-0006-demo-005-barangay-report-history-emulator.md) | SIBOL-DEMO-005 Barangay report history/receipt — live Firebase, Android emulator (**Pass 7/7**, 2026-10-22) |
 | [Records/MVR-0008-case-coord-001-increment-b-referral-live.md](Records/MVR-0008-case-coord-001-increment-b-referral-live.md) | SIBOL-CASE-COORD-001 Increment B — live referral (**Pass** steps 1–9, 2026-10-24; `displayRef` not recorded) |
+| [Records/MVR-0009-case-coord-001-b-history-barangay-referrals.md](Records/MVR-0009-case-coord-001-b-history-barangay-referrals.md) | SIBOL-CASE-COORD-001 B-HISTORY — Barangay submitted referrals (**prepared**; pending operator) |
 
 ## Navigation
 

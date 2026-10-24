@@ -4,6 +4,10 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+### Planned
+
+- SIBOL-CASE-COORD-001 **B-HISTORY:** Barangay submitted referral history (list + detail) — [spec](Docs/Development/SIBOL_CASE_COORD_001_B_HISTORY_SPEC.md); implementation pending PA handover.
+
 ### Added
 
 - SIBOL-REL-005: EDF release milestone documentation ([SIBOL_v0.5.0_RELEASE_MILESTONE.md](Docs/Development/SIBOL_v0.5.0_RELEASE_MILESTONE.md)).
