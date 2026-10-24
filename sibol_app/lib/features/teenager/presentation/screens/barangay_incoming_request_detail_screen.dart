@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/coordination/presentation/providers/coordination_providers.dart';
+import 'package:sibol_app/features/coordination/presentation/widgets/barangay_moph_referral_action.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_status.dart';
@@ -145,29 +146,13 @@ class _BarangayIncomingRequestDetailScreenState
                         onPressed: _acknowledging ? null : _acknowledge,
                       ),
                     ],
-                    if (isAcknowledged) ...[
-                      const SizedBox(height: 24),
-                      referralExistsAsync.when(
-                        loading: () => const SizedBox.shrink(),
-                        error: (_, __) => const SizedBox.shrink(),
-                        data: (exists) {
-                          if (exists) {
-                            return const Text(
-                              'MOPH coordination referral already submitted '
-                              'for this request.',
-                            );
-                          }
-                          return AppButton.primary(
-                            label: 'Refer to MOPH coordination',
-                            onPressed: () => context.push(
-                              Routes.barangayCoordinationReferral(
-                                widget.requestId,
-                              ),
-                            ),
-                          );
-                        },
+                    BarangayMophReferralAction(
+                      isAcknowledged: isAcknowledged,
+                      referralExistsAsync: referralExistsAsync,
+                      onReferPressed: () => context.push(
+                        Routes.barangayCoordinationReferral(widget.requestId),
                       ),
-                    ],
+                    ),
                   ],
                 );
               },

@@ -3,7 +3,8 @@
 > **Handover UUID:** `f5c2a910-7d46-4e3b-8f21-c0a9e647d352`  
 > **Date:** 2026-10-24  
 > **Git baseline:** `be97478` → *(commit after publication)*  
-> **Firebase / Functions deployed:** **NO** (local implementation and tests only)
+> **Firebase / Functions deployed:** **NO** (local implementation and tests only)  
+> **MVR-0008 defect fix:** [SIBOL_CASE_COORD_001_MVR_0008_DEFECT_EXECUTION_REPORT.md](SIBOL_CASE_COORD_001_MVR_0008_DEFECT_EXECUTION_REPORT.md) (handover `e4c7a219-…`)
 
 ## 1. Scope delivered
 
@@ -35,7 +36,7 @@ Increment C (clarification, follow-up, closure) **not** started.
 |---------|--------|
 | `cd shared/functions && npm test` | **10/10** pass |
 | `cd shared/firestore-rules-test && npm test` | **59/59** pass |
-| `cd sibol_app && flutter test` | **60/60** pass |
+| `cd sibol_app && flutter test` | **69/69** pass (post MVR-0008 defect fix) |
 | `cd sibol_app && flutter analyze` | 0 errors (pre-existing infos) |
 
 ## 5. Operational note

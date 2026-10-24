@@ -1,8 +1,8 @@
 # MVR-0008 — CASE-COORD-001 Increment B live referral (operator procedure)
 
-> **Status:** Prepared — **not executed** by EA  
+> **Status:** **Blocked on operator retest** — defect fix landed in app (handover `e4c7a219-…`); procedure unchanged  
 > **Prerequisite:** `createCoordinationReferral` deployed on `sibol-286d0` — **met** 2026-10-24 (`e9b43c72-…`)  
-> **Handover:** `d8e3b7a1-…`, deploy retry `e9b43c72-…`
+> **Handover:** `d8e3b7a1-…`, deploy retry `e9b43c72-…`, defect `e4c7a219-…`
 
 ## Accounts (fictional)
 
@@ -28,8 +28,12 @@ Use [shared/docs/DEMO_ACCOUNTS.md](../../../shared/docs/DEMO_ACCOUNTS.md). Do no
 - Callable without auth → error (not exercised live by EA).
 - Second referral same assistance id → blocked.
 
+## Defect note (2026-10-24)
+
+**MVR-0008 referral action missing:** Root cause was Firestore registry read denied when no `barangayCoordinationRegistry` document existed; UI hid the referral CTA on stream error. Fixed in app (`coordination_registry_referral_probe.dart`, `BarangayMophReferralAction`). Rebuild app from fixed `main` and re-run steps 4–7 below.
+
 ## Sign-off
 
 | Role | Result | Date |
 |------|--------|------|
-| Operator | Pending | |
+| Operator | Pending (retest after app fix) | |

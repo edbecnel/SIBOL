@@ -5,6 +5,7 @@ import 'package:sibol_app/features/coordination/data/models/coordination_staff_e
 import 'package:sibol_app/features/coordination/data/models/coordination_thread_model.dart';
 import 'package:sibol_app/features/coordination/domain/entities/coordination_staff_event.dart';
 import 'package:sibol_app/features/coordination/domain/entities/coordination_thread.dart';
+import 'package:sibol_app/features/coordination/data/coordination_registry_referral_probe.dart';
 import 'package:sibol_app/features/coordination/domain/repositories/coordination_repository.dart';
 
 class CoordinationRepositoryImpl implements CoordinationRepository {
@@ -84,10 +85,11 @@ class CoordinationRepositoryImpl implements CoordinationRepository {
   Stream<bool> watchReferralExistsForAssistanceRequest(
     String assistanceRequestId,
   ) {
-    return _firestore
-        .collection(FirestorePaths.barangayCoordinationRegistry)
-        .doc(assistanceRequestId)
-        .snapshots()
-        .map((snap) => snap.exists);
+    return mapRegistrySnapshotsToReferralExists(
+      _firestore
+          .collection(FirestorePaths.barangayCoordinationRegistry)
+          .doc(assistanceRequestId)
+          .snapshots(),
+    );
   }
 }

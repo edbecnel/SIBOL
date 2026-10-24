@@ -126,6 +126,16 @@ before(async () => {
         actorUid: barangayUid,
         createdAt: now,
       });
+    await db.collection("teenAssistanceRequests").doc(assistanceRequestId).set({
+      teenUid,
+      barangay: site,
+      category: "healthInformation",
+      description: "Fictional assistance request for coordination rules tests.",
+      status: "acknowledged",
+      createdAt: now,
+      acknowledgedAt: now,
+      acknowledgedByUid: barangayUid,
+    });
     await db.collection("barangayCoordinationRegistry").doc(assistanceRequestId).set({
       threadId,
       barangay: site,
@@ -241,6 +251,27 @@ describe("caseCoordinationThreads reads", () => {
 });
 
 describe("barangayCoordinationRegistry reads", () => {
+  it("allows barangay to read missing registry when assistance request is owned", async () => {
+    const unregisteredId = "assist-req-no-registry";
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await db.collection("teenAssistanceRequests").doc(unregisteredId).set({
+        teenUid,
+        barangay: site,
+        category: "generalSupport",
+        description: "Fictional request without coordination registry row.",
+        status: "acknowledged",
+        createdAt: now,
+        acknowledgedAt: now,
+        acknowledgedByUid: barangayUid,
+      });
+    });
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertSucceeds(
+      db.collection("barangayCoordinationRegistry").doc(unregisteredId).get(),
+    );
+  });
+
   it("allows barangay to read registry for its site", async () => {
     const db = testEnv.authenticatedContext(barangayUid).firestore();
     await assertSucceeds(

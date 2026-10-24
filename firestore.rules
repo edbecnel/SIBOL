@@ -302,14 +302,21 @@ service cloud.firestore {
       }
     }
 
-    function barangayCanReadCoordinationRegistry() {
+    function barangayCanReadCoordinationRegistry(assistanceRequestId) {
       return isBarangay()
           && hasAssignedBarangay(userDoc())
-          && resource.data.barangay == userDoc().assignedBarangay;
+          && exists(/databases/$(database)/documents/teenAssistanceRequests/$(assistanceRequestId))
+          && get(/databases/$(database)/documents/teenAssistanceRequests/$(assistanceRequestId)).data.barangay
+              == userDoc().assignedBarangay
+          && (
+            !exists(/databases/$(database)/documents/barangayCoordinationRegistry/$(assistanceRequestId))
+            || get(/databases/$(database)/documents/barangayCoordinationRegistry/$(assistanceRequestId)).data.barangay
+                == userDoc().assignedBarangay
+          );
     }
 
     match /barangayCoordinationRegistry/{assistanceRequestId} {
-      allow read: if barangayCanReadCoordinationRegistry();
+      allow read: if barangayCanReadCoordinationRegistry(assistanceRequestId);
 
       allow create, update, delete: if false;
     }
