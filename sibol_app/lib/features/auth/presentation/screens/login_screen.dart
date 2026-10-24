@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/config/app_config.dart';
 import 'package:sibol_app/core/errors/failure.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
@@ -80,6 +82,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     label: 'Sign in',
                     isLoading: authOp.isLoading,
                     onPressed: _submit,
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () => context.push(Routes.passwordReset),
+                    child: const Text('Forgot password?'),
+                  ),
+                  TextButton(
+                    onPressed: () => context.push(Routes.teenRegister),
+                    child: const Text('Create Teen account'),
                   ),
                   const SizedBox(height: 16),
                   Text(

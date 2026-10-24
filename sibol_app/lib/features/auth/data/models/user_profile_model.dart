@@ -13,6 +13,7 @@ class UserProfileModel {
     this.primaryOrgId,
     this.selectedBarangayOrgId,
     this.isCentralAdmin = false,
+    this.onboardingStatus,
   });
 
   final String uid;
@@ -24,6 +25,7 @@ class UserProfileModel {
   final String? primaryOrgId;
   final String? selectedBarangayOrgId;
   final bool isCentralAdmin;
+  final String? onboardingStatus;
 
   factory UserProfileModel.fromFirestore(String uid, Map<String, dynamic> data) {
     final created = data['createdAt'];
@@ -37,6 +39,7 @@ class UserProfileModel {
       primaryOrgId: data['primaryOrgId'] as String?,
       selectedBarangayOrgId: data['selectedBarangayOrgId'] as String?,
       isCentralAdmin: data['isCentralAdmin'] as bool? ?? false,
+      onboardingStatus: data['onboardingStatus'] as String?,
     );
   }
 
@@ -55,6 +58,7 @@ class UserProfileModel {
       primaryOrgId: primaryOrgId,
       selectedBarangayOrgId: selectedBarangayOrgId,
       isCentralAdmin: isCentralAdmin,
+      onboardingStatus: onboardingStatus,
     );
   }
 }

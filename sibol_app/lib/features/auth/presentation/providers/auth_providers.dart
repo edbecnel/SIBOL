@@ -48,6 +48,45 @@ class AuthController extends Notifier<AsyncValue<void>> {
     }
   }
 
+  Future<void> registerWithEmail(String email, String password) async {
+    state = const AsyncLoading();
+    try {
+      await ref.read(authRepositoryProvider).registerWithEmail(
+            email: email,
+            password: password,
+          );
+      state = const AsyncData(null);
+    } on AppException catch (e, st) {
+      state = AsyncError(e.toFailure(), st);
+      rethrow;
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
+
+  Future<void> sendEmailVerification() async {
+    await ref.read(authRepositoryProvider).sendEmailVerification();
+  }
+
+  Future<AuthUser> reloadCurrentUser() async {
+    return ref.read(authRepositoryProvider).reloadCurrentUser();
+  }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    state = const AsyncLoading();
+    try {
+      await ref.read(authRepositoryProvider).sendPasswordResetEmail(email);
+      state = const AsyncData(null);
+    } on AppException catch (e, st) {
+      state = AsyncError(e.toFailure(), st);
+      rethrow;
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
+
   Future<void> signOut() async {
     state = const AsyncLoading();
     try {

@@ -45,6 +45,59 @@ class AuthRepositoryImpl implements AuthRepository {
       uid: user.uid,
       email: user.email ?? '',
       displayName: user.displayName,
+      emailVerified: user.emailVerified,
     );
+  }
+
+  @override
+  Future<AuthUser> registerWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      final user = credential.user;
+      if (user == null) {
+        throw const AuthException(message: 'Registration failed');
+      }
+      return _mapUser(user)!;
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(message: e.message ?? 'Registration failed', code: e.code);
+    }
+  }
+
+  @override
+  Future<void> sendEmailVerification() async {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) {
+      throw const AuthException(message: 'Not signed in');
+    }
+    try {
+      await user.sendEmailVerification();
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(message: e.message ?? 'Could not send email', code: e.code);
+    }
+  }
+
+  @override
+  Future<AuthUser> reloadCurrentUser() async {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) {
+      throw const AuthException(message: 'Not signed in');
+    }
+    await user.reload();
+    return _mapUser(_firebaseAuth.currentUser)!;
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email.trim());
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(message: e.message ?? 'Password reset failed', code: e.code);
+    }
   }
 }

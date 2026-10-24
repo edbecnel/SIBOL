@@ -12,6 +12,7 @@ class UserProfile extends Equatable {
     this.primaryOrgId,
     this.selectedBarangayOrgId,
     this.isCentralAdmin = false,
+    this.onboardingStatus,
   });
 
   final String uid;
@@ -32,6 +33,18 @@ class UserProfile extends Equatable {
   /// Server-controlled; not client-writable (see Firestore rules).
   final bool isCentralAdmin;
 
+  /// Server-controlled teen onboarding gate (`complete`, `pending_email_verification`, …).
+  final String? onboardingStatus;
+
+  bool get teenAssistanceAllowed {
+    if (role != SibolRole.teen) return true;
+    if (selectedBarangayOrgId == null || selectedBarangayOrgId!.isEmpty) {
+      return false;
+    }
+    if (onboardingStatus == 'pending_email_verification') return false;
+    return active;
+  }
+
   @override
   List<Object?> get props => [
         uid,
@@ -43,5 +56,6 @@ class UserProfile extends Equatable {
         primaryOrgId,
         selectedBarangayOrgId,
         isCentralAdmin,
+        onboardingStatus,
       ];
 }
