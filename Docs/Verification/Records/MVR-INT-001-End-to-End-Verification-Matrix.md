@@ -4,6 +4,7 @@
 > **Amendment UUID:** `e4b7c291-5a63-4d08-9f12-6c83a0e745bd` — demo org ids `barangay03`, `hospital01`  
 > **Continuation UUID:** `a6d2c941-7e35-4b80-9f26-c103e8d754ab` (AGENT-002)  
 > **Emulator correction UUID:** `c8f24a61-3d79-4e05-9b12-f6a730d84e25` (EMULATOR-001)  
+> **Seed UUID:** `d7a39c42-8f61-4b05-a2e9-63c714d80f52` (SEED-001)  
 > **Work item:** SIBOL-INT-001
 
 Legend: **Auto** = emulator automated test; **Manual** = operator UI walkthrough; **NR** = not run in this execution.
@@ -21,7 +22,7 @@ Legend: **Auto** = emulator automated test; **Manual** = operator UI walkthrough
 | 9 | Coordination referral authz | `createCoordinationReferral.authz.test.mjs` | Auto PASS |
 | 10 | Full rules regression | `shared/firestore-rules-test` (95 tests, serial) | Auto PASS (AGENT-002) |
 | 11 | Functions regression | `shared/functions` (49) | Auto PASS (AGENT-002) |
-| 15 | Emulator seed + verify | `seed-emulator-demo.sh`, `verify:emulator` | Auto PASS (AGENT-002) |
+| 15 | Emulator seed + verify | `seed-emulator-demo.sh`, `verify:emulator` | Auto PASS (SEED-001 operator emulators) |
 | 16 | Emulator port alignment + seed guard | `emulator_guard.test.mjs`, `emulator_ports.test.mjs`, `emulator_config_test.dart` | Auto PASS (EMULATOR-001) |
 | 12 | Flutter unit/widget | `flutter test` (84) | Auto PASS |
 | 13 | Android emulator operator E2E | Runbook §6 scenarios A–F | Manual **NR** (AGENT-002: APK build PASS; `flutter run` not attested) |

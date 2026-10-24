@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-24 (SIBOL-INT-001 emulator integration)  
+> **Last updated:** 2026-10-25 (SIBOL-INT-001 SEED-001)  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -26,7 +26,7 @@
 | SIBOL-REL-005 | EDF documentation — v0.5.0 demo milestone | **Published** (handover `0f3e8b29-…`) | [SIBOL_REL_005_EXECUTION_REPORT.md](SIBOL_REL_005_EXECUTION_REPORT.md), [SIBOL_v0.5.0_RELEASE_MILESTONE.md](SIBOL_v0.5.0_RELEASE_MILESTONE.md) |
 | SIBOL-CASE-COORD-001 | Individual teen case coordination (Barangay–MOPH) | **Increment B + B-HISTORY accepted**; registry rules v2 **deployed** 2026-10-24; **Increment C not started** | [Registry v2 deploy report](SIBOL_CASE_COORD_001_REGISTRY_RULES_V2_DEPLOY_EXECUTION_REPORT.md), [operator closure](SIBOL_CASE_COORD_001_REGISTRY_RULES_V2_OPERATOR_CLOSURE.md) |
 | SIBOL-REG-001 | User registration and organization authorization | **REG-C teen onboarding in repo** (`c6f18a42-9e73-4b05-a2d8-61f0c9e735ab`); REG-B/M1/M2 in tree; **deploy / MVR NOT RUN** | [REG-C execution report](SIBOL_REG_001_REG_C_EXECUTION_REPORT.md), [REG-C matrix](../Verification/Records/MVR-REG-001-REG-C-Registration-Privacy-Matrix.md), [REG-B execution report](SIBOL_REG_001_REG_B_EXECUTION_REPORT.md), [CONTRACT-REG-C](../../shared/docs/CONTRACT-REG-C-Teen-Registration.md) |
-| SIBOL-INT-001 | End-to-end prototype integration (emulator) | **IN PROGRESS (AGENT-002)** — automation + seed verify PASS; operator mobile scenarios A–F pending | [AGENT-002 report](SIBOL_INT_001_AGENT_002_EXECUTION_REPORT.md), [runbook](../Operations/SIBOL-INT-001-Emulator-Demonstration-Runbook.md), [MVR-INT-001](../Verification/Records/MVR-INT-001-End-to-End-Verification-Matrix.md) |
+| SIBOL-INT-001 | End-to-end prototype integration (emulator) | **IN PROGRESS** — canonical emulators + demonstration seed **VERIFIED** (SEED-001); operator mobile scenarios A–F pending | [SEED-001 report](SIBOL_INT_001_SEED_001_EXECUTION_REPORT.md), [EMULATOR-001 report](SIBOL_INT_001_EMULATOR_001_EXECUTION_REPORT.md), [runbook](../Operations/SIBOL-INT-001-Emulator-Demonstration-Runbook.md), [MVR-INT-001](../Verification/Records/MVR-INT-001-End-to-End-Verification-Matrix.md) |
 
 ## Tranche 2 implementation gate
 

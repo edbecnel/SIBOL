@@ -1,6 +1,6 @@
 # SIBOL-INT-001 — Emulator demonstration runbook
 
-> **Handover UUIDs:** `b7e42a91-6c38-4f05-9d27-a813e0c65b42` (INT-001); `a6d2c941-7e35-4b80-9f26-c103e8d754ab` (AGENT-002); `c8f24a61-3d79-4e05-9b12-f6a730d84e25` (EMULATOR-001)  
+> **Handover UUIDs:** `b7e42a91-6c38-4f05-9d27-a813e0c65b42` (INT-001); `a6d2c941-7e35-4b80-9f26-c103e8d754ab` (AGENT-002); `c8f24a61-3d79-4e05-9b12-f6a730d84e25` (EMULATOR-001); `d7a39c42-8f61-4b05-a2e9-63c714d80f52` (SEED-001)  
 > **Work item:** SIBOL-INT-001  
 > **Scope:** Local Firebase emulators and synthetic data only — **not production**. Production Firebase deploy and production data changes are **not authorized** in this work stream.
 
@@ -94,7 +94,7 @@ Only after emulators are running and **Project Architect** authorizes seeding:
 
 **Failure indicators:** `WARN: Nothing listening` on canonical ports; guard errors mentioning port **8080** (stale `.env.emulator.local` — update `FIRESTORE_EMULATOR_HOST=127.0.0.1:8195`).
 
-**Safe corrective action:** Start emulators (§3); align `.env.emulator.local` with [`.env.emulator.example`](../../.env.emulator.example); re-run pre-flight. Do not seed until pre-flight passes.
+**Safe corrective action:** Start emulators (§3); align `.env.emulator.local` with [`.env.emulator.example`](../../.env.emulator.example); if your **shell** still exports an old Firestore host (e.g. `8080`), run `unset FIRESTORE_EMULATOR_HOST` or open a fresh terminal before validate/seed; re-run pre-flight. Do not seed until pre-flight passes.
 
 ### 4.2 Seed (writes fictional data)
 
