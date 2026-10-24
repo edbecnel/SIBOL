@@ -68,8 +68,8 @@ Dry-run (no writes):
 
 | Org ID | Type | Name |
 |--------|------|------|
-| `org0123456789012345678901` | Barangay | Barangay Tres, Balingasag |
-| `org2222222222222222222222` | Hospital | Misamis Oriental Provincial Hospital |
+| `barangay03` | Barangay | Barangay Tres, Balingasag |
+| `hospital01` | Hospital | Misamis Oriental Provincial Hospital |
 
 ### Demonstration accounts (fictional emails)
 

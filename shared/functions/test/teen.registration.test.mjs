@@ -7,7 +7,7 @@ import { runListBarangayDirectory } from "../lib/teen/exportHandlers.js";
 import { runRegisterTeenAccount } from "../lib/teen/exportHandlers.js";
 
 const projectId = "demo-sibol-coord-fn";
-const activeOrgId = "org0123456789012345678901";
+const activeOrgId = "barangay03";
 const suspendedOrgId = "org0999999999999999999999";
 const teenUid = "teenRegisterUid1234567890123";
 const staffUid = "barangayStaffUid123456789012";
@@ -95,7 +95,7 @@ describe("REG-C teen registration", () => {
     await expectDenied(
       () =>
         runRegisterTeenAccount(db, otherUid, true, {
-          selectedBarangayOrgId: "orgINVALID00000000000000",
+          selectedBarangayOrgId: "not/a/valid/org",
           privacyConsentAcknowledged: true,
         }),
       "invalid-argument",

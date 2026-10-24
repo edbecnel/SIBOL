@@ -1,3 +1,5 @@
+import { isValidOrgId } from "../../reg/src/org_id.mjs";
+
 const CASE_STATUSES = new Set([
   "active",
   "followUpScheduled",
@@ -52,11 +54,8 @@ export function validateFictionalCasePayload(casePayload) {
   if (typeof casePayload.barangay !== "string" || !casePayload.barangay.length) {
     errors.push("barangay must be a non-empty string");
   }
-  if (
-    typeof casePayload.orgId !== "string" ||
-    !/^org[0-9A-Za-z]{22}$/.test(casePayload.orgId)
-  ) {
-    errors.push("orgId must match org + 22 alphanumeric characters");
+  if (typeof casePayload.orgId !== "string" || !isValidOrgId(casePayload.orgId)) {
+    errors.push("orgId is invalid");
   }
   if (!CASE_STATUSES.has(casePayload.caseStatus)) {
     errors.push(`invalid caseStatus: ${casePayload.caseStatus}`);

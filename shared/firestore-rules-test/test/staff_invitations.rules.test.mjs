@@ -45,7 +45,7 @@ describe("organizationStaffInvitations (REG-B)", () => {
     await assertFails(
       db.collection("organizationStaffInvitations").doc("inv_test").set({
         invitationId: "inv_test",
-        orgId: "org0123456789012345678901",
+        orgId: "barangay03",
         status: "pending",
       }),
     );

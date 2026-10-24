@@ -11,7 +11,7 @@ describe("M1 mapping validation", () => {
     const path = join(dir, "bad.json");
     writeFileSync(
       path,
-      JSON.stringify({ barangayLabels: { "X": "not-an-org-id" } }),
+      JSON.stringify({ barangayLabels: { "X": "bad/org/id" } }),
     );
     assert.throws(() => loadOrgMapping(path), /invalid orgId/);
   });
@@ -19,7 +19,7 @@ describe("M1 mapping validation", () => {
   it("rejects duplicate orgId across barangay labels", () => {
     const dir = mkdtempSync(join(tmpdir(), "sibol-map-"));
     const path = join(dir, "dup.json");
-    const org = "org0123456789012345678901";
+    const org = "barangay03";
     writeFileSync(
       path,
       JSON.stringify({

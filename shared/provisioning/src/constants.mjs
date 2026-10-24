@@ -1,9 +1,15 @@
+import {
+  DEMO_BARANGAY_ORG_ID,
+  DEMO_HOSPITAL_ORG_ID,
+} from "../../reg/src/org_id.mjs";
+
 /** Coordinator-approved demonstration Firebase project (confirm flag must match). */
 export const EXPECTED_DEMO_PROJECT_ID = "sibol-286d0";
 
-/** Demo barangay organization id (matches shared/migration demo mapping). */
-export const DEMO_BARANGAY_ORG_ID = "org0123456789012345678901";
-export const DEMO_HOSPITAL_ORG_ID = "org2222222222222222222222";
+export { DEMO_BARANGAY_ORG_ID, DEMO_HOSPITAL_ORG_ID };
+
+/** Organization display name (distinct from orgId). */
+export const DEMO_BARANGAY_ORG_NAME = "Barangay Tres";
 export const DEMO_HOSPITAL_NAME = "Misamis Oriental Provincial Hospital";
 
 /** Demo site for teen assistance routing (matches seeded cases). */

@@ -1,8 +1,21 @@
-const ORG_ID_PATTERN = /^org[0-9A-Za-z]{22}$/;
+const ORG_ID_MAX_LENGTH = 128;
+const ORG_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
 const FIREBASE_UID_PATTERN = /^[A-Za-z0-9]{20,128}$/;
 const MEMBERSHIP_SEPARATOR = "__";
 
 export function isValidOrgId(orgId: string): boolean {
+  if (typeof orgId !== "string") {
+    return false;
+  }
+  if (!orgId.length || orgId.length > ORG_ID_MAX_LENGTH) {
+    return false;
+  }
+  if (orgId === "." || orgId === "..") {
+    return false;
+  }
+  if (orgId.includes(MEMBERSHIP_SEPARATOR) || orgId.includes("/")) {
+    return false;
+  }
   return ORG_ID_PATTERN.test(orgId);
 }
 

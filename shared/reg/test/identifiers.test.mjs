@@ -1,6 +1,10 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { isValidOrgId } from "../src/org_id.mjs";
+import {
+  DEMO_BARANGAY_ORG_ID,
+  DEMO_HOSPITAL_ORG_ID,
+  isValidOrgId,
+} from "../src/org_id.mjs";
 import {
   membershipIdFor,
   parseMembershipId,
@@ -8,31 +12,44 @@ import {
 } from "../src/membership_id.mjs";
 import { validateCapabilityList, hasCapability, CAPABILITIES } from "../src/capabilities.mjs";
 
-const sampleOrg = "org0123456789012345678901";
 const sampleUid = "Zgw0Kon5TeenDemoUid1234567890";
+const generatedOrg = "Kx9m2pL8vQ3nRw5yH4jT";
 
 describe("orgId", () => {
-  it("accepts canonical format", () => {
-    assert.equal(isValidOrgId(sampleOrg), true);
+  it("accepts canonical demonstration ids", () => {
+    assert.equal(isValidOrgId(DEMO_BARANGAY_ORG_ID), true);
+    assert.equal(isValidOrgId(DEMO_HOSPITAL_ORG_ID), true);
   });
 
-  it("rejects double underscore and short ids", () => {
-    assert.equal(isValidOrgId("org__invalid0000000000000"), false);
-    assert.equal(isValidOrgId("orgshort"), false);
+  it("accepts server-generated firestore document ids", () => {
+    assert.equal(isValidOrgId(generatedOrg), true);
+  });
+
+  it("rejects empty, path injection, and membership separator", () => {
+    assert.equal(isValidOrgId(""), false);
+    assert.equal(isValidOrgId("barangay/with/slash"), false);
+    assert.equal(isValidOrgId("barangay__bad"), false);
+    assert.equal(isValidOrgId("."), false);
+    assert.equal(isValidOrgId(".."), false);
   });
 });
 
 describe("membershipId", () => {
-  it("round-trips", () => {
-    const id = membershipIdFor(sampleOrg, sampleUid);
-    assert.equal(id, `mbr_${sampleOrg}__${sampleUid}`);
+  it("round-trips for demonstration org", () => {
+    const id = membershipIdFor(DEMO_BARANGAY_ORG_ID, sampleUid);
+    assert.equal(id, `mbr_barangay03__${sampleUid}`);
     const parsed = parseMembershipId(id);
-    assert.deepEqual(parsed, { orgId: sampleOrg, accountUid: sampleUid });
-    assert.equal(membershipIdMatchesPayload(id, sampleOrg, sampleUid), true);
+    assert.deepEqual(parsed, { orgId: DEMO_BARANGAY_ORG_ID, accountUid: sampleUid });
+    assert.equal(membershipIdMatchesPayload(id, DEMO_BARANGAY_ORG_ID, sampleUid), true);
+  });
+
+  it("round-trips for generated org id", () => {
+    const id = membershipIdFor(generatedOrg, sampleUid);
+    assert.equal(parseMembershipId(id)?.orgId, generatedOrg);
   });
 
   it("rejects ambiguous orgId", () => {
-    assert.throws(() => membershipIdFor("org__bad0000000000000000000", sampleUid));
+    assert.throws(() => membershipIdFor("barangay__bad", sampleUid));
   });
 });
 

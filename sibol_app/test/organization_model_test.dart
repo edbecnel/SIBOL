@@ -9,7 +9,7 @@ void main() {
   test('parses organization from firestore map', () {
     final now = Timestamp.fromDate(DateTime(2026, 10, 24));
     final entity = OrganizationModel.fromFirestore({
-      'orgId': 'org0123456789012345678901',
+      'orgId': 'barangay03',
       'type': 'barangay',
       'name': 'Demo',
       'status': 'active',
@@ -24,8 +24,8 @@ void main() {
   test('parses membership capabilities', () {
     final now = Timestamp.fromDate(DateTime(2026, 10, 24));
     final entity = OrganizationMembershipModel.fromFirestore({
-      'membershipId': 'mbr_org0123456789012345678901__uid',
-      'orgId': 'org0123456789012345678901',
+      'membershipId': 'mbr_barangay03__uid',
+      'orgId': 'barangay03',
       'accountUid': 'uid',
       'status': 'active',
       'capabilities': ['case.read', 'org.manage_members'],

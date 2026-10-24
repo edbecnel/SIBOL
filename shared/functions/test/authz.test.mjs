@@ -11,7 +11,7 @@ import {
 import { CAPABILITIES } from "../lib/authz/capabilities.js";
 import { membershipIdFor } from "../lib/authz/identifiers.js";
 
-const orgId = "org0123456789012345678901";
+const orgId = "barangay03";
 const uid = "Zgw0Kon5TeenDemoUid1234567890";
 
 describe("authz assert", () => {
@@ -21,7 +21,7 @@ describe("authz assert", () => {
 
   it("assertContextOrgId rejects mismatch", () => {
     assert.throws(
-      () => assertContextOrgId(orgId, "org9999999999999999999999"),
+      () => assertContextOrgId(orgId, "barangay99"),
       AuthzError,
     );
   });

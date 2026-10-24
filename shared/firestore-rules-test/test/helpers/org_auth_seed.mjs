@@ -1,7 +1,7 @@
 /** Demo org ids aligned with shared/migration/fixtures/demo_org_mapping.json */
-export const ORG_BARANGAY_DEMO = "org0123456789012345678901";
-export const ORG_BARANGAY_OTHER = "org1111111111111111111111";
-export const ORG_HOSPITAL_DEMO = "org2222222222222222222222";
+export const ORG_BARANGAY_DEMO = "barangay03";
+export const ORG_BARANGAY_OTHER = "barangay99";
+export const ORG_HOSPITAL_DEMO = "hospital01";
 
 export function membershipId(orgId, uid) {
   return `mbr_${orgId}__${uid}`;

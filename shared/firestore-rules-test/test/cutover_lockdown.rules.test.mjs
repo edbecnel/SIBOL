@@ -32,7 +32,7 @@ before(async () => {
     });
     await context.firestore().collection("cases").doc("c1").set({
       demoName: "Locked",
-      orgId: "org0123456789012345678901",
+      orgId: "barangay03",
       barangay: "Demo",
       caseStatus: "active",
       age: 16,
@@ -64,7 +64,7 @@ describe("cutover lockdown rules", () => {
     await assertFails(
       db
         .collection("cases")
-        .where("orgId", "==", "org0123456789012345678901")
+        .where("orgId", "==", "barangay03")
         .get(),
     );
   });
@@ -82,8 +82,8 @@ describe("cutover lockdown rules", () => {
         context
           .firestore()
           .collection("organizations")
-          .doc("org0123456789012345678901")
-          .set({ orgId: "org0123456789012345678901", status: "active" }),
+          .doc("barangay03")
+          .set({ orgId: "barangay03", status: "active" }),
       );
     });
   });

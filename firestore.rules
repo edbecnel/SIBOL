@@ -37,7 +37,14 @@ service cloud.firestore {
     // --- REG-A: organizations and memberships (SIBOL-REG-001) ---
 
     function isValidOrgId(orgId) {
-      return orgId is string && orgId.matches('^org[0-9A-Za-z]{22}$');
+      return orgId is string
+          && orgId.size() >= 1
+          && orgId.size() <= 128
+          && orgId != '.'
+          && orgId != '..'
+          && !orgId.matches('.*__.*')
+          && !orgId.matches('.*/.*')
+          && orgId.matches('^[A-Za-z0-9][A-Za-z0-9_-]*$');
     }
 
     function membershipDocIdForOrg(orgId) {

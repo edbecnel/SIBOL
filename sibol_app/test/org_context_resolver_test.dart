@@ -5,8 +5,8 @@ import 'package:sibol_app/features/org/domain/entities/organization_membership.d
 import 'package:sibol_app/features/org/domain/org_capabilities.dart';
 import 'package:sibol_app/features/org/domain/org_context_resolver.dart';
 
-const orgA = 'org0123456789012345678901';
-const orgB = 'org1111111111111111111111';
+const orgA = 'barangay03';
+const orgB = 'barangay99';
 
 UserProfile _profile({
   SibolRole role = SibolRole.barangay,

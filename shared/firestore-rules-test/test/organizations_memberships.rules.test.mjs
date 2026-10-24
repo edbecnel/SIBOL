@@ -16,7 +16,7 @@ const rulesPath = resolve(
 const rules = readFileSync(rulesPath, "utf8");
 
 const projectId = "demo-sibol-rules";
-const orgA = "org0123456789012345678901";
+const orgA = "barangay03";
 const orgB = "org9876543210987654321098";
 const staffUid = "barangayStaffUid123456789012";
 const otherUid = "otherStaffUid123456789012345";

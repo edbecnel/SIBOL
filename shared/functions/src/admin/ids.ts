@@ -12,8 +12,9 @@ function randomSuffix(length: number): string {
   return out;
 }
 
+/** Collision-resistant Firestore document id (no fixed prefix; not client-supplied). */
 export function generateOrgId(): string {
-  return `org${randomSuffix(22)}`;
+  return randomSuffix(20);
 }
 
 export function generateInvitationId(): string {

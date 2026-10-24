@@ -7,7 +7,7 @@ import 'package:sibol_app/features/cases/presentation/screens/case_edit_screen.d
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'support/fake_case_repository.dart';
 
-const _testOrgId = 'org0123456789012345678901';
+const _testOrgId = 'barangay03';
 
 void main() {
   testWidgets('create screen validates empty demo name', (tester) async {

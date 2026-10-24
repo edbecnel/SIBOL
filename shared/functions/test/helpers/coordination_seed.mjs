@@ -1,9 +1,9 @@
 import { Timestamp } from "firebase-admin/firestore";
 
 export const site = "Barangay Tres, Balingasag";
-export const orgId = "org0123456789012345678901";
-export const otherOrgId = "org1111111111111111111111";
-export const hospitalOrgId = "org2222222222222222222222";
+export const orgId = "barangay03";
+export const otherOrgId = "barangay99";
+export const hospitalOrgId = "hospital01";
 
 export function membershipDoc(org, uid, caps, status = "active") {
   const now = Timestamp.now();

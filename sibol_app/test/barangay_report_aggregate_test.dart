@@ -13,7 +13,7 @@ void main() {
       demoName: 'Demo $id',
       age: 16,
       barangay: barangay,
-      orgId: 'org0123456789012345678901',
+      orgId: 'barangay03',
       caseStatus: status,
       registeredAt: now,
       createdAt: now,

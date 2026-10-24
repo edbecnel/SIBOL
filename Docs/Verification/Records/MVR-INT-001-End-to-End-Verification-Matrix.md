@@ -1,6 +1,7 @@
 # MVR-INT-001 — End-to-end verification matrix
 
 > **Handover UUID:** `b7e42a91-6c38-4f05-9d27-a813e0c65b42`  
+> **Amendment UUID:** `e4b7c291-5a63-4d08-9f12-6c83a0e745bd` — demo org ids `barangay03`, `hospital01`  
 > **Work item:** SIBOL-INT-001
 
 Legend: **Auto** = emulator automated test; **Manual** = operator UI walkthrough; **NR** = not run in this execution.

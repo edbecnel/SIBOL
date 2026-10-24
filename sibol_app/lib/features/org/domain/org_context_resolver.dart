@@ -137,6 +137,9 @@ class OrgContextResolver {
   }
 
   static bool _isValidOrgId(String orgId) {
-    return RegExp(r'^org[0-9A-Za-z]{22}$').hasMatch(orgId);
+    if (orgId.isEmpty || orgId.length > 128) return false;
+    if (orgId == '.' || orgId == '..') return false;
+    if (orgId.contains('__') || orgId.contains('/')) return false;
+    return RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]*$').hasMatch(orgId);
   }
 }

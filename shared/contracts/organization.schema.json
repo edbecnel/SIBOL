@@ -6,7 +6,10 @@
   "properties": {
     "orgId": {
       "type": "string",
-      "pattern": "^org[0-9A-Za-z]{22}$"
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "description": "Immutable organization identifier (document id). Must not contain '/' or '__'."
     },
     "type": {
       "enum": ["barangay", "hospital"]

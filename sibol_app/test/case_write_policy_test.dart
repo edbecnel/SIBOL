@@ -15,7 +15,7 @@ CaseRecord _record({
     demoName: 'Ana Demo',
     age: 16,
     barangay: 'Demo',
-    orgId: 'org0123456789012345678901',
+    orgId: 'barangay03',
     caseStatus: CaseStatus.active,
     registeredAt: created,
     createdAt: created,

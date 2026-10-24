@@ -1,5 +1,5 @@
-/// Demo organization ids (aligned with shared/migration/fixtures/demo_org_mapping.json).
+/// Canonical demonstration organization identifiers (immutable).
 abstract final class DemoOrgConstants {
-  static const String barangayTresOrgId = 'org0123456789012345678901';
-  static const String hospitalOrgId = 'org2222222222222222222222';
+  static const String barangayTresOrgId = 'barangay03';
+  static const String hospitalOrgId = 'hospital01';
 }

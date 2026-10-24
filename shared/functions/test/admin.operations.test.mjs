@@ -19,7 +19,8 @@ import {
   runUpdateMembershipCapabilities,
 } from "../lib/admin/exportHandlers.js";
 import { CAPABILITIES } from "../lib/authz/capabilities.js";
-import { membershipIdFor } from "../lib/authz/identifiers.js";
+import { isValidOrgId, membershipIdFor } from "../lib/authz/identifiers.js";
+import { generateOrgId } from "../lib/admin/ids.js";
 
 const projectId = "demo-sibol-coord-fn";
 const centralUid = "centralAdminUid1234567890123";
@@ -103,6 +104,12 @@ after(async () => {
 });
 
 describe("REG-B admin operations", () => {
+  it("generateOrgId produces valid server identifiers without org prefix", () => {
+    const id = generateOrgId();
+    assert.equal(isValidOrgId(id), true);
+    assert.equal(id.startsWith("org"), false);
+  });
+
   it("denies non-central organization creation", async () => {
     await expectDenied(
       () =>

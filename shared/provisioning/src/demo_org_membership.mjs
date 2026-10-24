@@ -4,6 +4,7 @@ import { CAPABILITIES } from "../../reg/src/capabilities.mjs";
 import {
   DEMO_ASSIGNED_BARANGAY,
   DEMO_BARANGAY_ORG_ID,
+  DEMO_BARANGAY_ORG_NAME,
   DEMO_HOSPITAL_NAME,
   DEMO_HOSPITAL_ORG_ID,
 } from "./constants.mjs";
@@ -29,7 +30,7 @@ export async function ensureDemoOrganizationsAndMemberships(db, users, logger = 
     {
       orgId: DEMO_BARANGAY_ORG_ID,
       type: "barangay",
-      name: DEMO_ASSIGNED_BARANGAY,
+      name: DEMO_BARANGAY_ORG_NAME,
       status: "active",
     },
     {
