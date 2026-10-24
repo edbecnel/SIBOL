@@ -1,14 +1,15 @@
 # SIBOL-REG-001 — REG-C execution report
 
 **Handover UUID:** `c6f18a42-9e73-4b05-a2d8-61f0c9e735ab`  
-**Starting HEAD:** `7a0ed469f1f6df2026d4cc0ff5cbb13250479497`
+**Starting HEAD:** `7a0ed469f1f6df2026d4cc0ff5cbb13250479497`  
+**Ending HEAD:** `b0a84141c63dd1243d7f93a5ae8f8b3f0935498c`
 
 ## Verification
 
 | Suite | Result |
 |--------|--------|
 | `shared/functions` `npm test` | **48/48** |
-| `shared/firestore-rules-test` `npm test` | (run at release) |
+| `shared/firestore-rules-test` `npm test` | **96/96** |
 | `shared/migration` `npm test` | **10/10** |
 | `shared/provisioning` `npm test` | **6/6** |
 | `sibol_app` `flutter test` | **84/84** |
