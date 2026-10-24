@@ -129,6 +129,39 @@
       ]
     },
     {
+      "collectionGroup": "organizationStaffInvitations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgId", "order": "ASCENDING" },
+        { "fieldPath": "emailHash", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "organizationStaffInvitations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "organizationStaffInvitations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "emailHash", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "organizationMemberships",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "barangayCoordinationRegistry",
       "queryScope": "COLLECTION",
       "fields": [

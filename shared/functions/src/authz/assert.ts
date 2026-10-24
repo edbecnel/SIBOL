@@ -24,7 +24,9 @@ export class AuthzError extends Error {
       | "unauthenticated"
       | "permission-denied"
       | "failed-precondition"
-      | "invalid-argument" = "permission-denied",
+      | "invalid-argument"
+      | "not-found"
+      | "already-exists" = "permission-denied",
   ) {
     super(message);
     this.name = "AuthzError";

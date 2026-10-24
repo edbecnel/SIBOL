@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SibolOrganizationStaffInvitation",
+  "type": "object",
+  "required": [
+    "invitationId",
+    "orgId",
+    "emailHash",
+    "status",
+    "inviteKind",
+    "capabilities",
+    "invitedByUid",
+    "createdAt",
+    "updatedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "invitationId": {
+      "type": "string",
+      "pattern": "^inv_[0-9A-Za-z]{22}$"
+    },
+    "orgId": {
+      "type": "string",
+      "pattern": "^org[0-9A-Za-z]{22}$"
+    },
+    "emailHash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "status": {
+      "enum": ["pending", "accepted", "expired", "revoked"]
+    },
+    "inviteKind": {
+      "enum": ["staff", "org_admin"]
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "org.manage_members",
+          "org.manage_roles",
+          "case.read",
+          "case.write",
+          "report.submit",
+          "coordination.barangay",
+          "coordination.hospital"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "invitedByUid": { "type": "string" },
+    "acceptedByUid": { "type": "string" },
+    "acceptedAt": { "type": "string", "format": "date-time" },
+    "revokedAt": { "type": "string", "format": "date-time" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

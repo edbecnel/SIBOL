@@ -14,7 +14,7 @@ const config = resolve(repoRoot, "firebase.emulator-functions-test.json");
 const firestorePort = 8226;
 
 const command =
-  "node --test test/createCoordinationReferral.test.mjs test/createCoordinationReferral.authz.test.mjs";
+  "node --test test/createCoordinationReferral.test.mjs test/createCoordinationReferral.authz.test.mjs test/admin.operations.test.mjs";
 
 const result = spawnSync(
   `firebase emulators:exec --config "${config}" --only firestore --project demo-sibol-coord-fn "${command}"`,
