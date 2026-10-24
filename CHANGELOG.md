@@ -6,6 +6,7 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- SIBOL-CASE-COORD-001 registry rules v2: deploy/rollback procedure and isolated emulator test harness (`b6d2f814-…`); **not deployed** to `sibol-286d0`.
 - SIBOL-CASE-COORD-001 **B-HISTORY:** Barangay **Submitted referrals** list and detail (`a4e9c2d7-…`, `3e18c4b`).
 - SIBOL-CASE-COORD-001 **B-HISTORY:** MVR-0009 operator **Pass (7/7)**; PA acceptance (`f2a7c619-…`).
 

@@ -16,7 +16,9 @@ const assistanceUnacked = "assist-sub-1";
 let db;
 
 before(async () => {
-  process.env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:8195";
+  if (!process.env.FIRESTORE_EMULATOR_HOST) {
+    process.env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:8195";
+  }
   if (getApps().length === 0) {
     initializeApp({ projectId });
   }

@@ -8,4 +8,13 @@ npm ci
 npm test
 ```
 
-59 security scenarios (cases, teen assistance, aggregate reports, case coordination). Requires Firebase CLI. Emulator port is configured in root [`firebase.json`](../../firebase.json) (`8195`).
+**66** security scenarios (cases, teen assistance, aggregate reports, case coordination, registry v2). Requires Firebase CLI.
+
+## Emulator ports
+
+| Mode | Command | Port |
+|------|---------|------|
+| **Isolated (default `npm test`)** | Uses [`../../firebase.emulator-isolated.json`](../../firebase.emulator-isolated.json) | Firestore **8215** |
+| **Attached** | `npm run test:attached` | Firestore **8195** (must match root [`firebase.json`](../../firebase.json); use only when that emulator is running and clean) |
+
+Use isolated runs when port 8195 is used by `flutter run` or another process.
