@@ -2,6 +2,7 @@
 
 > **Handover UUID:** `b7e42a91-6c38-4f05-9d27-a813e0c65b42`  
 > **Amendment UUID:** `e4b7c291-5a63-4d08-9f12-6c83a0e745bd` (organization identifiers)  
+> **Continuation UUID:** `a6d2c941-7e35-4b80-9f26-c103e8d754ab` (AGENT-002 E2E continuation)  
 > **Handover ID:** SIBOL-INT-001-AGENT-001  
 > **Status:** Repository integration complete (emulator-backed)
 

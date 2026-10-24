@@ -2,7 +2,7 @@
   "name": "sibol-firestore-rules-test",
   "private": true,
   "scripts": {
-    "test": "firebase emulators:exec --config ../../firebase.emulator-isolated.json --only firestore --project demo-sibol-rules \"node --test test/*.test.mjs\"",
+    "test": "firebase emulators:exec --config ../../firebase.emulator-isolated.json --only firestore --project demo-sibol-rules \"node --test --test-concurrency=1 test/*.test.mjs\"",
     "test:attached": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8195 node --test test/*.test.mjs"
   },
   "devDependencies": {

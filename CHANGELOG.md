@@ -10,6 +10,7 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- SIBOL-INT-001 **AGENT-002:** emulator seed verification, pre-flight script, runbook scenarios A–F, rules test serial concurrency (`a6d2c941-7e35-4b80-9f26-c103e8d754ab`).
 - SIBOL-INT-001 **AMEND-001:** organization identifiers `barangay03` / `hospital01`, revised validation contract, server-generated org ids, ADR-REG-003 proposed (`e4b7c291-5a63-4d08-9f12-6c83a0e745bd`).
 - SIBOL-INT-001: emulator demonstration stack (`firebase.emulator-demo.json`), guarded emulator seed, Flutter Auth/Firestore/Functions emulator wiring, prototype journey smoke tests, operator runbook (`b7e42a91-6c38-4f05-9d27-a813e0c65b42`).
 - SIBOL-REG-001 **REG-C:** teen registration callables, Barangay directory, Flutter onboarding flow, password reset, provisional policy gates (`c6f18a42-9e73-4b05-a2d8-61f0c9e735ab`).

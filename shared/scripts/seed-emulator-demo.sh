@@ -14,3 +14,9 @@ export FIRESTORE_EMULATOR_HOST="${FIRESTORE_EMULATOR_HOST:-127.0.0.1:8080}"
 export FIREBASE_AUTH_EMULATOR_HOST="${FIREBASE_AUTH_EMULATOR_HOST:-127.0.0.1:9099}"
 cd "$ROOT/shared/provisioning"
 npm run seed:emulator -- --confirm-emulator-demo "$@"
+if [[ "${SIBOL_SKIP_SEED_VERIFY:-}" != "1" ]]; then
+  npm run verify:emulator || {
+    echo "Seed verify failed."
+    exit 1
+  }
+fi
