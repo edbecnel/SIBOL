@@ -8,7 +8,11 @@ import 'package:sibol_app/features/teenager/presentation/providers/barangay_assi
 import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
+import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/offline/domain/pending_operation.dart';
+import 'package:sibol_app/features/offline/presentation/offline_providers.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
+import 'dart:math';
 
 class BarangayCoordinationReferralScreen extends ConsumerStatefulWidget {
   const BarangayCoordinationReferralScreen({
@@ -63,19 +67,64 @@ class _BarangayCoordinationReferralScreenState
       _error = null;
     });
     try {
-      final result = await ref
-          .read(coordinationRepositoryProvider)
-          .createCoordinationReferral(
-            assistanceRequestId: widget.assistanceRequestId,
-            barangayReferralSummary: summary,
-          );
+      final uid = ref.read(authStateChangesProvider).value?.uid;
+      if (uid == null) return;
+      final sync = ref.read(offlineSyncServiceProvider);
+      final operationId =
+          'ref-${DateTime.now().microsecondsSinceEpoch}-${Random().nextInt(1 << 31)}';
+      final pending = PendingOperation(
+        operationId: operationId,
+        ownerUid: uid,
+        kind: PendingOperationKind.barangayReferral,
+        state: PendingOperationState.waitingToSubmit,
+        createdAt: DateTime.now(),
+        payload: {
+          'assistanceRequestId': widget.assistanceRequestId,
+          'summary': summary,
+        },
+      );
+      if (!await sync.hasConnectivity()) {
+        await sync.enqueue(pending.copyWith(state: PendingOperationState.savedLocally));
+        ref.invalidate(pendingOperationsProvider(uid));
+        if (!mounted) return;
+        await showDialog<void>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Referral saved locally'),
+            content: const Text(
+              'Your referral is stored on this device only. MOPH has not '
+              'received it until the server confirms submission.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        if (mounted) context.pop();
+        return;
+      }
+      await sync.enqueue(pending);
+      await sync.syncForUser(uid);
+      ref.invalidate(pendingOperationsProvider(uid));
+      final stored = await ref.read(pendingOperationStoreProvider).loadForUser(uid);
+      final done = stored.firstWhere((o) => o.operationId == operationId);
+      if (done.state == PendingOperationState.conflict) {
+        setState(() => _error = done.lastError);
+        return;
+      }
+      if (done.state != PendingOperationState.submittedConfirmed) {
+        setState(() => _error = done.lastError ?? 'Referral not confirmed by server.');
+        return;
+      }
       if (!mounted) return;
       await showDialog<void>(
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('Referral submitted'),
-          content: Text(
-            'Coordination reference: ${result.displayRef}\n\n'
+          content: const Text(
             'MOPH can review this referral in their coordination inbox. '
             'This is fictional demonstration data.',
           ),

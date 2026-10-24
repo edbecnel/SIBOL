@@ -15,13 +15,13 @@ Legend: **Auto** = emulator automated test; **Manual** = operator UI walkthrough
 | 2 | Org admin staff lifecycle | `admin.operations.test.mjs` | Auto PASS |
 | 3 | Teen registration callables | `teen.registration.test.mjs` | Auto PASS |
 | 4 | Teen assistance create (rules) | `assistance_requests.rules.test.mjs` | Auto PASS |
-| 5 | Barangay ack + referral + MOPH read | `prototype_journey.smoke.mjs` | Auto PASS |
+| 5 | Barangay ack + referral + MOPH read | `prototype_journey.smoke.mjs` | Auto **BLOCKED** (8215 in use; preserved emulator) |
 | 6 | Cross-org denial | `org_scoped_security.rules.test.mjs`, smoke | Auto PASS |
 | 7 | Central admin no case read | smoke | Auto PASS |
 | 8 | Teen isolation | smoke | Auto PASS |
 | 9 | Coordination referral authz | `createCoordinationReferral.authz.test.mjs` | Auto PASS |
-| 10 | Full rules regression | `shared/firestore-rules-test` (95 tests, serial) | Auto PASS (AGENT-002) |
-| 11 | Functions regression | `shared/functions` (49) | Auto PASS (AGENT-002) |
+| 10 | Full rules regression | `shared/firestore-rules-test` (98 tests, serial) | Auto **PASS** (OFFLINE-001 AGENT-001) |
+| 11 | Functions regression | `shared/functions` (60) | Auto **PASS** (OFFLINE-001 AGENT-001) |
 | 15 | Emulator seed + verify | `seed-emulator-demo.sh`, `verify:emulator` | Auto PASS (SEED-001 operator emulators) |
 | 16 | Emulator port alignment + seed guard | `emulator_guard.test.mjs`, `emulator_ports.test.mjs`, `emulator_config_test.dart` | Auto PASS (EMULATOR-001) |
 | 12 | Flutter unit/widget | `flutter test` (84) | Auto PASS |

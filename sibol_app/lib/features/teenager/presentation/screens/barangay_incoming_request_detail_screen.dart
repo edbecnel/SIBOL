@@ -9,7 +9,10 @@ import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_status.dart';
 import 'package:sibol_app/features/teenager/presentation/providers/barangay_assistance_providers.dart';
+import 'package:sibol_app/features/offline/domain/pending_operation.dart';
+import 'package:sibol_app/features/offline/presentation/offline_providers.dart';
 import 'package:sibol_app/features/teenager/presentation/widgets/teen_non_emergency_notice.dart';
+import 'dart:math';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
@@ -44,11 +47,37 @@ class _BarangayIncomingRequestDetailScreenState
       _acknowledging = true;
     });
     try {
-      await ref.read(assistanceRequestRepositoryProvider).acknowledgeRequest(
-            requestId: widget.requestId,
-            barangay: barangay,
-            barangayStaffUid: uid,
+      final sync = ref.read(offlineSyncServiceProvider);
+      final operationId =
+          'ack-${DateTime.now().microsecondsSinceEpoch}-${Random().nextInt(1 << 31)}';
+      final pending = PendingOperation(
+        operationId: operationId,
+        ownerUid: uid,
+        kind: PendingOperationKind.barangayAcknowledge,
+        state: PendingOperationState.waitingToSubmit,
+        createdAt: DateTime.now(),
+        payload: {
+          'requestId': widget.requestId,
+          'barangay': barangay,
+        },
+      );
+      if (!await sync.hasConnectivity()) {
+        await sync.enqueue(pending.copyWith(state: PendingOperationState.savedLocally));
+        ref.invalidate(pendingOperationsProvider(uid));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Acknowledgment saved on this device only — not confirmed by the server.',
+              ),
+            ),
           );
+        }
+        return;
+      }
+      await sync.enqueue(pending);
+      await sync.syncForUser(uid);
+      ref.invalidate(pendingOperationsProvider(uid));
     } catch (e) {
       setState(() => _actionError = e.toString());
     } finally {

@@ -5,9 +5,11 @@ import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_category.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_validation.dart';
-import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
+import 'package:sibol_app/features/offline/domain/pending_operation.dart';
+import 'package:sibol_app/features/offline/presentation/offline_providers.dart';
 import 'package:sibol_app/features/teenager/presentation/widgets/teen_non_emergency_notice.dart';
+import 'dart:math';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/app_text_field.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
@@ -66,17 +68,60 @@ class _AssistanceRequestFormScreenState
 
     setState(() => _submitting = true);
     try {
-      final id = await ref
-          .read(assistanceRequestRepositoryProvider)
-          .createRequest(
-            teenUid: uid,
-            barangay: barangay,
-            orgId: orgId,
-            category: _category!,
-            description: _descriptionController.text,
+      final sync = ref.read(offlineSyncServiceProvider);
+      final operationId =
+          'assist-${DateTime.now().microsecondsSinceEpoch}-${Random().nextInt(1 << 31)}';
+      final pending = PendingOperation(
+        operationId: operationId,
+        ownerUid: uid,
+        kind: PendingOperationKind.teenAssistanceSubmit,
+        state: PendingOperationState.waitingToSubmit,
+        createdAt: DateTime.now(),
+        payload: {
+          'category': _category!.firestoreValue,
+          'description': _descriptionController.text.trim(),
+        },
+      );
+      final online = await sync.hasConnectivity();
+      if (!online) {
+        await sync.enqueue(
+          pending.copyWith(state: PendingOperationState.savedLocally),
+        );
+        ref.invalidate(pendingOperationsProvider(uid));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Saved on this device only. Your Barangay has not been notified '
+                'until the server confirms submission.',
+              ),
+            ),
           );
-      if (mounted) {
-        context.go(Routes.teenAssistanceDetail(id));
+          context.go(Routes.teenAssistanceList);
+        }
+        return;
+      }
+      await sync.enqueue(pending);
+      await sync.syncForUser(uid);
+      ref.invalidate(pendingOperationsProvider(uid));
+      final stored = await ref.read(pendingOperationStoreProvider).loadForUser(uid);
+      final done = stored.firstWhere((o) => o.operationId == operationId);
+      if (done.state == PendingOperationState.submittedConfirmed &&
+          done.serverRequestId != null) {
+        if (mounted) context.go(Routes.teenAssistanceDetail(done.serverRequestId!));
+      } else if (done.state == PendingOperationState.failedPermanent) {
+        setState(() => _formError = done.lastError ?? 'Submission failed.');
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Submission queued — waiting for server confirmation.',
+              ),
+            ),
+          );
+          context.go(Routes.teenAssistanceList);
+        }
       }
     } catch (e) {
       setState(() => _formError = e.toString());

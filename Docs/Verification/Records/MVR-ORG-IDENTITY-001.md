@@ -25,14 +25,14 @@ Legend: **NR** = not run; **PASS** / **FAIL** = executed; **Auto** = automated t
 |----|----------|------|--------|
 | I-01 | Duplicate PSGC create (active org) | Auto | **PASS** (`org_identity.test.mjs`) |
 | I-02 | Duplicate PSGC create (suspended org) | Auto | **NR** (identity still reserved — not separately asserted) |
-| I-03 | Identity key client write denied | Rules Auto | **PASS** (rules deny `organizationIdentityKeys`; not re-run in rules matrix this session) |
+| I-03 | Identity key client write denied | Rules Auto | **PASS** (`organization_identity.rules.test.mjs` + rules suite) |
 | I-04 | Key document permanent (no release field) | Review | **PASS** (implementation: no release API) |
 
 ## Creation idempotency (F-04)
 
 | ID | Scenario | Type | Result |
 |----|----------|------|--------|
-| C-01 | Retry same idempotency key + fingerprint | Auto | **NR** (handler implemented; dedicated test NR) |
+| C-01 | Retry same idempotency key + fingerprint | Auto | **PASS** (barangay org replay + assistance submission tests) |
 | C-02 | Same key, different fingerprint | Auto | **NR** |
 | C-03 | Concurrent duplicate create | Auto | **NR** (coordination referral concurrency pattern exists; org create NR) |
 | C-04 | Single invitation on idempotent replay | Auto | **NR** |
@@ -42,9 +42,9 @@ Legend: **NR** = not run; **PASS** / **FAIL** = executed; **Auto** = automated t
 | ID | Scenario | Type | Result |
 |----|----------|------|--------|
 | T-01 | PSGC → identity key → active org | Auto | **PASS** (`org_identity.test.mjs`) |
-| T-02 | No identity key | Auto | **NR** |
+| T-02 | No identity key | Auto | **PASS** (`org_identity.test.mjs`) |
 | T-03 | Suspended org | Auto | **PASS** (`teen.registration.test.mjs` PSGC path) |
-| T-04 | Re-register different PSGC rejected | Auto | **NR** (implemented in `registerTeenAccount`; test NR) |
+| T-04 | Re-register different PSGC rejected | Auto | **PASS** (`org_identity.test.mjs`) |
 | T-05 | Legacy `orgId` shim emulator only | Auto | **PASS** (`teen.registration.test.mjs` + `SIBOL_ALLOW_LEGACY_TEEN_ORG_BINDING`) |
 | T-06 | Production rejects client `orgId` | Auto | **PASS** (code path without env flag; invalid org id test) |
 
@@ -52,9 +52,9 @@ Legend: **NR** = not run; **PASS** / **FAIL** = executed; **Auto** = automated t
 
 | ID | Scenario | Type | Result |
 |----|----------|------|--------|
-| H-01 | Valid hospital NHFR create | Auto | **NR** (callable implemented; integration test NR) |
+| H-01 | Valid hospital NHFR create | Auto | **PASS** (`org_identity.test.mjs`) |
 | H-02 | RHU type rejected | Auto | **NR** |
-| H-03 | Duplicate NHFR | Auto | **NR** |
+| H-03 | Duplicate NHFR | Auto | **PASS** (`org_identity.test.mjs`) |
 
 ## Reference versions (F-05)
 
