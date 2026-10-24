@@ -4,8 +4,17 @@
     "indexes": "firestore.indexes.json"
   },
   "emulators": {
+    "auth": {
+      "port": 9099
+    },
     "firestore": {
       "port": 8195
+    },
+    "functions": {
+      "port": 5001
+    },
+    "ui": {
+      "port": 4000
     }
   },
   "functions": [

@@ -4,7 +4,7 @@
  *
  * Prerequisites:
  *   - Auth, Firestore (and optionally Functions) emulators running
- *   - FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+ *   - FIRESTORE_EMULATOR_HOST=127.0.0.1:8195
  *   - FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099
  *   - FIREBASE_PROJECT_ID=sibol-286d0
  *   - Password env vars (see Docs/Operations/SIBOL-INT-001-Emulator-Demonstration-Runbook.md)
@@ -33,7 +33,10 @@ function parseArgv(argv) {
 
 async function main() {
   const flags = parseArgv(process.argv.slice(2));
-  const guard = assertEmulatorEnvironment({ confirmFlag: flags.confirmEmulatorDemo });
+  const guard = await assertEmulatorEnvironment({
+    confirmFlag: flags.confirmEmulatorDemo,
+    checkReachable: !flags.dryRun,
+  });
   if (!guard.ok) {
     console.error(guard.message);
     process.exit(1);

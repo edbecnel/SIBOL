@@ -9,9 +9,8 @@ if [[ -f "$ENV_FILE" ]]; then
   source "$ENV_FILE"
   set +a
 fi
-export FIREBASE_PROJECT_ID="${FIREBASE_PROJECT_ID:-sibol-286d0}"
-export FIRESTORE_EMULATOR_HOST="${FIRESTORE_EMULATOR_HOST:-127.0.0.1:8080}"
-export FIREBASE_AUTH_EMULATOR_HOST="${FIREBASE_AUTH_EMULATOR_HOST:-127.0.0.1:9099}"
+# shellcheck disable=SC1091
+source "$ROOT/shared/scripts/emulator-canonical.env.sh"
 cd "$ROOT/shared/provisioning"
 npm run seed:emulator -- --confirm-emulator-demo "$@"
 if [[ "${SIBOL_SKIP_SEED_VERIFY:-}" != "1" ]]; then

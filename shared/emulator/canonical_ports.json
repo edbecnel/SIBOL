@@ -1,0 +1,8 @@
+{
+  "projectId": "sibol-286d0",
+  "auth": { "host": "127.0.0.1", "port": 9099 },
+  "firestore": { "host": "127.0.0.1", "port": 8195 },
+  "functions": { "host": "127.0.0.1", "port": 5001 },
+  "ui": { "port": 4000 },
+  "authoritativeConfig": "firebase.json"
+}

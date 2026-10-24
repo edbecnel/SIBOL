@@ -8,20 +8,19 @@ import {
   DEMO_BARANGAY_ORG_ID,
   DEMO_HOSPITAL_ORG_ID,
 } from "../../reg/src/org_id.mjs";
+import { assertEmulatorEnvironment } from "./emulator_guard.mjs";
 
-const projectId = process.env.FIREBASE_PROJECT_ID || "sibol-286d0";
-
-if (!process.env.FIRESTORE_EMULATOR_HOST) {
-  console.error("FIRESTORE_EMULATOR_HOST is required.");
-  process.exit(1);
-}
-if (projectId !== "sibol-286d0") {
-  console.error("Refusing: FIREBASE_PROJECT_ID must be sibol-286d0 for demo verify.");
+const guard = await assertEmulatorEnvironment({
+  confirmFlag: true,
+  checkReachable: true,
+});
+if (!guard.ok) {
+  console.error(guard.message);
   process.exit(1);
 }
 
 if (!getApps().length) {
-  initializeApp({ projectId });
+  initializeApp({ projectId: guard.projectId });
 }
 const db = getFirestore();
 

@@ -37,15 +37,32 @@ let mophStaffUid;
 let teenUid;
 let centralUid;
 
+function parseHostPort(envName) {
+  const raw = process.env[envName];
+  if (!raw) {
+    throw new Error(`${envName} is required`);
+  }
+  const [host, portStr] = raw.split(":");
+  const port = Number(portStr);
+  if (!host || !Number.isInteger(port)) {
+    throw new Error(`${envName} must be host:port`);
+  }
+  return { host, port };
+}
+
 function clientApp() {
+  const fs = parseHostPort("FIRESTORE_EMULATOR_HOST");
+  const authEp = parseHostPort("FIREBASE_AUTH_EMULATOR_HOST");
   const app = initClient({
     projectId,
     apiKey: "demo-api-key",
   });
   const auth = getAuth(app);
-  connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
+  connectAuthEmulator(auth, `http://${authEp.host}:${authEp.port}`, {
+    disableWarnings: true,
+  });
   const db = getFirestore(app);
-  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+  connectFirestoreEmulator(db, fs.host, fs.port);
   return { auth, db };
 }
 

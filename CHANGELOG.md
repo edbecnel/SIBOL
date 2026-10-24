@@ -10,6 +10,7 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- SIBOL-INT-001 **EMULATOR-001:** canonical emulator ports (Firestore **8195**), shared `canonical_ports.json`, fail-closed seed/verify guard, Flutter `EmulatorConfig`, integration smoke on isolated 9199/8215 (`c8f24a61-3d79-4e05-9b12-f6a730d84e25`).
 - SIBOL-INT-001 **AGENT-002:** emulator seed verification, pre-flight script, runbook scenarios A–F, rules test serial concurrency (`a6d2c941-7e35-4b80-9f26-c103e8d754ab`).
 - SIBOL-INT-001 **AMEND-001:** organization identifiers `barangay03` / `hospital01`, revised validation contract, server-generated org ids, ADR-REG-003 proposed (`e4b7c291-5a63-4d08-9f12-6c83a0e745bd`).
 - SIBOL-INT-001: emulator demonstration stack (`firebase.emulator-demo.json`), guarded emulator seed, Flutter Auth/Firestore/Functions emulator wiring, prototype journey smoke tests, operator runbook (`b7e42a91-6c38-4f05-9d27-a813e0c65b42`).

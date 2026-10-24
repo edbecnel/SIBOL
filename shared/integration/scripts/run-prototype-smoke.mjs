@@ -27,8 +27,8 @@ const result = spawnSync(
     env: {
       ...process.env,
       NODE_PATH: resolve(functionsDir, "node_modules"),
-      FIRESTORE_EMULATOR_HOST: "127.0.0.1:8080",
-      FIREBASE_AUTH_EMULATOR_HOST: "127.0.0.1:9099",
+      FIRESTORE_EMULATOR_HOST: "127.0.0.1:8215",
+      FIREBASE_AUTH_EMULATOR_HOST: "127.0.0.1:9199",
       FIREBASE_PROJECT_ID: "sibol-286d0",
       SIBOL_EMULATOR_PASSWORD_TEEN: "int-smoke-teen-only-local",
       SIBOL_EMULATOR_PASSWORD_BARANGAY_STAFF: "int-smoke-bns-only-local",

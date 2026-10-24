@@ -1,8 +1,8 @@
 # SIBOL-INT-001 — Emulator demonstration runbook
 
-> **Handover UUIDs:** `b7e42a91-6c38-4f05-9d27-a813e0c65b42` (INT-001); `a6d2c941-7e35-4b80-9f26-c103e8d754ab` (AGENT-002 continuation)  
+> **Handover UUIDs:** `b7e42a91-6c38-4f05-9d27-a813e0c65b42` (INT-001); `a6d2c941-7e35-4b80-9f26-c103e8d754ab` (AGENT-002); `c8f24a61-3d79-4e05-9b12-f6a730d84e25` (EMULATOR-001)  
 > **Work item:** SIBOL-INT-001  
-> **Scope:** Local Firebase emulators and synthetic data only — not production.
+> **Scope:** Local Firebase emulators and synthetic data only — **not production**. Production Firebase deploy and production data changes are **not authorized** in this work stream.
 
 ## 1. Prerequisites
 
@@ -23,26 +23,52 @@ cd ../integration && npm install
 cd ../../sibol_app && flutter pub get
 ```
 
-## 2. Emulator configuration
+## 2. Emulator configuration (canonical)
 
-| Service | Port | Config file |
-|---------|------|-------------|
-| Auth | 9099 | [`firebase.emulator-demo.json`](../../firebase.emulator-demo.json) |
-| Firestore | 8080 | same |
-| Functions | 5001 | same |
-| Emulator UI | 4000 | same |
+**Authoritative ports** for operator demonstrations are defined in [`firebase.json`](../../firebase.json) and mirrored in [`shared/emulator/canonical_ports.json`](../../shared/emulator/canonical_ports.json).
+
+| Service | Port | Config |
+|---------|------|--------|
+| Authentication | 9099 | `firebase.json` → `emulators.auth` |
+| Firestore | **8195** | `firebase.json` → `emulators.firestore` |
+| Cloud Functions | 5001 | `firebase.json` → `emulators.functions` |
+| Emulator UI | 4000 | `firebase.json` → `emulators.ui` |
 
 **Project ID (emulator):** `sibol-286d0` (matches Flutter `firebase_options.dart`).
 
-**Safety:** Seeding refuses to run without `FIRESTORE_EMULATOR_HOST`, `FIREBASE_AUTH_EMULATOR_HOST`, matching `FIREBASE_PROJECT_ID`, and `--confirm-emulator-demo`.
+**CI / isolated integration smoke** uses [`firebase.emulator-demo.json`](../../firebase.emulator-demo.json) on **different** ports (Auth **9199**, Firestore **8215**) so tests do not collide with a developer’s long-running emulator on 9099/8195.
 
-## 3. Start emulators
+**Safety (fail-closed seeding):** `shared/provisioning` refuses demo seed or verify unless:
 
-**Working directory:** repository root.
+- `FIRESTORE_EMULATOR_HOST` and `FIREBASE_AUTH_EMULATOR_HOST` are set to **local** hosts on the **canonical** ports above (8195 / 9099),
+- `FIREBASE_PROJECT_ID` is `sibol-286d0`,
+- `--confirm-emulator-demo` is passed,
+- and (for writes / verify) the emulators respond on those endpoints.
+
+Application Default Credentials may still be present; seeding does **not** treat ADC or project id alone as proof of emulator isolation.
+
+## 3. Start emulators (no seed)
+
+**Working directory:** repository root (`/Users/edbecnel/Development/GitHub/SIBOL`).
+
+**Command:**
+
+```bash
+cd /Users/edbecnel/Development/GitHub/SIBOL
+firebase emulators:start --project sibol-286d0 --only auth,firestore,functions
+```
+
+Equivalent wrapper (builds Functions first):
 
 ```bash
 ./shared/scripts/start-demo-emulators.sh
 ```
+
+**Expected:** CLI lists Auth **9099**, Firestore **8195**, Functions **5001**, Emulator UI **4000**; Cloud Functions load without error.
+
+**Failure indicators:** Port already in use; Functions build failure; “Could not start” for any emulator.
+
+**Safe corrective action:** Free the conflicting port or stop the other process; rebuild with `cd shared/functions && npm run build`; do **not** point seed scripts at production.
 
 Leave this terminal open. Optional persistence:
 
@@ -50,19 +76,38 @@ Leave this terminal open. Optional persistence:
 ./shared/scripts/start-demo-emulators.sh --import=./.emulator-data/int-001 --export-on-exit
 ```
 
-## 4. Seed demonstration data
+**Note:** Starting emulators does **not** create demonstration users or organizations. Seeding is a separate step (§4).
 
-**Working directory:** repository root (script changes to `shared/provisioning`).
+## 4. Pre-flight and seed demonstration data
+
+Only after emulators are running and **Project Architect** authorizes seeding:
+
+**Working directory:** repository root.
+
+### 4.1 Non-destructive pre-flight
 
 ```bash
-./shared/scripts/validate-int-001-emulator.sh   # ports + dry-run guard
-./shared/scripts/seed-emulator-demo.sh          # runs verify:emulator after seed
+./shared/scripts/validate-int-001-emulator.sh
 ```
 
-Dry-run (no writes):
+**Expected:** `OK: port 8195 open`, `OK: port 9099 open`, `OK: port 5001 open`, and `OK: emulator environment validated`.
+
+**Failure indicators:** `WARN: Nothing listening` on canonical ports; guard errors mentioning port **8080** (stale `.env.emulator.local` — update `FIRESTORE_EMULATOR_HOST=127.0.0.1:8195`).
+
+**Safe corrective action:** Start emulators (§3); align `.env.emulator.local` with [`.env.emulator.example`](../../.env.emulator.example); re-run pre-flight. Do not seed until pre-flight passes.
+
+### 4.2 Seed (writes fictional data)
 
 ```bash
-./shared/scripts/seed-emulator-demo.sh --dry-run
+./shared/scripts/seed-emulator-demo.sh
+```
+
+Runs `verify:emulator` after seed unless `SIBOL_SKIP_SEED_VERIFY=1`.
+
+Dry-run (no writes, no reachability check):
+
+```bash
+cd shared/provisioning && npm run seed:emulator -- --dry-run --confirm-emulator-demo
 ```
 
 ### Demonstration organizations
@@ -101,6 +146,8 @@ flutter run -d <device-id> \
 ```
 
 **Critical:** Without `USE_FIREBASE_EMULATORS=true`, the app talks to **production** Firebase (`sibol-286d0`). Emulator demos will fail or hit live data.
+
+Emulator ports in demonstration mode match §2 (`EmulatorConfig` in `sibol_app/lib/config/emulator_config.dart`).
 
 Physical iOS device on LAN: emulator host is not automatic — prefer Android emulator for local demos.
 
@@ -181,8 +228,8 @@ Record **Manual PASS** / **FAIL** per step in the execution report.
 
 1. Stop emulators (Ctrl+C).
 2. Remove persisted data if used: `rm -rf .emulator-data/int-001`
-3. Restart emulators (step 3).
-4. Re-run seed (step 4).
+3. Restart emulators (§3).
+4. Re-run seed (§4) after pre-flight passes.
 
 ## 9. Automated smoke (no UI)
 
@@ -190,7 +237,7 @@ Record **Manual PASS** / **FAIL** per step in the execution report.
 cd shared/integration && npm test
 ```
 
-Fails clearly if emulators cannot start or authorization/seed is wrong.
+Spawns isolated emulators (ports 9199 / 8215) via `firebase emulator-demo.json`. Does not use the operator’s 9099 / 8195 stack.
 
 Full regression:
 
@@ -202,11 +249,13 @@ Full regression:
 
 | Symptom | Check |
 |---------|--------|
-| Seed refused | Emulator env vars and `--confirm-emulator-demo` |
-| Flutter cannot reach Auth | `USE_FIREBASE_EMULATORS=true`; Android uses `10.0.2.2` |
+| Seed refused / port 8080 | Update `.env.emulator.local` to Firestore **8195**; re-run `validate-int-001-emulator.sh` |
+| Seed refused (other) | Emulator env vars, canonical ports, `--confirm-emulator-demo` |
+| Flutter cannot reach Auth/Firestore | `USE_FIREBASE_EMULATORS=true`; Android uses `10.0.2.2`; Firestore port **8195** |
 | REG callables fail | Functions emulator on 5001; rebuild `shared/functions` |
 | Permission denied on assistance | Teen `assignedBarangay` + `selectedBarangayOrgId` match request `orgId` |
 | Index errors | [`firestore.indexes.json`](../../firestore.indexes.json) loaded by emulator config |
+| ADC warning on emulator start | Expected; ensure seed/verify use emulator env vars (fail-closed guard) |
 
 ## 11. Known limitations
 

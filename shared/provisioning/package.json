@@ -10,6 +10,7 @@
     "seed": "node seed_tranche1_demo.mjs",
     "seed:emulator": "node seed_emulator_demo.mjs",
     "verify:emulator": "node src/verify_emulator_seed.mjs",
+    "preflight:emulator": "node scripts/preflight-emulator-env.mjs --check-reachable",
     "test": "node --test test/*.mjs"
   },
   "dependencies": {
