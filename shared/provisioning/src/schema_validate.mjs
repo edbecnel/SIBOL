@@ -26,6 +26,7 @@ export function validateFictionalCasePayload(casePayload) {
     "demoName",
     "age",
     "barangay",
+    "orgId",
     "caseStatus",
     "registeredAt",
     "createdAt",
@@ -50,6 +51,12 @@ export function validateFictionalCasePayload(casePayload) {
   }
   if (typeof casePayload.barangay !== "string" || !casePayload.barangay.length) {
     errors.push("barangay must be a non-empty string");
+  }
+  if (
+    typeof casePayload.orgId !== "string" ||
+    !/^org[0-9A-Za-z]{22}$/.test(casePayload.orgId)
+  ) {
+    errors.push("orgId must match org + 22 alphanumeric characters");
   }
   if (!CASE_STATUSES.has(casePayload.caseStatus)) {
     errors.push(`invalid caseStatus: ${casePayload.caseStatus}`);

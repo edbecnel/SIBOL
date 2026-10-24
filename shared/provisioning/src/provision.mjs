@@ -2,6 +2,7 @@ import { Timestamp } from "firebase-admin/firestore";
 
 import { buildDemoCasePlans } from "./case_payloads.mjs";
 import { DEMO_ASSIGNED_BARANGAY, DEMO_BARANGAY_ORG_ID } from "./constants.mjs";
+import { ensureDemoOrganizationsAndMemberships } from "./demo_org_membership.mjs";
 import { planProvisioningOperations } from "./preflight.mjs";
 
 function isoToTimestamp(iso) {
@@ -17,6 +18,8 @@ export async function executeProvisioning({ auth, db, users, logger = console })
 
   const remoteSnapshot = await collectRemoteSnapshot({ auth, db, users, casePlans });
   const operations = planProvisioningOperations({ users, casePlans, remoteSnapshot });
+
+  const provisionedUsers = [];
 
   for (const user of users) {
     let record = remoteSnapshot.authByEmail[user.email];
@@ -63,7 +66,10 @@ export async function executeProvisioning({ auth, db, users, logger = console })
       await profileRef.set(profile);
       logger.log(`Created user profile: ${user.email} role=${user.role}`);
     }
+    provisionedUsers.push({ uid: record.uid, role: user.role });
   }
+
+  await ensureDemoOrganizationsAndMemberships(db, provisionedUsers, logger);
 
   for (const plan of casePlans) {
     const caseRef = db.collection("cases").doc(plan.caseId);

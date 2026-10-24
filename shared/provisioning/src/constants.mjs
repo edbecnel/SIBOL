@@ -3,6 +3,8 @@ export const EXPECTED_DEMO_PROJECT_ID = "sibol-286d0";
 
 /** Demo barangay organization id (matches shared/migration demo mapping). */
 export const DEMO_BARANGAY_ORG_ID = "org0123456789012345678901";
+export const DEMO_HOSPITAL_ORG_ID = "org2222222222222222222222";
+export const DEMO_HOSPITAL_NAME = "Misamis Oriental Provincial Hospital";
 
 /** Demo site for teen assistance routing (matches seeded cases). */
 export const DEMO_ASSIGNED_BARANGAY = "Barangay Tres, Balingasag";
