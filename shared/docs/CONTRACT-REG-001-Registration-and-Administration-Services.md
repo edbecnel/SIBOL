@@ -1,7 +1,7 @@
 # CONTRACT-REG-001 — Registration and administration services (proposed)
 
-> **Status:** Proposed — architecture documentation only (`SIBOL-REG-001-ARCH-DOC-001`)  
-> **Implementation:** **Not authorized** — no Cloud Functions in this handover  
+> **Status:** **REG-B implemented in repository** (callables `reg*` + emulator bootstrap); not deployed  
+> **Implementation handover:** `SIBOL-REG-001-REG-B-AGENT-001`  
 > **Work item:** SIBOL-REG-001  
 > **Normative spec:** [SPEC-REG-001](../../Docs/Specifications/SPEC-REG-001-Registration-and-Organization-Authorization.md)  
 > **ADRs:** [ADR-REG-001](../../Docs/Architecture/ADRs/ADR-REG-001-Organization-Identity-and-Membership.md), [ADR-REG-002](../../Docs/Architecture/ADRs/ADR-REG-002-Administrative-Authorization-and-Provisioning.md)

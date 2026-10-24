@@ -91,7 +91,7 @@ Additional rules:
 
 **REG-A** delivered capability vocabulary, `users.isCentralAdmin` client-write denial in rules, and authz assertion helpers — **not** admin callables, bootstrap, invitations, or audit writes. PA **accepted REG-A A0–A7 with conditions** at git `4eafa5e` (`SIBOL-REG-001-REG-A-ACCEPT-CLOSE-001`, 2026-10-24).
 
-Administrative provisioning per this ADR awaits **REG-B** and later increments. **M1** / **M2** are separately gated.
+**REG-B** (repository @ post-`a8dcccd`) implements admin callables, invitations, audit append, and Flutter administration UI — **not deployed**. **M1** / **M2** remain separately gated for production cutover.
 
 ## Related
 
