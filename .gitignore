@@ -27,3 +27,4 @@ shared/integration/node_modules/
 # Emulator demonstration (local only)
 .env.emulator.local
 .emulator-data/
+shared/integration/firestore-debug.log
