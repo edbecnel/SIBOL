@@ -10,6 +10,7 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- SIBOL-INT-001: emulator demonstration stack (`firebase.emulator-demo.json`), guarded emulator seed, Flutter Auth/Firestore/Functions emulator wiring, prototype journey smoke tests, operator runbook (`b7e42a91-6c38-4f05-9d27-a813e0c65b42`).
 - SIBOL-REG-001 **REG-C:** teen registration callables, Barangay directory, Flutter onboarding flow, password reset, provisional policy gates (`c6f18a42-9e73-4b05-a2d8-61f0c9e735ab`).
 - SIBOL-REG-001 **REG-B:** organization administration callables, staff invitation lifecycle, audit events, Flutter admin screens, emulator central-admin bootstrap (`SIBOL-REG-001-REG-B-AGENT-001`).
 - SIBOL-REG-001 **M1/M2 final corrections:** org-scoped Flutter queries and `OrgContextResolver`, `firestore.rules.cutover-lockdown` + emulator tests, MOPH demo org/membership provisioning, composite indexes for org list queries, rules **94/94**, Flutter **81/81** (`SIBOL-REG-001-M1-M2-FINAL-CORRECTIONS-001`).

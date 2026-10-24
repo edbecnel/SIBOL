@@ -67,12 +67,19 @@ Documentation: [shared/docs/PROVISIONING.md](../../shared/docs/PROVISIONING.md),
 
 ## Emulators (optional)
 
+Integrated demonstration (SIBOL-INT-001):
+
 ```bash
-firebase emulators:start --only auth,firestore,functions
+./shared/scripts/start-demo-emulators.sh
+./shared/scripts/seed-emulator-demo.sh   # after configuring .env.emulator.local
 ```
+
+See [SIBOL-INT-001-Emulator-Demonstration-Runbook.md](../Operations/SIBOL-INT-001-Emulator-Demonstration-Runbook.md).
 
 Run the app with:
 
 ```bash
-flutter run --dart-define=USE_FIREBASE_EMULATORS=true
+cd sibol_app
+flutter run --dart-define=USE_FIREBASE_EMULATORS=true \
+  --dart-define=SIBOL_COORD_REGISTRY_RULES_V2=true
 ```
