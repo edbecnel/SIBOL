@@ -12,7 +12,7 @@
 |------|--------|
 | Implementation starting HEAD | `b6fc2e5` |
 | Finalization session starting HEAD | `88cf23ec5dff9f8ace10c1150c11fc14153c0ab5` |
-| Ending HEAD | *(see final commit after contract doc closure)* |
+| Ending HEAD | `3da7750` (`3da7750925dd913b90fd8ed4f84c7d4c27154676`) |
 | Commits (implementation) | `fcc93e8` feat(int-001): adopt barangay03 and hospital01 org identifiers; `88cf23e` docs: AMEND-001 ending HEAD |
 | `main` vs `origin/main` | Aligned after push |
 
