@@ -1,0 +1,12 @@
+{
+  "name": "sibol-migration",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "migrate": "node src/cli.mjs"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}

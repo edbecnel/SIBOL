@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "description": "Explicit legacy label → orgId mapping. No inference beyond this file.",
+  "barangayLabels": {
+    "Barangay Tres, Balingasag": "org0123456789012345678901"
+  },
+  "hospital": {
+    "Misamis Oriental Provincial Hospital": "org2222222222222222222222"
+  }
+}
