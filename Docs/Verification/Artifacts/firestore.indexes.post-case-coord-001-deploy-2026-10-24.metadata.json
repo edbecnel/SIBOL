@@ -1,0 +1,74 @@
+{
+  "workItem": "SIBOL-CASE-COORD-001",
+  "increment": "A",
+  "handoverUuid": "c6a8e231-4d79-4b02-9f15-72d8e3c09a64",
+  "targetProject": "sibol-286d0",
+  "deployCompletedAtUtc": "2026-10-24T05:10:17Z",
+  "indexesSha256": "2eba2fcf908fb2ed6f6933a6302ab49535a19cc43b79054825e11b99752e9230",
+  "activeRuleset": "projects/sibol-286d0/rulesets/d1bb212e-53a3-44a9-95df-c91a083b9e09",
+  "compositeIndexes": [
+    {
+      "collectionGroup": "teenAssistanceRequests",
+      "fields": ["teenUid ASC", "createdAt DESC"],
+      "gcloudIndexId": "CICAgOjXh4EK",
+      "state": "READY",
+      "notes": "v0.5.0 — unchanged"
+    },
+    {
+      "collectionGroup": "teenAssistanceRequests",
+      "fields": ["barangay ASC", "createdAt DESC"],
+      "gcloudIndexId": "CICAgJiUpoMK",
+      "state": "READY",
+      "notes": "v0.5.0 — unchanged"
+    },
+    {
+      "collectionGroup": "reports",
+      "fields": ["reportStatus ASC", "submittedAt DESC"],
+      "gcloudIndexId": "CICAgJim14AK",
+      "state": "READY",
+      "notes": "v0.5.0 — unchanged"
+    },
+    {
+      "collectionGroup": "reports",
+      "fields": ["barangay ASC", "submittedAt DESC"],
+      "gcloudIndexId": "CICAgJim14AJ",
+      "state": "READY",
+      "notes": "v0.5.0 — unchanged"
+    },
+    {
+      "collectionGroup": "reports",
+      "fields": ["reportStatus ASC", "acceptedAt DESC"],
+      "gcloudIndexId": "CICAgJjF9oIK",
+      "state": "READY",
+      "notes": "v0.5.0 — unchanged"
+    },
+    {
+      "collectionGroup": "reports",
+      "fields": ["barangay ASC", "reportStatus ASC", "acceptedAt DESC"],
+      "gcloudIndexId": "CICAgJj7z4EK",
+      "state": "READY",
+      "notes": "v0.5.0 — unchanged"
+    },
+    {
+      "collectionGroup": "caseCoordinationThreads",
+      "fields": ["phase ASC", "lastStaffEventAt DESC"],
+      "gcloudIndexId": "CICAgNi47oMK",
+      "state": "READY",
+      "readyObservedAtUtc": "2026-10-24T05:16:00Z"
+    },
+    {
+      "collectionGroup": "caseCoordinationThreads",
+      "fields": ["barangay ASC", "phase ASC", "lastStaffEventAt DESC"],
+      "gcloudIndexId": "CICAgJjFqZMK",
+      "state": "READY",
+      "readyObservedAtUtc": "2026-10-24T05:16:00Z"
+    },
+    {
+      "collectionGroup": "barangayCoordinationRegistry",
+      "fields": ["barangay ASC", "active ASC"],
+      "gcloudIndexId": "CICAgJjFqZMJ",
+      "state": "READY",
+      "readyObservedAtUtc": "2026-10-24T05:12:00Z"
+    }
+  ]
+}

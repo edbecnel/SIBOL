@@ -1,7 +1,7 @@
 # SIBOL-CASE-COORD-001 Increment A — Firebase deploy readiness
 
-> **Status:** Prepared — **not deployed**  
-> **Project:** `sibol-286d0` (when authorized)
+> **Status:** **Deployed** 2026-10-24 (handover `c6a8e231-…`)  
+> **Project:** `sibol-286d0`
 
 ## Proposed deploy artifacts
 
@@ -25,6 +25,6 @@
 - Flutter application binaries.
 - Seed data mutations.
 
-## Operator note
+## Deploy record
 
-Until deploy, live Firebase **does not** enforce coordination rules; app behavior unchanged for end users.
+See [SIBOL_CASE_COORD_001_INCREMENT_A_FIREBASE_DEPLOY_EXECUTION_REPORT.md](SIBOL_CASE_COORD_001_INCREMENT_A_FIREBASE_DEPLOY_EXECUTION_REPORT.md) and verification artifacts `firestore.*.post-case-coord-001-deploy-2026-10-24.metadata.json`.

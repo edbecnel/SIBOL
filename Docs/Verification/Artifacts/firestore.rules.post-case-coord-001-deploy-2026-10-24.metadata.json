@@ -1,0 +1,21 @@
+{
+  "workItem": "SIBOL-CASE-COORD-001",
+  "increment": "A",
+  "handoverUuid": "c6a8e231-4d79-4b02-9f15-72d8e3c09a64",
+  "targetProject": "sibol-286d0",
+  "gitCommit": "4de308c8e6f08cfb57dabb75ad898f3c93adde63",
+  "deployCommand": "firebase deploy --only firestore:rules,firestore:indexes --project sibol-286d0",
+  "deployResult": "success",
+  "deployCompletedAtUtc": "2026-10-24T05:10:17Z",
+  "rulesSourceFile": "firestore.rules",
+  "rulesSha256": "3d8b82cb54c9b8ec0e4a5181f9cc7d926792345dafc097a8636866bc57e7c601",
+  "indexesSourceFile": "firestore.indexes.json",
+  "indexesSha256": "2eba2fcf908fb2ed6f6933a6302ab49535a19cc43b79054825e11b99752e9230",
+  "priorLiveRuleset": "projects/sibol-286d0/rulesets/c5b24ed9-aebf-44a9-af28-e9b2ff0d8c9c",
+  "priorLiveRulesSha256": "497df6e50fbcfbb1e6a2951df3aa9d0fae86841b8ed2e6a69329e9c2adfd4082",
+  "priorLiveRulesRollbackArtifact": "Docs/Verification/Artifacts/firestore.rules.pre-case-coord-001-deploy-2026-10-24.rules",
+  "priorLiveIndexesRollbackArtifact": "Docs/Verification/Artifacts/firestore.indexes.pre-case-coord-001-deploy-2026-10-24.json",
+  "postDeployRuleset": "projects/sibol-286d0/rulesets/d1bb212e-53a3-44a9-95df-c91a083b9e09",
+  "rulesTestSuite": "shared/firestore-rules-test — 59/59 pass (pre-deploy, 2026-10-24)",
+  "notes": "Coordination paths added; all client writes on coordination collections denied until Increment B/C."
+}

@@ -3,7 +3,7 @@
 > **Handover UUID:** `a2c8d471-9f36-4e0b-b751-6d23f8a94c10`  
 > **Date:** 2026-10-24  
 > **Increment:** A — Secure Coordination Foundation  
-> **Firebase deployed:** **NO**
+> **Firebase deployed:** **YES** — see [SIBOL_CASE_COORD_001_INCREMENT_A_FIREBASE_DEPLOY_EXECUTION_REPORT.md](SIBOL_CASE_COORD_001_INCREMENT_A_FIREBASE_DEPLOY_EXECUTION_REPORT.md) (handover `c6a8e231-…`, 2026-10-24)
 
 ## 1. PA authorization
 

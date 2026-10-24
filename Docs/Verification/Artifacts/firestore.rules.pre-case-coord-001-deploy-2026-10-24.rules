@@ -1,0 +1,257 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Deny-by-default: only explicit paths below are reachable.
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function userRole() {
+      return userDoc().role;
+    }
+
+    function isActiveUser() {
+      return isSignedIn()
+          && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+          && userDoc().active == true;
+    }
+
+    function isTeen() {
+      return isActiveUser() && userRole() == 'teen';
+    }
+
+    function isBarangay() {
+      return isActiveUser() && userRole() == 'barangay';
+    }
+
+    function isMoph() {
+      return isActiveUser() && userRole() == 'moph';
+    }
+
+    function roleUnchanged() {
+      return !('role' in request.resource.data)
+          || request.resource.data.role == resource.data.role;
+    }
+
+    function profileCreateValid() {
+      return request.resource.data.keys().hasAll(['role', 'displayName', 'active', 'createdAt'])
+          && request.resource.data.role in ['teen', 'barangay', 'moph']
+          && request.resource.data.active is bool
+          && request.resource.data.displayName is string;
+    }
+
+    function isValidCaseStatus(status) {
+      return status in ['active', 'followUpScheduled', 'followUpCompleted', 'closed'];
+    }
+
+    function isValidClientReportStatus(status) {
+      return status in ['notSubmitted', 'pendingSubmit'];
+    }
+
+    function caseAllowedKeys() {
+      return [
+        'demoName', 'age', 'barangay', 'caseStatus', 'registeredAt',
+        'nextFollowUpAt', 'notes', 'createdAt', 'updatedAt', 'reportStatus'
+      ];
+    }
+
+    function isValidAssistanceCategory(category) {
+      return category in [
+        'generalSupport',
+        'healthInformation',
+        'counselingReferral',
+        'barangayServices'
+      ];
+    }
+
+    function teenProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function hasAssignedBarangay(data) {
+      return 'assignedBarangay' in data
+          && data.assignedBarangay is string
+          && data.assignedBarangay.size() >= 1;
+    }
+
+    function assistanceRequestCreateValid(data) {
+      return data.keys().hasAll([
+            'teenUid', 'barangay', 'category', 'description', 'status', 'createdAt'
+          ])
+          && data.keys().hasOnly([
+            'teenUid', 'barangay', 'category', 'description', 'status', 'createdAt'
+          ])
+          && data.teenUid is string
+          && data.teenUid == request.auth.uid
+          && hasAssignedBarangay(teenProfile())
+          && data.barangay == teenProfile().assignedBarangay
+          && isValidAssistanceCategory(data.category)
+          && data.description is string
+          && data.description.size() >= 10
+          && data.description.size() <= 500
+          && data.status == 'submitted'
+          && data.createdAt is timestamp;
+    }
+
+    function barangayCanAccessAssistanceRequest() {
+      return isBarangay()
+          && hasAssignedBarangay(userDoc())
+          && resource.data.barangay == userDoc().assignedBarangay;
+    }
+
+    function assistanceRequestAcknowledgeUpdate() {
+      return barangayCanAccessAssistanceRequest()
+          && resource.data.status == 'submitted'
+          && request.resource.data.status == 'acknowledged'
+          && request.resource.data.teenUid == resource.data.teenUid
+          && request.resource.data.barangay == resource.data.barangay
+          && request.resource.data.category == resource.data.category
+          && request.resource.data.description == resource.data.description
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.acknowledgedAt is timestamp
+          && request.resource.data.acknowledgedByUid == request.auth.uid
+          && request.resource.data.keys().hasAll([
+            'teenUid', 'barangay', 'category', 'description', 'status', 'createdAt',
+            'acknowledgedAt', 'acknowledgedByUid'
+          ]);
+    }
+
+    function caseCoreFieldsValid(data) {
+      return data.keys().hasAll([
+            'demoName', 'age', 'barangay', 'caseStatus', 'registeredAt',
+            'createdAt', 'updatedAt', 'reportStatus'
+          ])
+          && data.keys().hasOnly(caseAllowedKeys())
+          && data.demoName is string
+          && data.demoName.size() >= 2
+          && data.age is int
+          && data.age >= 13
+          && data.age <= 19
+          && data.barangay is string
+          && data.barangay.size() >= 1
+          && isValidCaseStatus(data.caseStatus)
+          && data.registeredAt is timestamp
+          && data.createdAt is timestamp
+          && data.updatedAt is timestamp
+          && isValidClientReportStatus(data.reportStatus)
+          && (!('nextFollowUpAt' in data) || data.nextFollowUpAt is timestamp)
+          && (!('notes' in data) || data.notes is string);
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+
+      allow create: if false;
+
+      allow update: if isSignedIn()
+          && request.auth.uid == userId
+          && roleUnchanged()
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['displayName']);
+
+      allow delete: if false;
+    }
+
+    match /cases/{caseId} {
+      allow read: if isBarangay();
+
+      allow create: if isBarangay()
+          && caseCoreFieldsValid(request.resource.data)
+          && request.resource.data.reportStatus == 'notSubmitted';
+
+      allow update: if isBarangay()
+          && caseCoreFieldsValid(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.reportStatus == resource.data.reportStatus;
+
+      allow delete: if false;
+
+      match /followUps/{followUpId} {
+        allow read, create, update: if isBarangay();
+        allow delete: if false;
+      }
+    }
+
+    match /teenAssistanceRequests/{requestId} {
+      allow read: if (isTeen()
+          && resource.data.teenUid == request.auth.uid)
+          || barangayCanAccessAssistanceRequest();
+
+      allow create: if isTeen()
+          && assistanceRequestCreateValid(request.resource.data);
+
+      allow update: if assistanceRequestAcknowledgeUpdate();
+
+      allow delete: if false;
+    }
+
+    function barangayReportStatusCountsValid(data) {
+      return data.activeCaseCount is int
+          && data.followUpScheduledCount is int
+          && data.followUpCompletedCount is int
+          && data.closedCaseCount is int
+          && data.activeCaseCount >= 0
+          && data.followUpScheduledCount >= 0
+          && data.followUpCompletedCount >= 0
+          && data.closedCaseCount >= 0
+          && data.activeCaseCount + data.followUpScheduledCount
+              + data.followUpCompletedCount + data.closedCaseCount
+              == data.totalCaseCount;
+    }
+
+    function barangayReportCreateValid(data) {
+      return data.keys().hasAll([
+            'barangay', 'submittedAt', 'submittedByUid', 'totalCaseCount',
+            'activeCaseCount', 'followUpScheduledCount', 'followUpCompletedCount',
+            'closedCaseCount', 'reportStatus', 'acceptedAt'
+          ])
+          && data.keys().hasOnly([
+            'barangay', 'submittedAt', 'submittedByUid', 'totalCaseCount',
+            'activeCaseCount', 'followUpScheduledCount', 'followUpCompletedCount',
+            'closedCaseCount', 'reportStatus', 'acceptedAt'
+          ])
+          && data.barangay is string
+          && data.barangay.size() >= 1
+          && hasAssignedBarangay(userDoc())
+          && data.barangay == userDoc().assignedBarangay
+          && data.submittedByUid == request.auth.uid
+          && data.reportStatus == 'submitted'
+          && data.submittedAt == request.time
+          && data.acceptedAt == request.time
+          && data.totalCaseCount is int
+          && data.totalCaseCount >= 0
+          && barangayReportStatusCountsValid(data);
+    }
+
+    function barangayCanReadSubmittedReport() {
+      return isBarangay()
+          && hasAssignedBarangay(userDoc())
+          && resource.data.barangay == userDoc().assignedBarangay
+          && resource.data.reportStatus == 'submitted'
+          && resource.data.acceptedAt != null;
+    }
+
+    match /reports/{reportId} {
+      allow read: if (isMoph()
+          && resource.data.acceptedAt != null
+          && resource.data.reportStatus == 'submitted')
+          || barangayCanReadSubmittedReport();
+
+      allow create: if isBarangay()
+          && barangayReportCreateValid(request.resource.data);
+
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
