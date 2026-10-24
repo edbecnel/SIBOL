@@ -18,7 +18,7 @@ See ADR-0005 and [`firestore_paths.dart`](../../sibol_app/lib/core/constants/fir
 |-----------|--------|----------------|
 | **A** | Rules, indexes, rules tests, callable contract | **Deployed** (`sibol-286d0`) |
 | **B** | `createCoordinationReferral` + Barangay submit + MOPH inbox/detail | **Accepted** (MVR-0008 Pass); callable live |
-| **B-HISTORY** | Barangay **submitted referral history** (list + detail, all phases) | **Specified** — [B-HISTORY spec](SIBOL_CASE_COORD_001_B_HISTORY_SPEC.md); **not implemented** (PA addendum) |
+| **B-HISTORY** | Barangay **submitted referral history** (list + detail, all phases) | **Delivered in repo** — [spec](SIBOL_CASE_COORD_001_B_HISTORY_SPEC.md), [execution report](SIBOL_CASE_COORD_001_B_HISTORY_EXECUTION_REPORT.md); MVR-0009 pending |
 | **C** | Staff events + phase transitions (write path) | Two-way coordination — **not authorized** |
 | **D** | Teen generic progress UI | Teen visibility |
 

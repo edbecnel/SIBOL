@@ -19,7 +19,13 @@ abstract class CoordinationRepository {
 
   Stream<List<CoordinationThread>> watchOpenThreadsForMoph();
 
+  Stream<List<CoordinationThread>> watchSubmittedReferralsForBarangay(
+    String barangay,
+  );
+
   Stream<CoordinationThread?> watchThreadForMoph(String threadId);
+
+  Stream<CoordinationThread?> watchThreadForBarangay(String threadId);
 
   Stream<List<CoordinationStaffEvent>> watchStaffEventsForThread(String threadId);
 

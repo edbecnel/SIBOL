@@ -16,6 +16,13 @@ class CoordinationRepositoryImpl implements CoordinationRepository {
 
   static const _openPhases = ['referred', 'awaitingBarangay', 'awaitingMoph'];
 
+  static const _allPhases = [
+    'referred',
+    'awaitingBarangay',
+    'awaitingMoph',
+    'closed',
+  ];
+
   CollectionReference<Map<String, dynamic>> get _threads =>
       _firestore.collection(FirestorePaths.caseCoordinationThreads);
 
@@ -53,7 +60,35 @@ class CoordinationRepositoryImpl implements CoordinationRepository {
   }
 
   @override
+  Stream<List<CoordinationThread>> watchSubmittedReferralsForBarangay(
+    String barangay,
+  ) {
+    return _threads
+        .where('barangay', isEqualTo: barangay)
+        .where('phase', whereIn: _allPhases)
+        .orderBy('lastStaffEventAt', descending: true)
+        .snapshots()
+        .map(
+          (snap) => snap.docs
+              .map(
+                (d) => CoordinationThreadModel.fromFirestore(d.id, d.data())
+                    .toEntity(),
+              )
+              .toList(),
+        );
+  }
+
+  @override
   Stream<CoordinationThread?> watchThreadForMoph(String threadId) {
+    return _watchThread(threadId);
+  }
+
+  @override
+  Stream<CoordinationThread?> watchThreadForBarangay(String threadId) {
+    return _watchThread(threadId);
+  }
+
+  Stream<CoordinationThread?> _watchThread(String threadId) {
     return _threads.doc(threadId).snapshots().map((snap) {
       if (!snap.exists) return null;
       final data = snap.data();

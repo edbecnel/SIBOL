@@ -11,7 +11,9 @@ import 'package:sibol_app/features/cases/presentation/screens/barangay_home_scre
 import 'package:sibol_app/features/cases/presentation/screens/case_detail_screen.dart';
 import 'package:sibol_app/features/cases/presentation/screens/case_edit_screen.dart';
 import 'package:sibol_app/features/moph/presentation/screens/moph_home_screen.dart';
+import 'package:sibol_app/features/coordination/presentation/screens/barangay_coordination_detail_screen.dart';
 import 'package:sibol_app/features/coordination/presentation/screens/barangay_coordination_referral_screen.dart';
+import 'package:sibol_app/features/coordination/presentation/screens/barangay_submitted_referrals_screen.dart';
 import 'package:sibol_app/features/moph/presentation/screens/moph_coordination_detail_screen.dart';
 import 'package:sibol_app/features/moph/presentation/screens/moph_report_detail_screen.dart';
 import 'package:sibol_app/features/reporting/presentation/screens/barangay_report_receipt_screen.dart';
@@ -138,6 +140,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) {
                   final reportId = state.pathParameters['reportId']!;
                   return BarangayReportReceiptScreen(reportId: reportId);
+                },
+              ),
+            ],
+          ),
+          GoRoute(
+            path: Routes.barangaySubmittedReferralsSegment,
+            builder: (context, state) =>
+                const BarangaySubmittedReferralsScreen(),
+            routes: [
+              GoRoute(
+                path: ':threadId',
+                builder: (context, state) {
+                  final threadId = state.pathParameters['threadId']!;
+                  return BarangayCoordinationDetailScreen(threadId: threadId);
                 },
               ),
             ],

@@ -51,6 +51,14 @@ abstract final class Routes {
   static String barangayReportReceipt(String reportId) =>
       '$barangayHome/$barangaySubmittedReportsSegment/$reportId';
 
+  static const barangaySubmittedReferralsSegment = 'submitted-referrals';
+
+  static const barangaySubmittedReferrals =
+      '$barangayHome/$barangaySubmittedReferralsSegment';
+
+  static String barangaySubmittedReferralDetail(String threadId) =>
+      '$barangayHome/$barangaySubmittedReferralsSegment/$threadId';
+
   static const settings = '/settings';
   static const unauthorized = '/unauthorized';
 }

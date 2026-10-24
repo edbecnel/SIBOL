@@ -56,6 +56,12 @@ class BarangayHomeScreen extends ConsumerWidget {
                   icon: const Icon(Icons.history),
                   label: const Text('Submitted reports'),
                 ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: () => context.push(Routes.barangaySubmittedReferrals),
+                  icon: const Icon(Icons.medical_services_outlined),
+                  label: const Text('Submitted referrals'),
+                ),
               ],
             ),
           ),

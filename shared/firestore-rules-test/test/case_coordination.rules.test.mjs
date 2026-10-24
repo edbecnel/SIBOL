@@ -61,6 +61,14 @@ function barangayThreadListQuery(db, barangay) {
     .orderBy("lastStaffEventAt", "desc");
 }
 
+function barangaySubmittedReferralsQuery(db, barangay) {
+  return db
+    .collection("caseCoordinationThreads")
+    .where("barangay", "==", barangay)
+    .where("phase", "in", ["referred", "awaitingBarangay", "awaitingMoph", "closed"])
+    .orderBy("lastStaffEventAt", "desc");
+}
+
 before(async () => {
   testEnv = await initializeTestEnvironment({
     projectId,
@@ -209,6 +217,21 @@ describe("caseCoordinationThreads reads", () => {
   it("allows barangay production list query", async () => {
     const db = testEnv.authenticatedContext(barangayUid).firestore();
     await assertSucceeds(barangayThreadListQuery(db, site).get());
+  });
+
+  it("allows barangay submitted referrals query (all phases)", async () => {
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertSucceeds(barangaySubmittedReferralsQuery(db, site).get());
+  });
+
+  it("denies barangay submitted referrals query for another site", async () => {
+    const db = testEnv.authenticatedContext(barangayUid2).firestore();
+    await assertFails(barangaySubmittedReferralsQuery(db, site).get());
+  });
+
+  it("denies teen submitted referrals query", async () => {
+    const db = testEnv.authenticatedContext(teenUid).firestore();
+    await assertFails(barangaySubmittedReferralsQuery(db, site).get());
   });
 
   it("allows barangay to read private binding for its thread", async () => {
