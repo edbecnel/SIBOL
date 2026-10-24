@@ -7,6 +7,7 @@ import 'package:sibol_app/features/auth/presentation/providers/auth_providers.da
 import 'package:sibol_app/features/geo/presentation/geo_providers.dart';
 import 'package:sibol_app/features/geo/presentation/psgc_geo_picker.dart';
 import 'package:sibol_app/features/teen_registration/domain/teen_onboarding_policy.dart';
+import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_intent_providers.dart';
 import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_providers.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/app_text_field.dart';
@@ -31,6 +32,14 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
   bool _submitting = false;
   String? _error;
   bool _authCreated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(teenRegistrationIntentProvider.notifier).markInProgress();
+    });
+  }
 
   @override
   void dispose() {
@@ -103,14 +112,12 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
             displayName: _displayNameController.text.trim(),
             privacyConsentAcknowledged: true,
           );
+      await ref.read(teenRegistrationIntentProvider.notifier).clear();
       if (TeenOnboardingPolicy.requireEmailVerificationBeforeAssistance) {
         await ref.read(authControllerProvider.notifier).sendEmailVerification();
         if (mounted) context.go(Routes.teenRegisterVerifyEmail);
-      } else {
-        try {
-          await ref.read(authControllerProvider.notifier).sendEmailVerification();
-        } catch (_) {}
-        if (mounted) context.go(Routes.teenRegisterComplete);
+      } else if (mounted) {
+        context.go(Routes.teenRegisterComplete);
       }
     } catch (e) {
       setState(() => _error = userErrorMessage(e));

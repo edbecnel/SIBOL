@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sibol_app/config/app_config.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
+import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_intent_providers.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends ConsumerWidget {
   const WelcomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Column(
         children: [
@@ -47,7 +49,12 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton(
-                    onPressed: () => context.push(Routes.teenRegister),
+                    onPressed: () async {
+                      await ref
+                          .read(teenRegistrationIntentProvider.notifier)
+                          .markInProgress();
+                      if (context.mounted) context.push(Routes.teenRegister);
+                    },
                     child: const Text('Register as Teen'),
                   ),
                 ],

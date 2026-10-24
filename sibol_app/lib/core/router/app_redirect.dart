@@ -51,6 +51,7 @@ String? resolveAppRedirect({
   required String location,
   required AsyncValue<AuthUser?> authAsync,
   required AsyncValue<UserProfile?> profileAsync,
+  bool teenSelfRegistrationInProgress = false,
 }) {
   final onSplash = location == Routes.splash;
   final onWelcome = location == Routes.welcome;
@@ -74,7 +75,13 @@ String? resolveAppRedirect({
   }
 
   if (profileAsync.isLoading) {
-    return onSplash || onAccountNotProvisioned ? null : Routes.splash;
+    if (onSplash ||
+        onAccountNotProvisioned ||
+        onTeenRegister ||
+        onPasswordReset) {
+      return null;
+    }
+    return Routes.splash;
   }
 
   if (profileAsync.hasError) {
@@ -85,6 +92,9 @@ String? resolveAppRedirect({
 
   if (profile == null) {
     if (onTeenRegister || onPasswordReset) return null;
+    if (teenSelfRegistrationInProgress) {
+      if (onSplash || onAccountNotProvisioned) return Routes.teenRegister;
+    }
     if (onLogin || onWelcome || onAccountNotProvisioned) return null;
     return Routes.accountNotProvisioned;
   }

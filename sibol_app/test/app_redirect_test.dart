@@ -100,6 +100,52 @@ void main() {
       );
     });
 
+    test('profile loading on teen register → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.teenRegister,
+          authAsync: const AsyncData(user),
+          profileAsync: const AsyncLoading(),
+        ),
+        isNull,
+      );
+    });
+
+    test('profile loading on verify-email route → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.teenRegisterVerifyEmail,
+          authAsync: const AsyncData(user),
+          profileAsync: const AsyncLoading(),
+        ),
+        isNull,
+      );
+    });
+
+    test('teen self-registration intent on splash → teen register', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.splash,
+          authAsync: const AsyncData(user),
+          profileAsync: const AsyncData(null),
+          teenSelfRegistrationInProgress: true,
+        ),
+        Routes.teenRegister,
+      );
+    });
+
+    test('staff without intent on splash → account not provisioned', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.splash,
+          authAsync: const AsyncData(user),
+          profileAsync: const AsyncData(null),
+          teenSelfRegistrationInProgress: false,
+        ),
+        Routes.accountNotProvisioned,
+      );
+    });
+
     test('authenticated inactive profile → unauthorized', () {
       expect(
         resolveAppRedirect(

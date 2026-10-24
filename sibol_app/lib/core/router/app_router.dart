@@ -9,6 +9,7 @@ import 'package:sibol_app/features/auth/presentation/screens/account_not_provisi
 import 'package:sibol_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:sibol_app/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:sibol_app/features/auth/presentation/screens/password_reset_screen.dart';
+import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_intent_providers.dart';
 import 'package:sibol_app/features/teen_registration/presentation/screens/teen_register_complete_screen.dart';
 import 'package:sibol_app/features/teen_registration/presentation/screens/teen_register_verify_email_screen.dart';
 import 'package:sibol_app/features/teen_registration/presentation/screens/teen_registration_screen.dart';
@@ -50,6 +51,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         location: state.matchedLocation,
         authAsync: ref.read(authStateChangesProvider),
         profileAsync: ref.read(userProfileProvider),
+        teenSelfRegistrationInProgress: ref.read(teenRegistrationIntentProvider),
       );
     },
     routes: [
@@ -267,6 +269,7 @@ class _RouterRefresh extends ChangeNotifier {
   _RouterRefresh(this._ref) {
     _ref.listen(authStateChangesProvider, (_, __) => notifyListeners());
     _ref.listen(userProfileProvider, (_, __) => notifyListeners());
+    _ref.listen(teenRegistrationIntentProvider, (_, __) => notifyListeners());
   }
 
   final Ref _ref;

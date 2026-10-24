@@ -3,6 +3,7 @@ import 'package:sibol_app/core/errors/app_exception.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/domain/entities/auth_user.dart';
 import 'package:sibol_app/features/auth/domain/entities/user_profile.dart';
+import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_intent_providers.dart';
 
 final authStateChangesProvider = StreamProvider<AuthUser?>((ref) {
   return ref.watch(authRepositoryProvider).authStateChanges;
@@ -90,6 +91,7 @@ class AuthController extends Notifier<AsyncValue<void>> {
   Future<void> signOut() async {
     state = const AsyncLoading();
     try {
+      await ref.read(teenRegistrationIntentProvider.notifier).clear();
       await ref.read(authRepositoryProvider).signOut();
       state = const AsyncData(null);
     } on AppException catch (e, st) {

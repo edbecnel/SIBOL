@@ -3,14 +3,31 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/app.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
+import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_intent_providers.dart';
 import 'support/fake_auth_repositories.dart';
+import 'support/fake_teen_registration_intent_store.dart';
+
+Widget teenTestScope({
+  required List overrides,
+  required Widget child,
+}) {
+  return ProviderScope(
+    overrides: [
+      teenRegistrationIntentStoreProvider.overrideWith(
+        (ref) => FakeTeenRegistrationIntentStore(),
+      ),
+      ...overrides,
+    ],
+    child: child,
+  );
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('signed-out startup navigates to welcome screen', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      teenTestScope(
         overrides: [
           authRepositoryProvider.overrideWith(
             (ref) => FakeAuthRepository(Stream.value(null)),
@@ -31,7 +48,7 @@ void main() {
 
   testWidgets('welcome sign in opens login', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      teenTestScope(
         overrides: [
           authRepositoryProvider.overrideWith(
             (ref) => FakeAuthRepository(Stream.value(null)),
@@ -50,7 +67,7 @@ void main() {
 
   testWidgets('welcome register as teen opens teen registration', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      teenTestScope(
         overrides: [
           authRepositoryProvider.overrideWith(
             (ref) => FakeAuthRepository(Stream.value(null)),
@@ -69,7 +86,7 @@ void main() {
 
   testWidgets('teen registration back returns to welcome', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      teenTestScope(
         overrides: [
           authRepositoryProvider.overrideWith(
             (ref) => FakeAuthRepository(Stream.value(null)),
