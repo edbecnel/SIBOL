@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SibolOrganization",
+  "type": "object",
+  "required": ["orgId", "type", "name", "status", "createdAt", "updatedAt"],
+  "properties": {
+    "orgId": {
+      "type": "string",
+      "pattern": "^org[0-9A-Za-z]{22}$"
+    },
+    "type": {
+      "enum": ["barangay", "hospital"]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "status": {
+      "enum": ["pending", "active", "suspended"]
+    },
+    "legacyBarangayLabel": {
+      "type": "string",
+      "description": "Migration metadata only; not used for authorization"
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

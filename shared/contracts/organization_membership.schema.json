@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SibolOrganizationMembership",
+  "type": "object",
+  "required": [
+    "membershipId",
+    "orgId",
+    "accountUid",
+    "status",
+    "capabilities",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "membershipId": {
+      "type": "string",
+      "pattern": "^mbr_org[0-9A-Za-z]{22}__[A-Za-z0-9]{20,128}$"
+    },
+    "orgId": {
+      "type": "string",
+      "pattern": "^org[0-9A-Za-z]{22}$"
+    },
+    "accountUid": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 128
+    },
+    "status": {
+      "enum": ["invited", "pending", "active", "rejected", "suspended", "revoked"]
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "org.manage_members",
+          "org.manage_roles",
+          "case.read",
+          "case.write",
+          "report.submit",
+          "coordination.barangay",
+          "coordination.hospital"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "invitedBy": { "type": "string" },
+    "approvedBy": { "type": "string" },
+    "revokedAt": { "type": "string", "format": "date-time" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

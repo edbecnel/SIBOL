@@ -34,6 +34,40 @@ service cloud.firestore {
       return isActiveUser() && userRole() == 'moph';
     }
 
+    // --- REG-A: organizations and memberships (SIBOL-REG-001) ---
+
+    function isValidOrgId(orgId) {
+      return orgId is string && orgId.matches('^org[0-9A-Za-z]{22}$');
+    }
+
+    function membershipDocIdForOrg(orgId) {
+      return 'mbr_' + orgId + '__' + request.auth.uid;
+    }
+
+    function membershipDataForOrg(orgId) {
+      return get(/databases/$(database)/documents/organizationMemberships/$(membershipDocIdForOrg(orgId))).data;
+    }
+
+    function membershipExistsActive(orgId) {
+      return isSignedIn()
+          && isValidOrgId(orgId)
+          && exists(/databases/$(database)/documents/organizationMemberships/$(membershipDocIdForOrg(orgId)))
+          && membershipDataForOrg(orgId).status == 'active'
+          && membershipDataForOrg(orgId).orgId == orgId
+          && membershipDataForOrg(orgId).accountUid == request.auth.uid;
+    }
+
+    function organizationIsActive(orgId) {
+      return exists(/databases/$(database)/documents/organizations/$(orgId))
+          && get(/databases/$(database)/documents/organizations/$(orgId)).data.status == 'active';
+    }
+
+    function capabilityGranted(orgId, cap) {
+      return membershipExistsActive(orgId)
+          && organizationIsActive(orgId)
+          && cap in membershipDataForOrg(orgId).capabilities;
+    }
+
     function roleUnchanged() {
       return !('role' in request.resource.data)
           || request.resource.data.role == resource.data.role;
@@ -144,6 +178,25 @@ service cloud.firestore {
           && (!('notes' in data) || data.notes is string);
     }
 
+    match /organizations/{orgId} {
+      allow read: if membershipExistsActive(orgId) && organizationIsActive(orgId);
+
+      allow create, update, delete: if false;
+    }
+
+    match /organizationMemberships/{membershipId} {
+      allow read: if isSignedIn()
+          && resource.data.accountUid == request.auth.uid
+          && isValidOrgId(resource.data.orgId)
+          && membershipId == membershipDocIdForOrg(resource.data.orgId);
+
+      allow create, update, delete: if false;
+    }
+
+    match /auditEvents/{eventId} {
+      allow read, write: if false;
+    }
+
     match /users/{userId} {
       allow read: if isSignedIn() && request.auth.uid == userId;
 
@@ -153,6 +206,7 @@ service cloud.firestore {
           && request.auth.uid == userId
           && roleUnchanged()
           && request.resource.data.role == resource.data.role
+          && !('isCentralAdmin' in request.resource.data)
           && request.resource.data.diff(resource.data).affectedKeys()
               .hasOnly(['displayName']);
 
