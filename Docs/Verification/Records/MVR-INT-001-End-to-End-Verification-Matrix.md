@@ -15,7 +15,7 @@ Legend: **Auto** = emulator automated test; **Manual** = operator UI walkthrough
 | 2 | Org admin staff lifecycle | `admin.operations.test.mjs` | Auto PASS |
 | 3 | Teen registration callables | `teen.registration.test.mjs` | Auto PASS |
 | 4 | Teen assistance create (rules) | `assistance_requests.rules.test.mjs` | Auto PASS |
-| 5 | Barangay ack + referral + MOPH read | `prototype_journey.smoke.mjs` | Auto **BLOCKED** (8215 in use; preserved emulator) |
+| 5 | Barangay ack + referral + MOPH read | `prototype_journey.smoke.mjs` (isolated ports 9315/8325) | Auto **PASS** (PROTOTYPE-VERIFY-001) |
 | 6 | Cross-org denial | `org_scoped_security.rules.test.mjs`, smoke | Auto PASS |
 | 7 | Central admin no case read | smoke | Auto PASS |
 | 8 | Teen isolation | smoke | Auto PASS |

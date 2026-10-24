@@ -1,8 +1,11 @@
 import { after, before, describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { initializeApp as initAdmin, deleteApp, getApps } from "firebase-admin/app";
-import { getAuth as getAdminAuth } from "firebase-admin/auth";
-import { getFirestore as getAdminFirestore, Timestamp } from "firebase-admin/firestore";
+import {
+  cleanupSmokeApps,
+  ensureDemoSeed,
+  getSmokeDb,
+  smokeTimestamp,
+} from "./smoke_harness.mjs";
 import { initializeApp as initClient } from "firebase/app";
 import {
   connectAuthEmulator,
@@ -19,11 +22,10 @@ import {
   query,
   where,
   updateDoc,
-  addDoc,
   serverTimestamp,
 } from "firebase/firestore";
 import { runCreateCoordinationReferral } from "../../functions/lib/coordination/createCoordinationReferral.js";
-import { executeEmulatorDemoSeed, loadEmulatorDemoUsers } from "../../provisioning/src/emulator_seed.mjs";
+import { runSubmitTeenAssistanceRequest } from "../../functions/lib/teen/exportHandlers.js";
 import {
   DEMO_ASSIGNED_BARANGAY,
   DEMO_BARANGAY_ORG_ID,
@@ -70,18 +72,7 @@ before(async () => {
   if (!process.env.FIRESTORE_EMULATOR_HOST || !process.env.FIREBASE_AUTH_EMULATOR_HOST) {
     throw new Error("Auth and Firestore emulators must be running (emulators:exec).");
   }
-  const { users, missing } = loadEmulatorDemoUsers();
-  if (missing.length) {
-    throw new Error(`Missing smoke passwords: ${missing.join(", ")}`);
-  }
-  if (!getApps().length) {
-    initAdmin({ projectId });
-  }
-  const result = await executeEmulatorDemoSeed({
-    auth: getAdminAuth(),
-    db: getAdminFirestore(),
-    users,
-  });
+  const result = await ensureDemoSeed();
   uidByKey = result.uidByKey;
   barangayStaffUid = uidByKey.barangay_staff;
   mophStaffUid = uidByKey.moph_staff;
@@ -90,9 +81,7 @@ before(async () => {
 });
 
 after(async () => {
-  for (const app of getApps()) {
-    await deleteApp(app);
-  }
+  await cleanupSmokeApps();
 });
 
 describe("SIBOL-INT-001 prototype journey (emulator smoke)", () => {
@@ -105,15 +94,16 @@ describe("SIBOL-INT-001 prototype journey (emulator smoke)", () => {
     );
     const signedInTeenUid = teenCredential.user.uid;
 
-    const newRef = await addDoc(collection(db, "teenAssistanceRequests"), {
-      teenUid: signedInTeenUid,
-      barangay: DEMO_ASSIGNED_BARANGAY,
-      orgId: DEMO_BARANGAY_ORG_ID,
-      category: "generalSupport",
-      description: "Fictional smoke-test assistance request for integration.",
-      status: "submitted",
-      createdAt: new Date(),
-    });
+    const submitted = await runSubmitTeenAssistanceRequest(
+      getSmokeDb(),
+      signedInTeenUid,
+      {
+        idempotencyKey: `smoke-journey-${Date.now()}`,
+        category: "generalSupport",
+        description: "Fictional smoke-test assistance request for integration.",
+      },
+    );
+    const requestId = submitted.requestId;
 
     await auth.signOut();
     const barangayCredential = await signInWithEmailAndPassword(
@@ -124,7 +114,7 @@ describe("SIBOL-INT-001 prototype journey (emulator smoke)", () => {
     );
     const signedInBarangayUid = barangayCredential.user.uid;
 
-    const ackRef = doc(db, "teenAssistanceRequests", newRef.id);
+    const ackRef = doc(db, "teenAssistanceRequests", requestId);
     await updateDoc(ackRef, {
       status: "acknowledged",
       acknowledgedAt: serverTimestamp(),
@@ -132,10 +122,10 @@ describe("SIBOL-INT-001 prototype journey (emulator smoke)", () => {
     });
 
     const referral = await runCreateCoordinationReferral(
-      getAdminFirestore(),
+      getSmokeDb(),
       signedInBarangayUid,
       {
-      assistanceRequestId: newRef.id,
+      assistanceRequestId: requestId,
       barangayReferralSummary:
         "Fictional referral summary for MOPH review (smoke test).",
       },
@@ -180,7 +170,7 @@ describe("SIBOL-INT-001 prototype journey (emulator smoke)", () => {
   });
 
   it("central administrator without case capability cannot read cases", async () => {
-    const adminDb = getAdminFirestore();
+    const adminDb = getSmokeDb();
     const caseRef = adminDb.collection("cases").doc("int-smoke-case");
     if (!(await caseRef.get()).exists) {
       await caseRef.set({
@@ -189,9 +179,9 @@ describe("SIBOL-INT-001 prototype journey (emulator smoke)", () => {
         barangay: DEMO_ASSIGNED_BARANGAY,
         orgId: DEMO_BARANGAY_ORG_ID,
         caseStatus: "active",
-        registeredAt: Timestamp.now(),
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
+        registeredAt: smokeTimestamp.now(),
+        createdAt: smokeTimestamp.now(),
+        updatedAt: smokeTimestamp.now(),
         reportStatus: "notSubmitted",
       });
     }
@@ -209,7 +199,7 @@ describe("SIBOL-INT-001 prototype journey (emulator smoke)", () => {
   });
 
   it("teen cannot read another teen assistance document", async () => {
-    const adminDb = getAdminFirestore();
+    const adminDb = getSmokeDb();
     const otherTeen = "otherTeenUid1234567890123456";
     const otherId = "demo-assist-other-teen";
     await adminDb.collection("users").doc(otherTeen).set({
@@ -218,7 +208,7 @@ describe("SIBOL-INT-001 prototype journey (emulator smoke)", () => {
       active: true,
       assignedBarangay: DEMO_ASSIGNED_BARANGAY,
       selectedBarangayOrgId: DEMO_BARANGAY_ORG_ID,
-      createdAt: Timestamp.now(),
+      createdAt: smokeTimestamp.now(),
     });
     await adminDb.collection("teenAssistanceRequests").doc(otherId).set({
       teenUid: otherTeen,
@@ -227,7 +217,7 @@ describe("SIBOL-INT-001 prototype journey (emulator smoke)", () => {
       category: "generalSupport",
       description: "Other teen fictional request.",
       status: "submitted",
-      createdAt: Timestamp.now(),
+      createdAt: smokeTimestamp.now(),
     });
 
     const { auth, db } = clientApp();

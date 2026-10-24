@@ -78,6 +78,7 @@ before(async () => {
       teenUid2,
       otherSite: OTHER_BARANGAY,
     });
+    await db.collection("teenAssistanceRequests").doc("req-1").set(validRequest());
   });
 });
 
@@ -86,10 +87,10 @@ after(async () => {
 });
 
 describe("teenAssistanceRequests rules", () => {
-  it("allows teen to create own request with provisioned barangay", async () => {
+  it("denies teen client create (server submission required)", async () => {
     const db = testEnv.authenticatedContext(teenUid).firestore();
-    await assertSucceeds(
-      db.collection("teenAssistanceRequests").doc("req-1").set(validRequest()),
+    await assertFails(
+      db.collection("teenAssistanceRequests").doc("req-client-create").set(validRequest()),
     );
   });
 

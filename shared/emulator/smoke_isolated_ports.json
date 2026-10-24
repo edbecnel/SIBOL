@@ -1,0 +1,7 @@
+{
+  "description": "Isolated INT-001 smoke emulators (does not use canonical 8195/9099 or legacy smoke 8215/9199)",
+  "auth": 9315,
+  "firestore": 8325,
+  "hub": 4442,
+  "logging": 4542
+}

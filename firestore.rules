@@ -312,8 +312,8 @@ service cloud.firestore {
           && resource.data.teenUid == request.auth.uid)
           || barangayCanAccessAssistanceRequest();
 
-      allow create: if isTeen()
-          && assistanceRequestCreateValid(request.resource.data);
+      // Teen assistance creates are server-only (regSubmitTeenAssistanceRequest).
+      allow create: if false;
 
       allow update: if assistanceRequestAcknowledgeUpdate();
 

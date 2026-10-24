@@ -13,13 +13,6 @@ abstract class AssistanceRequestRepository {
     String orgId,
   );
 
-  Future<String> createRequest({
-    required String teenUid,
-    required String barangay,
-    required String orgId,
-    required AssistanceRequestCategory category,
-    required String description,
-  });
 
   Future<void> acknowledgeRequest({
     required String requestId,

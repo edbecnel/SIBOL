@@ -36,7 +36,9 @@ cd ../../sibol_app && flutter pub get
 
 **Project ID (emulator):** `sibol-286d0` (matches Flutter `firebase_options.dart`).
 
-**CI / isolated integration smoke** uses [`firebase.emulator-demo.json`](../../firebase.emulator-demo.json) on **different** ports (Auth **9199**, Firestore **8215**) so tests do not collide with a developer’s long-running emulator on 9099/8195.
+**CI / isolated integration smoke** uses [`firebase.emulator-smoke-isolated.json`](../../firebase.emulator-smoke-isolated.json) on Auth **9315** / Firestore **8325** (see [`shared/emulator/smoke_isolated_ports.json`](../../shared/emulator/smoke_isolated_ports.json)) so tests do not collide with canonical **8195/9099** or legacy demo **8215/9199** stacks.
+
+Override config: `SIBOL_FIREBASE_EMULATOR_CONFIG=firebase.emulator-demo.json` (legacy ports).
 
 **Safety (fail-closed seeding):** `shared/provisioning` refuses demo seed or verify unless:
 
@@ -237,7 +239,7 @@ Record **Manual PASS** / **FAIL** per step in the execution report.
 cd shared/integration && npm test
 ```
 
-Spawns isolated emulators (ports 9199 / 8215) via `firebase emulator-demo.json`. Does not use the operator’s 9099 / 8195 stack.
+Spawns isolated emulators (ports **9315 / 8325** by default) via `firebase.emulator-smoke-isolated.json`. Does not use the operator’s 9099 / 8195 stack.
 
 Full regression:
 

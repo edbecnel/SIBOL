@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sibol_app/core/constants/firestore_paths.dart';
 import 'package:sibol_app/features/teenager/data/models/assistance_request_model.dart';
-import 'package:sibol_app/features/teenager/domain/assistance_request_category.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_status.dart';
 import 'package:sibol_app/features/teenager/domain/entities/assistance_request.dart';
 import 'package:sibol_app/features/teenager/domain/repositories/assistance_request_repository.dart';
@@ -71,30 +70,6 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
       if (model.orgId != orgId) return null;
       return model.toEntity();
     });
-  }
-
-  @override
-  Future<String> createRequest({
-    required String teenUid,
-    required String barangay,
-    required String orgId,
-    required AssistanceRequestCategory category,
-    required String description,
-  }) async {
-    final ref = _collection.doc();
-    final now = DateTime.now();
-    final model = AssistanceRequestModel(
-      requestId: ref.id,
-      teenUid: teenUid,
-      barangay: barangay,
-      orgId: orgId,
-      category: category.firestoreValue,
-      description: description.trim(),
-      status: AssistanceRequestStatus.submitted.firestoreValue,
-      createdAt: now,
-    );
-    await ref.set(model.toFirestoreCreate());
-    return ref.id;
   }
 
   @override
