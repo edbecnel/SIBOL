@@ -1,5 +1,7 @@
 export const COLLECTIONS = {
   users: "users",
+  organizations: "organizations",
+  organizationMemberships: "organizationMemberships",
   teenAssistanceRequests: "teenAssistanceRequests",
   caseCoordinationThreads: "caseCoordinationThreads",
   barangayCoordinationRegistry: "barangayCoordinationRegistry",

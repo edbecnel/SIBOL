@@ -8,6 +8,7 @@ import {
   assertSucceeds,
 } from "@firebase/rules-unit-testing";
 import { serverTimestamp, Timestamp } from "firebase/firestore";
+import { ORG_BARANGAY_DEMO, ORG_BARANGAY_OTHER, setupM2DemoAuth } from "./helpers/org_auth_seed.mjs";
 
 const rulesPath = resolve(
   fileURLToPath(new URL(".", import.meta.url)),
@@ -46,6 +47,7 @@ function barangayProductionListQuery(db, barangay) {
   return db
     .collection("reports")
     .where("barangay", "==", barangay)
+    .where("orgId", "==", ORG_BARANGAY_DEMO)
     .where("reportStatus", "==", "submitted")
     .where("acceptedAt", ">", minAcceptedAt)
     .orderBy("acceptedAt", "desc");
@@ -54,6 +56,7 @@ function barangayProductionListQuery(db, barangay) {
 function validAggregateReport(overrides = {}) {
   return {
     barangay: site,
+    orgId: ORG_BARANGAY_DEMO,
     submittedAt: serverTimestamp(),
     submittedByUid: barangayUid,
     totalCaseCount: 2,
@@ -101,6 +104,13 @@ before(async () => {
       displayName: "Other Barangay Demo",
       assignedBarangay: otherSite,
     });
+    await setupM2DemoAuth(db, {
+      barangayUid,
+      barangayUid2,
+      teenUid,
+      mophUid,
+      otherSite,
+    });
   });
 });
 
@@ -124,12 +134,12 @@ describe("reports collection (DEMO-004 aggregate)", () => {
     await assertFails(mophDb.collection("reports").add(payload));
   });
 
-  it("denies barangay create with wrong site or mismatched counts", async () => {
+  it("denies barangay create with wrong org or mismatched counts", async () => {
     const barangayDb = testEnv.authenticatedContext(barangayUid).firestore();
     await assertFails(
       barangayDb
         .collection("reports")
-        .add(validAggregateReport({ barangay: "Other Barangay" })),
+        .add(validAggregateReport({ orgId: ORG_BARANGAY_OTHER })),
     );
     await assertFails(
       barangayDb.collection("reports").add(
@@ -150,6 +160,7 @@ describe("reports collection (DEMO-004 aggregate)", () => {
       const now = new Date();
       await context.firestore().collection("reports").doc(reportId).set({
         barangay: site,
+        orgId: ORG_BARANGAY_DEMO,
         submittedAt: now,
         submittedByUid: barangayUid,
         totalCaseCount: 1,
@@ -178,6 +189,7 @@ describe("reports collection (DEMO-004 aggregate)", () => {
       const db = context.firestore();
       await db.collection("reports").doc("good-report").set({
         barangay: site,
+        orgId: ORG_BARANGAY_DEMO,
         submittedAt: now,
         submittedByUid: barangayUid,
         totalCaseCount: 1,
@@ -203,6 +215,7 @@ describe("reports collection (DEMO-004 aggregate)", () => {
       const now = new Date();
       await context.firestore().collection("reports").doc("brgy-list").set({
         barangay: site,
+        orgId: ORG_BARANGAY_DEMO,
         submittedAt: now,
         submittedByUid: barangayUid,
         totalCaseCount: 1,
@@ -229,6 +242,7 @@ describe("reports collection (DEMO-004 aggregate)", () => {
       const now = new Date();
       await context.firestore().collection("reports").doc(reportId).set({
         barangay: site,
+        orgId: ORG_BARANGAY_DEMO,
         submittedAt: now,
         submittedByUid: barangayUid,
         totalCaseCount: 1,
@@ -243,7 +257,14 @@ describe("reports collection (DEMO-004 aggregate)", () => {
     const otherBarangayDb = testEnv.authenticatedContext(barangayUid2).firestore();
     await assertFails(otherBarangayDb.collection("reports").doc(reportId).get());
     await assertSucceeds(
-      barangayProductionListQuery(otherBarangayDb, otherSite).get(),
+      otherBarangayDb
+        .collection("reports")
+        .where("barangay", "==", otherSite)
+        .where("orgId", "==", ORG_BARANGAY_OTHER)
+        .where("reportStatus", "==", "submitted")
+        .where("acceptedAt", ">", minAcceptedAt)
+        .orderBy("acceptedAt", "desc")
+        .get(),
     );
   });
 
@@ -253,6 +274,7 @@ describe("reports collection (DEMO-004 aggregate)", () => {
       const now = new Date();
       await context.firestore().collection("reports").doc(reportId).set({
         barangay: site,
+        orgId: ORG_BARANGAY_DEMO,
         submittedAt: now,
         submittedByUid: barangayUid,
         totalCaseCount: 1,
@@ -274,6 +296,7 @@ describe("reports collection (DEMO-004 aggregate)", () => {
       const now = new Date();
       await context.firestore().collection("reports").doc(reportId).set({
         barangay: site,
+        orgId: ORG_BARANGAY_DEMO,
         submittedAt: now,
         submittedByUid: barangayUid,
         totalCaseCount: 1,

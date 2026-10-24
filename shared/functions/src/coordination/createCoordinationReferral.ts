@@ -7,6 +7,14 @@ import {
   SUMMARY_MIN,
   TEEN_PROGRESS,
 } from "./constants";
+import { CAPABILITIES } from "../authz/capabilities";
+import {
+  assertActiveAccount,
+  assertActiveMembership,
+  assertActiveOrganization,
+  assertCapability,
+} from "../authz/assert";
+import { isValidOrgId, membershipIdFor } from "../authz/identifiers";
 
 export type CreateCoordinationReferralInput = {
   assistanceRequestId?: unknown;
@@ -81,28 +89,55 @@ export async function runCreateCoordinationReferral(
       throw new HttpsError("permission-denied", "User profile not found.");
     }
     const user = userSnap.data()!;
-    if (user.active !== true || user.role !== "barangay") {
+    if (user.role !== "barangay") {
       throw new HttpsError(
         "permission-denied",
-        "Only active barangay personnel may create referrals.",
+        "Only barangay personnel may create referrals.",
       );
     }
-    const assignedBarangay = user.assignedBarangay;
-    if (typeof assignedBarangay !== "string" || assignedBarangay.length < 1) {
-      throw new HttpsError(
-        "failed-precondition",
-        "Barangay site is not configured on your profile.",
-      );
+    try {
+      assertActiveAccount(user);
+    } catch {
+      throw new HttpsError("permission-denied", "Account is not active.");
     }
 
     if (!assistanceSnap.exists) {
       throw new HttpsError("not-found", "Assistance request not found.");
     }
     const assistance = assistanceSnap.data()!;
-    if (assistance.barangay !== assignedBarangay) {
+    const assistanceOrgId = assistance.orgId;
+    if (typeof assistanceOrgId !== "string" || !isValidOrgId(assistanceOrgId)) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Assistance request is missing organization scope.",
+      );
+    }
+
+    const orgRef = db.collection(COLLECTIONS.organizations).doc(assistanceOrgId);
+    const membershipRef = db
+      .collection(COLLECTIONS.organizationMemberships)
+      .doc(membershipIdFor(assistanceOrgId, authUid));
+    const [orgSnap, membershipSnap] = await Promise.all([
+      tx.get(orgRef),
+      tx.get(membershipRef),
+    ]);
+    try {
+      assertActiveOrganization(orgSnap.data());
+      assertActiveMembership(membershipSnap.data(), assistanceOrgId, authUid);
+      assertCapability(membershipSnap.data()!, CAPABILITIES.COORDINATION_BARANGAY);
+    } catch (err) {
       throw new HttpsError(
         "permission-denied",
-        "Assistance request is not assigned to your barangay.",
+        err instanceof Error ? err.message : "Not authorized for this organization.",
+      );
+    }
+
+    const assignedBarangay =
+      typeof assistance.barangay === "string" ? assistance.barangay : "";
+    if (assignedBarangay.length < 1) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Assistance request is missing barangay label.",
       );
     }
     if (assistance.status !== "acknowledged") {
@@ -147,6 +182,7 @@ export async function runCreateCoordinationReferral(
 
     tx.set(threadRef, {
       barangay: assignedBarangay,
+      orgId: assistanceOrgId,
       displayRef,
       category,
       barangayReferralSummary,
@@ -167,6 +203,7 @@ export async function runCreateCoordinationReferral(
     tx.set(registryRef, {
       threadId,
       barangay: assignedBarangay,
+      orgId: assistanceOrgId,
       teenUid,
       active: true,
       createdAt: now,

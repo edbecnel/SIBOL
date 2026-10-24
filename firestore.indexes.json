@@ -50,6 +50,26 @@
       ]
     },
     {
+      "collectionGroup": "reports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "barangay", "order": "ASCENDING" },
+        { "fieldPath": "orgId", "order": "ASCENDING" },
+        { "fieldPath": "reportStatus", "order": "ASCENDING" },
+        { "fieldPath": "acceptedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "caseCoordinationThreads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "barangay", "order": "ASCENDING" },
+        { "fieldPath": "orgId", "order": "ASCENDING" },
+        { "fieldPath": "phase", "order": "ASCENDING" },
+        { "fieldPath": "lastStaffEventAt", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "caseCoordinationThreads",
       "queryScope": "COLLECTION",
       "fields": [
@@ -64,6 +84,14 @@
         { "fieldPath": "barangay", "order": "ASCENDING" },
         { "fieldPath": "phase", "order": "ASCENDING" },
         { "fieldPath": "lastStaffEventAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "organizationMemberships",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "accountUid", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
       ]
     },
     {

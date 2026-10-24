@@ -6,10 +6,12 @@ import { runCreateCoordinationReferral } from "../lib/coordination/createCoordin
 
 const projectId = "demo-sibol-coord-fn";
 const site = "Barangay Tres, Balingasag";
-const barangayUid = "bns-1";
-const teenUid = "teen-1";
-const mophUid = "moph-1";
-const otherBnsUid = "bns-other";
+const orgId = "org0123456789012345678901";
+const otherOrgId = "org1111111111111111111111";
+const barangayUid = "barangayStaffUid123456789012";
+const teenUid = "teenUserUid123456789012345";
+const mophUid = "mophStaffUid1234567890123456";
+const otherBnsUid = "otherBarangayStaffUid12345678901";
 const assistanceId = "assist-ack-1";
 const assistanceUnacked = "assist-sub-1";
 
@@ -42,9 +44,45 @@ before(async () => {
   await db.collection("users").doc(teenUid).set({ ...userBase, role: "teen" });
   await db.collection("users").doc(mophUid).set({ ...userBase, role: "moph" });
 
+  const nowTs = Timestamp.now();
+  await db.collection("organizations").doc(orgId).set({
+    orgId,
+    type: "barangay",
+    name: site,
+    status: "active",
+    createdAt: nowTs,
+    updatedAt: nowTs,
+  });
+  await db.collection("organizations").doc(otherOrgId).set({
+    orgId: otherOrgId,
+    type: "barangay",
+    name: "Other Demo Barangay",
+    status: "active",
+    createdAt: nowTs,
+    updatedAt: nowTs,
+  });
+  const membership = (oid, uid, caps) => ({
+    membershipId: `mbr_${oid}__${uid}`,
+    orgId: oid,
+    accountUid: uid,
+    status: "active",
+    capabilities: caps,
+    createdAt: nowTs,
+    updatedAt: nowTs,
+  });
+  await db
+    .collection("organizationMemberships")
+    .doc(`mbr_${orgId}__${barangayUid}`)
+    .set(membership(orgId, barangayUid, ["coordination.barangay"]));
+  await db
+    .collection("organizationMemberships")
+    .doc(`mbr_${otherOrgId}__${otherBnsUid}`)
+    .set(membership(otherOrgId, otherBnsUid, ["coordination.barangay"]));
+
   const assistanceBase = {
     teenUid,
     barangay: site,
+    orgId,
     category: "generalSupport",
     description: "Teen original narrative must not appear on MOPH header.",
     createdAt: now,
@@ -82,6 +120,7 @@ describe("createCoordinationReferral", () => {
       await db.collection("caseCoordinationThreads").doc(result.threadId).get()
     ).data();
     assert.equal(header.barangay, site);
+    assert.equal(header.orgId, orgId);
     assert.equal(header.category, "generalSupport");
     assert.equal(header.phase, "referred");
     assert.ok(!("teenUid" in header));
@@ -203,6 +242,7 @@ describe("createCoordinationReferral concurrent duplicate", () => {
     await db.collection("teenAssistanceRequests").doc(concurrentId).set({
       teenUid,
       barangay: site,
+      orgId,
       category: "healthInformation",
       description: "Concurrent test assistance request.",
       status: "acknowledged",

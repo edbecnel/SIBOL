@@ -7,6 +7,7 @@ import {
   assertFails,
   assertSucceeds,
 } from "@firebase/rules-unit-testing";
+import { ORG_BARANGAY_DEMO, ORG_BARANGAY_OTHER, setupM2DemoAuth } from "./helpers/org_auth_seed.mjs";
 
 const rulesPath = resolve(
   fileURLToPath(new URL(".", import.meta.url)),
@@ -29,6 +30,7 @@ function validRequest(overrides = {}) {
   return {
     teenUid,
     barangay: DEMO_BARANGAY,
+    orgId: ORG_BARANGAY_DEMO,
     category: "generalSupport",
     description: "Fictional demo assistance request text.",
     status: "submitted",
@@ -68,6 +70,13 @@ before(async () => {
       role: "barangay",
       assignedBarangay: OTHER_BARANGAY,
       displayName: "Other BNS",
+    });
+    await setupM2DemoAuth(db, {
+      barangayUid,
+      barangayUid2: barangayUidOther,
+      teenUid,
+      teenUid2,
+      otherSite: OTHER_BARANGAY,
     });
   });
 });

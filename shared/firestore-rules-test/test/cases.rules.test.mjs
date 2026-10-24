@@ -8,6 +8,13 @@ import {
   assertFails,
   assertSucceeds,
 } from "@firebase/rules-unit-testing";
+import {
+  ORG_BARANGAY_DEMO,
+  ORG_BARANGAY_OTHER,
+  setupM2DemoAuth,
+  seedMembership,
+  CAPS,
+} from "./helpers/org_auth_seed.mjs";
 
 const rulesPath = resolve(
   fileURLToPath(new URL(".", import.meta.url)),
@@ -17,8 +24,10 @@ const rules = readFileSync(rulesPath, "utf8");
 
 const projectId = "demo-sibol-rules";
 const barangayUid = "barangay-user-1";
+const barangayUidOther = "barangay-user-2";
 const teenUid = "teen-user-1";
 const mophUid = "moph-user-1";
+const DEMO_BARANGAY = "Barangay Tres, Balingasag";
 
 let testEnv;
 
@@ -27,7 +36,8 @@ function validCase(overrides = {}) {
   return {
     demoName: "Ana Demo",
     age: 16,
-    barangay: "Demo Barangay",
+    barangay: DEMO_BARANGAY,
+    orgId: ORG_BARANGAY_DEMO,
     caseStatus: "active",
     registeredAt: now,
     createdAt: now,
@@ -45,7 +55,8 @@ function demoProvisionedCase() {
   return {
     demoName: "Bea Demo Santos",
     age: 17,
-    barangay: "Barangay Demo",
+    barangay: DEMO_BARANGAY,
+    orgId: ORG_BARANGAY_DEMO,
     caseStatus: "followUpScheduled",
     registeredAt: registered,
     nextFollowUpAt: new Date("2026-11-06T10:00:00.000Z"),
@@ -67,12 +78,18 @@ before(async () => {
       displayName: "Demo",
       active: true,
       createdAt: new Date(),
-      assignedBarangay: "Barangay Tres, Balingasag",
+      assignedBarangay: DEMO_BARANGAY,
     };
     await db.collection("users").doc(barangayUid).set({
       ...userBase,
       role: "barangay",
       displayName: "Barangay Demo",
+    });
+    await db.collection("users").doc(barangayUidOther).set({
+      ...userBase,
+      role: "barangay",
+      assignedBarangay: "Other Demo Barangay",
+      displayName: "Other BNS",
     });
     await db.collection("users").doc(teenUid).set({
       ...userBase,
@@ -83,6 +100,12 @@ before(async () => {
       ...userBase,
       role: "moph",
       displayName: "MOPH Demo",
+    });
+    await setupM2DemoAuth(db, {
+      barangayUid,
+      barangayUidOther,
+      teenUid,
+      mophUid,
     });
     await db.collection("cases").doc("demo-case-read").set(demoProvisionedCase());
     await db
@@ -252,6 +275,65 @@ describe("cases collection", () => {
     const caseId = "case-no-delete";
     await assertSucceeds(db.collection("cases").doc(caseId).set(validCase()));
     await assertFails(db.collection("cases").doc(caseId).delete());
+  });
+
+  it("denies cross-barangay read and write", async () => {
+    const otherDb = testEnv.authenticatedContext(barangayUidOther).firestore();
+    await assertFails(otherDb.collection("cases").doc("demo-case-read").get());
+    await assertFails(
+      otherDb.collection("cases").doc("case-cross").set(validCase()),
+    );
+  });
+
+  it("denies barangay with org admin only (no case capabilities)", async () => {
+    const adminOnlyUid = "barangay-admin-only-uid12";
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await db.collection("users").doc(adminOnlyUid).set({
+        role: "barangay",
+        displayName: "Org Admin",
+        active: true,
+        createdAt: new Date(),
+        primaryOrgId: ORG_BARANGAY_DEMO,
+      });
+      await seedMembership(db, ORG_BARANGAY_DEMO, adminOnlyUid, CAPS.orgAdminOnly);
+    });
+    const db = testEnv.authenticatedContext(adminOnlyUid).firestore();
+    await assertFails(db.collection("cases").doc("demo-case-read").get());
+  });
+
+  it("denies legacy case without orgId", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const { orgId: _drop, ...legacy } = validCase();
+      await context.firestore().collection("cases").doc("legacy-no-org").set(legacy);
+    });
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertFails(db.collection("cases").doc("legacy-no-org").get());
+  });
+
+  it("denies forged orgId on create", async () => {
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertFails(
+      db
+        .collection("cases")
+        .doc("forged-org")
+        .set(validCase({ orgId: ORG_BARANGAY_OTHER })),
+    );
+  });
+
+  it("denies update that changes orgId", async () => {
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    const caseId = "case-org-immutable";
+    await assertSucceeds(db.collection("cases").doc(caseId).set(validCase()));
+    const snap = await db.collection("cases").doc(caseId).get();
+    const data = snap.data();
+    await assertFails(
+      db.collection("cases").doc(caseId).update({
+        ...data,
+        orgId: ORG_BARANGAY_OTHER,
+        updatedAt: new Date(),
+      }),
+    );
   });
 
   it("denies invalid field types and status values", async () => {

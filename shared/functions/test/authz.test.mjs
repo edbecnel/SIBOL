@@ -2,6 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   assertActiveAccount,
+  assertActiveOrganization,
   assertActiveMembership,
   assertCapability,
   assertContextOrgId,
@@ -52,5 +53,10 @@ describe("authz assert", () => {
 
   it("assertActiveAccount", () => {
     assert.throws(() => assertActiveAccount({ active: false }), AuthzError);
+  });
+
+  it("assertActiveOrganization", () => {
+    assert.throws(() => assertActiveOrganization({ status: "suspended" }), AuthzError);
+    assert.throws(() => assertActiveOrganization(undefined), AuthzError);
   });
 });

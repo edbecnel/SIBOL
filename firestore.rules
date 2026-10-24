@@ -65,6 +65,8 @@ service cloud.firestore {
     function capabilityGranted(orgId, cap) {
       return membershipExistsActive(orgId)
           && organizationIsActive(orgId)
+          && membershipDataForOrg(orgId).keys().hasAll(['capabilities'])
+          && membershipDataForOrg(orgId).capabilities is list
           && cap in membershipDataForOrg(orgId).capabilities;
     }
 
@@ -90,9 +92,48 @@ service cloud.firestore {
 
     function caseAllowedKeys() {
       return [
-        'demoName', 'age', 'barangay', 'caseStatus', 'registeredAt',
+        'demoName', 'age', 'barangay', 'orgId', 'caseStatus', 'registeredAt',
         'nextFollowUpAt', 'notes', 'createdAt', 'updatedAt', 'reportStatus'
       ];
+    }
+
+    function caseOrgIdImmutable() {
+      return request.resource.data.orgId == resource.data.orgId;
+    }
+
+    function documentHasOrgId(data) {
+      return data.keys().hasAll(['orgId']) && isValidOrgId(data.orgId);
+    }
+
+    function canReadCaseOrg(orgId) {
+      return isActiveUser()
+          && isValidOrgId(orgId)
+          && capabilityGranted(orgId, 'case.read');
+    }
+
+    function canWriteCaseOrg(orgId) {
+      return isActiveUser()
+          && isValidOrgId(orgId)
+          && capabilityGranted(orgId, 'case.write');
+    }
+
+    function parentCaseOrgId(caseId) {
+      return get(/databases/$(database)/documents/cases/$(caseId)).data.orgId;
+    }
+
+    function userPrimaryOrgId() {
+      return userDoc().primaryOrgId;
+    }
+
+    function teenSelectedBarangayOrgId() {
+      return teenProfile().selectedBarangayOrgId;
+    }
+
+    function mophHospitalCoordinationGranted() {
+      return isActiveUser()
+          && userDoc().keys().hasAll(['primaryOrgId'])
+          && isValidOrgId(userPrimaryOrgId())
+          && capabilityGranted(userPrimaryOrgId(), 'coordination.hospital');
     }
 
     function isValidAssistanceCategory(category) {
@@ -116,14 +157,18 @@ service cloud.firestore {
 
     function assistanceRequestCreateValid(data) {
       return data.keys().hasAll([
-            'teenUid', 'barangay', 'category', 'description', 'status', 'createdAt'
+            'teenUid', 'barangay', 'orgId', 'category', 'description', 'status', 'createdAt'
           ])
           && data.keys().hasOnly([
-            'teenUid', 'barangay', 'category', 'description', 'status', 'createdAt'
+            'teenUid', 'barangay', 'orgId', 'category', 'description', 'status', 'createdAt'
           ])
           && data.teenUid is string
           && data.teenUid == request.auth.uid
           && hasAssignedBarangay(teenProfile())
+          && isValidOrgId(data.orgId)
+          && isValidOrgId(teenSelectedBarangayOrgId())
+          && data.orgId == teenSelectedBarangayOrgId()
+          && organizationIsActive(data.orgId)
           && data.barangay == teenProfile().assignedBarangay
           && isValidAssistanceCategory(data.category)
           && data.description is string
@@ -134,9 +179,8 @@ service cloud.firestore {
     }
 
     function barangayCanAccessAssistanceRequest() {
-      return isBarangay()
-          && hasAssignedBarangay(userDoc())
-          && resource.data.barangay == userDoc().assignedBarangay;
+      return documentHasOrgId(resource.data)
+          && capabilityGranted(resource.data.orgId, 'coordination.barangay');
     }
 
     function assistanceRequestAcknowledgeUpdate() {
@@ -145,13 +189,14 @@ service cloud.firestore {
           && request.resource.data.status == 'acknowledged'
           && request.resource.data.teenUid == resource.data.teenUid
           && request.resource.data.barangay == resource.data.barangay
+          && request.resource.data.orgId == resource.data.orgId
           && request.resource.data.category == resource.data.category
           && request.resource.data.description == resource.data.description
           && request.resource.data.createdAt == resource.data.createdAt
           && request.resource.data.acknowledgedAt is timestamp
           && request.resource.data.acknowledgedByUid == request.auth.uid
           && request.resource.data.keys().hasAll([
-            'teenUid', 'barangay', 'category', 'description', 'status', 'createdAt',
+            'teenUid', 'barangay', 'orgId', 'category', 'description', 'status', 'createdAt',
             'acknowledgedAt', 'acknowledgedByUid'
           ]);
     }
@@ -169,6 +214,7 @@ service cloud.firestore {
           && data.age <= 19
           && data.barangay is string
           && data.barangay.size() >= 1
+          && isValidOrgId(data.orgId)
           && isValidCaseStatus(data.caseStatus)
           && data.registeredAt is timestamp
           && data.createdAt is timestamp
@@ -214,21 +260,26 @@ service cloud.firestore {
     }
 
     match /cases/{caseId} {
-      allow read: if isBarangay();
+      allow read: if documentHasOrgId(resource.data)
+          && canReadCaseOrg(resource.data.orgId);
 
-      allow create: if isBarangay()
+      allow create: if canWriteCaseOrg(request.resource.data.orgId)
           && caseCoreFieldsValid(request.resource.data)
           && request.resource.data.reportStatus == 'notSubmitted';
 
-      allow update: if isBarangay()
+      allow update: if canWriteCaseOrg(resource.data.orgId)
           && caseCoreFieldsValid(request.resource.data)
+          && caseOrgIdImmutable()
           && request.resource.data.createdAt == resource.data.createdAt
           && request.resource.data.reportStatus == resource.data.reportStatus;
 
       allow delete: if false;
 
       match /followUps/{followUpId} {
-        allow read, create, update: if isBarangay();
+        allow read: if canReadCaseOrg(parentCaseOrgId(caseId));
+
+        allow create, update: if canWriteCaseOrg(parentCaseOrgId(caseId));
+
         allow delete: if false;
       }
     }
@@ -262,19 +313,20 @@ service cloud.firestore {
 
     function barangayReportCreateValid(data) {
       return data.keys().hasAll([
-            'barangay', 'submittedAt', 'submittedByUid', 'totalCaseCount',
+            'barangay', 'orgId', 'submittedAt', 'submittedByUid', 'totalCaseCount',
             'activeCaseCount', 'followUpScheduledCount', 'followUpCompletedCount',
             'closedCaseCount', 'reportStatus', 'acceptedAt'
           ])
           && data.keys().hasOnly([
-            'barangay', 'submittedAt', 'submittedByUid', 'totalCaseCount',
+            'barangay', 'orgId', 'submittedAt', 'submittedByUid', 'totalCaseCount',
             'activeCaseCount', 'followUpScheduledCount', 'followUpCompletedCount',
             'closedCaseCount', 'reportStatus', 'acceptedAt'
           ])
           && data.barangay is string
           && data.barangay.size() >= 1
-          && hasAssignedBarangay(userDoc())
-          && data.barangay == userDoc().assignedBarangay
+          && isValidOrgId(data.orgId)
+          && organizationIsActive(data.orgId)
+          && capabilityGranted(data.orgId, 'report.submit')
           && data.submittedByUid == request.auth.uid
           && data.reportStatus == 'submitted'
           && data.submittedAt == request.time
@@ -285,21 +337,29 @@ service cloud.firestore {
     }
 
     function barangayCanReadSubmittedReport() {
-      return isBarangay()
-          && hasAssignedBarangay(userDoc())
-          && resource.data.barangay == userDoc().assignedBarangay
+      return resource.data.keys().hasAll(['orgId', 'reportStatus', 'acceptedAt'])
+          && documentHasOrgId(resource.data)
+          && capabilityGranted(resource.data.orgId, 'report.submit')
           && resource.data.reportStatus == 'submitted'
           && resource.data.acceptedAt != null;
     }
 
-    match /reports/{reportId} {
-      allow read: if (isMoph()
+    function mophCanReadSubmittedReport() {
+      return userRole() == 'moph'
+          && mophHospitalCoordinationGranted()
+          && resource.data.keys().hasAll(['acceptedAt', 'reportStatus'])
           && resource.data.acceptedAt != null
-          && resource.data.reportStatus == 'submitted')
-          || barangayCanReadSubmittedReport();
+          && resource.data.reportStatus == 'submitted';
+    }
 
-      allow create: if isBarangay()
-          && barangayReportCreateValid(request.resource.data);
+    function barangayRoleCanReadSubmittedReport() {
+      return userRole() == 'barangay' && barangayCanReadSubmittedReport();
+    }
+
+    match /reports/{reportId} {
+      allow read: if mophCanReadSubmittedReport() || barangayRoleCanReadSubmittedReport();
+
+      allow create: if barangayReportCreateValid(request.resource.data);
 
       allow update, delete: if false;
     }
@@ -315,29 +375,43 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/caseCoordinationThreads/$(threadId)).data;
     }
 
-    function barangayCanReadCoordinationThreadId(threadId) {
-      return isBarangay()
-          && hasAssignedBarangay(userDoc())
-          && coordinationThreadDoc(threadId).barangay == userDoc().assignedBarangay;
+    function coordinationThreadOrgId(threadId) {
+      return coordinationThreadDoc(threadId).orgId;
     }
 
-    function mophCanReadCoordinationThreadId(threadId) {
-      return isMoph()
+    function barangayCanReadCoordinationThreadId(threadId) {
+      return documentHasOrgId(coordinationThreadDoc(threadId))
+          && capabilityGranted(coordinationThreadOrgId(threadId), 'coordination.barangay');
+    }
+
+    function coordinationThreadHasReadablePhase(threadId) {
+      return coordinationThreadDoc(threadId).keys().hasAll(['phase'])
           && isValidCoordinationPhase(coordinationThreadDoc(threadId).phase);
     }
 
+    function mophCanReadCoordinationThreadId(threadId) {
+      return mophHospitalCoordinationGranted()
+          && coordinationThreadHasReadablePhase(threadId);
+    }
+
     function barangayCanReadCoordinationThread() {
-      return isBarangay()
-          && hasAssignedBarangay(userDoc())
-          && resource.data.barangay == userDoc().assignedBarangay;
+      return documentHasOrgId(resource.data)
+          && capabilityGranted(resource.data.orgId, 'coordination.barangay');
     }
 
     function mophCanReadCoordinationThread() {
-      return isMoph() && isValidCoordinationPhase(resource.data.phase);
+      return userRole() == 'moph'
+          && mophHospitalCoordinationGranted()
+          && resource.data.keys().hasAll(['phase'])
+          && isValidCoordinationPhase(resource.data.phase);
+    }
+
+    function barangayRoleCanReadCoordinationThread() {
+      return userRole() == 'barangay' && barangayCanReadCoordinationThread();
     }
 
     match /caseCoordinationThreads/{threadId} {
-      allow read: if mophCanReadCoordinationThread() || barangayCanReadCoordinationThread();
+      allow read: if mophCanReadCoordinationThread() || barangayRoleCanReadCoordinationThread();
 
       allow create, update, delete: if false;
 
@@ -356,16 +430,23 @@ service cloud.firestore {
       }
     }
 
+    function assistanceRequestData(assistanceRequestId) {
+      return get(/databases/$(database)/documents/teenAssistanceRequests/$(assistanceRequestId)).data;
+    }
+
     function barangayCanReadCoordinationRegistry(assistanceRequestId) {
-      return isBarangay()
-          && hasAssignedBarangay(userDoc())
-          && exists(/databases/$(database)/documents/teenAssistanceRequests/$(assistanceRequestId))
-          && get(/databases/$(database)/documents/teenAssistanceRequests/$(assistanceRequestId)).data.barangay
-              == userDoc().assignedBarangay
+      return exists(/databases/$(database)/documents/teenAssistanceRequests/$(assistanceRequestId))
+          && documentHasOrgId(assistanceRequestData(assistanceRequestId))
+          && capabilityGranted(
+              assistanceRequestData(assistanceRequestId).orgId, 'coordination.barangay')
           && (
             !exists(/databases/$(database)/documents/barangayCoordinationRegistry/$(assistanceRequestId))
-            || get(/databases/$(database)/documents/barangayCoordinationRegistry/$(assistanceRequestId)).data.barangay
-                == userDoc().assignedBarangay
+            || (
+              documentHasOrgId(
+                  get(/databases/$(database)/documents/barangayCoordinationRegistry/$(assistanceRequestId)).data)
+              && get(/databases/$(database)/documents/barangayCoordinationRegistry/$(assistanceRequestId)).data.orgId
+                  == assistanceRequestData(assistanceRequestId).orgId
+            )
           );
     }
 

@@ -8,6 +8,7 @@ import {
   assertSucceeds,
 } from "@firebase/rules-unit-testing";
 import { Timestamp } from "firebase/firestore";
+import { ORG_BARANGAY_DEMO, setupM2DemoAuth } from "./helpers/org_auth_seed.mjs";
 
 const rulesPath = resolve(
   fileURLToPath(new URL(".", import.meta.url)),
@@ -33,6 +34,7 @@ let testEnv;
 function validThreadHeader(overrides = {}) {
   return {
     barangay: site,
+    orgId: ORG_BARANGAY_DEMO,
     displayRef: "SIBOL-REF-DEMO-001",
     category: "generalSupport",
     barangayReferralSummary:
@@ -57,6 +59,7 @@ function barangayThreadListQuery(db, barangay) {
   return db
     .collection("caseCoordinationThreads")
     .where("barangay", "==", barangay)
+    .where("orgId", "==", ORG_BARANGAY_DEMO)
     .where("phase", "==", "referred")
     .orderBy("lastStaffEventAt", "desc");
 }
@@ -65,6 +68,7 @@ function barangaySubmittedReferralsQuery(db, barangay) {
   return db
     .collection("caseCoordinationThreads")
     .where("barangay", "==", barangay)
+    .where("orgId", "==", ORG_BARANGAY_DEMO)
     .where("phase", "in", ["referred", "awaitingBarangay", "awaitingMoph", "closed"])
     .orderBy("lastStaffEventAt", "desc");
 }
@@ -108,6 +112,14 @@ before(async () => {
       role: "moph",
       displayName: "MOPH Demo",
     });
+    await setupM2DemoAuth(db, {
+      barangayUid,
+      barangayUid2,
+      teenUid,
+      teenUid2,
+      mophUid,
+      otherSite,
+    });
 
     await db.collection("caseCoordinationThreads").doc(threadId).set(
       validThreadHeader(),
@@ -137,6 +149,7 @@ before(async () => {
     await db.collection("teenAssistanceRequests").doc(assistanceRequestId).set({
       teenUid,
       barangay: site,
+      orgId: ORG_BARANGAY_DEMO,
       category: "healthInformation",
       description: "Fictional assistance request for coordination rules tests.",
       status: "acknowledged",
@@ -147,6 +160,7 @@ before(async () => {
     await db.collection("barangayCoordinationRegistry").doc(assistanceRequestId).set({
       threadId,
       barangay: site,
+      orgId: ORG_BARANGAY_DEMO,
       teenUid,
       active: true,
       createdAt: now,
@@ -281,6 +295,7 @@ describe("barangayCoordinationRegistry reads", () => {
       await db.collection("teenAssistanceRequests").doc(unregisteredId).set({
         teenUid,
         barangay: site,
+        orgId: ORG_BARANGAY_DEMO,
         category: "generalSupport",
         description: "Fictional request without coordination registry row.",
         status: "acknowledged",
