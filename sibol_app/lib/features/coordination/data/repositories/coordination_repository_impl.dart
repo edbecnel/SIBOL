@@ -60,11 +60,9 @@ class CoordinationRepositoryImpl implements CoordinationRepository {
   }
 
   @override
-  Stream<List<CoordinationThread>> watchSubmittedReferralsForBarangay(
-    String barangay,
-  ) {
+  Stream<List<CoordinationThread>> watchSubmittedReferralsForOrg(String orgId) {
     return _threads
-        .where('barangay', isEqualTo: barangay)
+        .where('orgId', isEqualTo: orgId)
         .where('phase', whereIn: _allPhases)
         .orderBy('lastStaffEventAt', descending: true)
         .snapshots()

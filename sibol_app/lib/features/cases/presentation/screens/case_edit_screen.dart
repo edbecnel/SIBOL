@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sibol_app/core/constants/demo_org_constants.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
+import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/cases/domain/case_status.dart';
 import 'package:sibol_app/features/cases/domain/case_validation.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
@@ -73,12 +73,16 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
     final now = DateTime.now();
     final age = int.parse(_ageController.text.trim());
     if (widget.isCreate) {
+      final orgId = ref.read(barangayCaseOrgIdProvider);
+      if (orgId == null) {
+        throw StateError('Organization context is not available for case create.');
+      }
       return CaseRecord(
         caseId: '',
         demoName: _demoNameController.text.trim(),
         age: age,
         barangay: _barangayController.text.trim(),
-        orgId: DemoOrgConstants.barangayTresOrgId,
+        orgId: orgId,
         caseStatus: _caseStatus,
         registeredAt: now,
         notes: _notesController.text.trim(),

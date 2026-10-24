@@ -14,9 +14,7 @@ class FakeCoordinationRepository implements CoordinationRepository {
   final Map<String, Stream<List<CoordinationStaffEvent>>> staffEventStreams;
 
   @override
-  Stream<List<CoordinationThread>> watchSubmittedReferralsForBarangay(
-    String barangay,
-  ) {
+  Stream<List<CoordinationThread>> watchSubmittedReferralsForOrg(String orgId) {
     return submittedReferralsStream ?? Stream.value(const []);
   }
 

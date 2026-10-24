@@ -1,30 +1,30 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
-import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/teenager/domain/entities/assistance_request.dart';
 
 final barangayIncomingRequestsProvider =
     StreamProvider<List<AssistanceRequest>>((ref) {
-  final profile = ref.watch(userProfileProvider).value;
-  final barangay = profile?.assignedBarangay;
-  if (barangay == null || barangay.isEmpty) {
+  final orgId = ref.watch(barangayAssistanceOrgIdProvider);
+  if (orgId == null) {
     return Stream.error(
-      StateError('Barangay site is not configured on your profile.'),
+      StateError(
+        'Organization context is not available for barangay assistance inbox.',
+      ),
     );
   }
   return ref
       .watch(assistanceRequestRepositoryProvider)
-      .watchIncomingForBarangay(barangay);
+      .watchIncomingForOrg(orgId);
 });
 
 final barangayAssistanceRequestDetailProvider =
     StreamProvider.family<AssistanceRequest?, String>((ref, requestId) {
-  final profile = ref.watch(userProfileProvider).value;
-  final barangay = profile?.assignedBarangay;
-  if (barangay == null || barangay.isEmpty) {
+  final orgId = ref.watch(barangayAssistanceOrgIdProvider);
+  if (orgId == null) {
     return const Stream.empty();
   }
   return ref
       .watch(assistanceRequestRepositoryProvider)
-      .watchRequestForBarangay(requestId, barangay);
+      .watchRequestForOrg(requestId, orgId);
 });

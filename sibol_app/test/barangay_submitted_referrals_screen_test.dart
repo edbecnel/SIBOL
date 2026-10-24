@@ -7,7 +7,9 @@ import 'package:sibol_app/core/permissions/sibol_role.dart';
 import 'package:sibol_app/features/coordination/domain/coordination_phase.dart';
 import 'package:sibol_app/features/coordination/domain/entities/coordination_thread.dart';
 import 'package:sibol_app/features/coordination/presentation/providers/coordination_providers.dart';
+import 'package:sibol_app/core/constants/demo_org_constants.dart';
 import 'package:sibol_app/features/coordination/presentation/screens/barangay_submitted_referrals_screen.dart';
+import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_category.dart';
 import 'support/fake_coordination_repository.dart';
 
@@ -44,6 +46,9 @@ void main() {
       overrides: [
         userProfileProvider.overrideWith((ref) => Stream.value(profile)),
         coordinationRepositoryProvider.overrideWithValue(repo),
+        barangayCoordinationOrgIdProvider.overrideWithValue(
+          DemoOrgConstants.barangayTresOrgId,
+        ),
       ],
       child: const MaterialApp(
         home: BarangaySubmittedReferralsScreen(),

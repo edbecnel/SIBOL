@@ -1,6 +1,22 @@
 {
   "indexes": [
     {
+      "collectionGroup": "cases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgId", "order": "ASCENDING" },
+        { "fieldPath": "registeredAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "teenAssistanceRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "teenAssistanceRequests",
       "queryScope": "COLLECTION",
       "fields": [
@@ -63,10 +79,28 @@
       "collectionGroup": "caseCoordinationThreads",
       "queryScope": "COLLECTION",
       "fields": [
+        { "fieldPath": "orgId", "order": "ASCENDING" },
+        { "fieldPath": "phase", "order": "ASCENDING" },
+        { "fieldPath": "lastStaffEventAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "caseCoordinationThreads",
+      "queryScope": "COLLECTION",
+      "fields": [
         { "fieldPath": "barangay", "order": "ASCENDING" },
         { "fieldPath": "orgId", "order": "ASCENDING" },
         { "fieldPath": "phase", "order": "ASCENDING" },
         { "fieldPath": "lastStaffEventAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "reports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgId", "order": "ASCENDING" },
+        { "fieldPath": "reportStatus", "order": "ASCENDING" },
+        { "fieldPath": "acceptedAt", "order": "DESCENDING" }
       ]
     },
     {

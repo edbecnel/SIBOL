@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sibol_app/core/constants/demo_org_constants.dart';
 import 'package:sibol_app/core/constants/firestore_paths.dart';
 import 'package:sibol_app/features/teenager/data/models/assistance_request_model.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_category.dart';
@@ -44,9 +43,9 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
   }
 
   @override
-  Stream<List<AssistanceRequest>> watchIncomingForBarangay(String barangay) {
+  Stream<List<AssistanceRequest>> watchIncomingForOrg(String orgId) {
     return _collection
-        .where('barangay', isEqualTo: barangay)
+        .where('orgId', isEqualTo: orgId)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
@@ -60,16 +59,16 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
   }
 
   @override
-  Stream<AssistanceRequest?> watchRequestForBarangay(
+  Stream<AssistanceRequest?> watchRequestForOrg(
     String requestId,
-    String barangay,
+    String orgId,
   ) {
     return _collection.doc(requestId).snapshots().map((snap) {
       if (!snap.exists) return null;
       final data = snap.data();
       if (data == null) return null;
       final model = AssistanceRequestModel.fromFirestore(snap.id, data);
-      if (model.barangay != barangay) return null;
+      if (model.orgId != orgId) return null;
       return model.toEntity();
     });
   }
@@ -78,7 +77,7 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
   Future<String> createRequest({
     required String teenUid,
     required String barangay,
-    String? orgId,
+    required String orgId,
     required AssistanceRequestCategory category,
     required String description,
   }) async {
@@ -88,7 +87,7 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
       requestId: ref.id,
       teenUid: teenUid,
       barangay: barangay,
-      orgId: orgId ?? DemoOrgConstants.barangayTresOrgId,
+      orgId: orgId,
       category: category.firestoreValue,
       description: description.trim(),
       status: AssistanceRequestStatus.submitted.firestoreValue,

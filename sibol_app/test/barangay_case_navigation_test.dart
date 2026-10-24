@@ -4,8 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
+import 'package:sibol_app/core/constants/demo_org_constants.dart';
 import 'package:sibol_app/features/cases/presentation/screens/barangay_home_screen.dart';
 import 'package:sibol_app/features/cases/presentation/screens/case_detail_screen.dart';
+import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'support/fake_case_repository.dart';
 import 'support/sample_case_records.dart';
 
@@ -42,6 +44,9 @@ void main() {
       ProviderScope(
         overrides: [
           caseRepositoryProvider.overrideWithValue(repo),
+          barangayCaseOrgIdProvider.overrideWithValue(
+            DemoOrgConstants.barangayTresOrgId,
+          ),
         ],
         child: MaterialApp.router(routerConfig: router),
       ),

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sibol_app/core/constants/demo_org_constants.dart';
 import 'package:sibol_app/core/constants/firestore_paths.dart';
 import 'package:sibol_app/features/reporting/data/models/moph_aggregate_report_model.dart';
 import 'package:sibol_app/features/reporting/domain/barangay_report_aggregate.dart';
@@ -47,9 +46,9 @@ class ReportRepositoryImpl implements ReportRepository {
   }
 
   @override
-  Stream<List<MophAggregateReport>> watchReportsForBarangay(String barangay) {
+  Stream<List<MophAggregateReport>> watchReportsForOrg(String orgId) {
     return _collection
-        .where('barangay', isEqualTo: barangay)
+        .where('orgId', isEqualTo: orgId)
         .where('reportStatus', isEqualTo: 'submitted')
         .where('acceptedAt', isGreaterThan: _minAcceptedAt)
         .orderBy('acceptedAt', descending: true)
@@ -65,16 +64,16 @@ class ReportRepositoryImpl implements ReportRepository {
   }
 
   @override
-  Stream<MophAggregateReport?> watchReportForBarangay(
+  Stream<MophAggregateReport?> watchReportForOrg(
     String reportId,
-    String barangay,
+    String orgId,
   ) {
     return _collection.doc(reportId).snapshots().map((snap) {
       if (!snap.exists) return null;
       final data = snap.data();
       if (data == null) return null;
       final model = MophAggregateReportModel.fromFirestore(snap.id, data);
-      if (model.barangay != barangay || model.reportStatus != 'submitted') {
+      if (model.orgId != orgId || model.reportStatus != 'submitted') {
         return null;
       }
       return model.toEntity();
@@ -84,13 +83,14 @@ class ReportRepositoryImpl implements ReportRepository {
   @override
   Future<String> submitBarangayAggregateReport({
     required String submittedByUid,
+    required String orgId,
     required BarangayReportAggregateCounts counts,
   }) async {
     final now = DateTime.now();
     final model = MophAggregateReportModel(
       reportId: '',
       barangay: counts.barangay,
-      orgId: DemoOrgConstants.barangayTresOrgId,
+      orgId: orgId,
       submittedAt: now,
       submittedByUid: submittedByUid,
       totalCaseCount: counts.totalCaseCount,

@@ -6,7 +6,7 @@ import 'package:sibol_app/features/auth/presentation/providers/auth_providers.da
 import 'package:sibol_app/features/teenager/domain/assistance_request_category.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_validation.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
-import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/teenager/presentation/widgets/teen_non_emergency_notice.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/app_text_field.dart';
@@ -57,6 +57,12 @@ class _AssistanceRequestFormScreenState
           'Your demo profile is missing barangay assignment. Contact the administrator.');
       return;
     }
+    final orgId = ref.read(teenBarangayOrgIdProvider);
+    if (orgId == null) {
+      setState(() => _formError =
+          'Your profile is missing organization routing. Contact the administrator.');
+      return;
+    }
 
     setState(() => _submitting = true);
     try {
@@ -65,6 +71,7 @@ class _AssistanceRequestFormScreenState
           .createRequest(
             teenUid: uid,
             barangay: barangay,
+            orgId: orgId,
             category: _category!,
             description: _descriptionController.text,
           );

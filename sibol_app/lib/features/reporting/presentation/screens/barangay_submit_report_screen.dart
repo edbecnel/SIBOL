@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/reporting/domain/barangay_report_aggregate.dart';
+import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/reporting/presentation/providers/report_providers.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
@@ -26,6 +27,15 @@ class _BarangaySubmitReportScreenState
     final profile = ref.read(userProfileProvider).value;
     final auth = ref.read(authStateChangesProvider).value;
     if (profile == null || auth == null) return;
+    final orgId = ref.read(barangayReportOrgIdProvider);
+    if (orgId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Organization context is not available for report submit.'),
+        ),
+      );
+      return;
+    }
 
     setState(() => _submitting = true);
     try {
@@ -33,6 +43,7 @@ class _BarangaySubmitReportScreenState
           .read(reportRepositoryProvider)
           .submitBarangayAggregateReport(
             submittedByUid: auth.uid,
+            orgId: orgId,
             counts: counts,
           );
       if (!mounted) return;

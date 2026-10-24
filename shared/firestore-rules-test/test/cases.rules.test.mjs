@@ -133,6 +133,28 @@ describe("cases collection", () => {
     );
   });
 
+  it("allows barangay org-scoped list query for home org", async () => {
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertSucceeds(
+      db
+        .collection("cases")
+        .where("orgId", "==", ORG_BARANGAY_DEMO)
+        .orderBy("registeredAt", "desc")
+        .get(),
+    );
+  });
+
+  it("denies barangay list query for other org", async () => {
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertFails(
+      db
+        .collection("cases")
+        .where("orgId", "==", ORG_BARANGAY_OTHER)
+        .orderBy("registeredAt", "desc")
+        .get(),
+    );
+  });
+
   it("allows barangay to read provisioned demo-style case and follow-ups", async () => {
     const db = testEnv.authenticatedContext(barangayUid).firestore();
     await assertSucceeds(db.collection("cases").doc("demo-case-read").get());

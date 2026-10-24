@@ -4,7 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/cases/presentation/screens/case_edit_screen.dart';
+import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'support/fake_case_repository.dart';
+
+const _testOrgId = 'org0123456789012345678901';
 
 void main() {
   testWidgets('create screen validates empty demo name', (tester) async {
@@ -14,6 +17,7 @@ void main() {
       ProviderScope(
         overrides: [
           caseRepositoryProvider.overrideWithValue(repo),
+          barangayCaseOrgIdProvider.overrideWithValue(_testOrgId),
         ],
         child: const MaterialApp(home: CaseEditScreen()),
       ),
@@ -46,6 +50,7 @@ void main() {
       ProviderScope(
         overrides: [
           caseRepositoryProvider.overrideWithValue(repo),
+          barangayCaseOrgIdProvider.overrideWithValue(_testOrgId),
         ],
         child: MaterialApp.router(routerConfig: router),
       ),
@@ -57,7 +62,7 @@ void main() {
     await tester.tap(find.text('Create case'));
     await tester.pumpAndSettle();
 
-    final cases = await repo.fetchCases();
+    final cases = await repo.fetchCasesForOrg(_testOrgId);
     expect(cases.length, 1);
     expect(cases.first.demoName, 'New Demo');
   });

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/cases/presentation/providers/case_providers.dart';
+import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/reporting/data/repositories/report_repository_impl.dart';
 import 'package:sibol_app/features/reporting/domain/barangay_report_aggregate.dart';
 import 'package:sibol_app/features/reporting/domain/entities/moph_aggregate_report.dart';
@@ -23,26 +24,22 @@ final mophReportDetailProvider =
 
 final barangaySubmittedReportsProvider =
     StreamProvider<List<MophAggregateReport>>((ref) {
-  final profile = ref.watch(userProfileProvider).value;
-  final barangay = profile?.assignedBarangay;
-  if (barangay == null || barangay.isEmpty) {
+  final orgId = ref.watch(barangayReportOrgIdProvider);
+  if (orgId == null) {
     return Stream.error(
-      StateError('Barangay site is not configured on your profile.'),
+      StateError('Organization context is not available for barangay reports.'),
     );
   }
-  return ref.watch(reportRepositoryProvider).watchReportsForBarangay(barangay);
+  return ref.watch(reportRepositoryProvider).watchReportsForOrg(orgId);
 });
 
 final barangayReportReceiptProvider =
     StreamProvider.family<MophAggregateReport?, String>((ref, reportId) {
-  final profile = ref.watch(userProfileProvider).value;
-  final barangay = profile?.assignedBarangay;
-  if (barangay == null || barangay.isEmpty) {
+  final orgId = ref.watch(barangayReportOrgIdProvider);
+  if (orgId == null) {
     return const Stream.empty();
   }
-  return ref
-      .watch(reportRepositoryProvider)
-      .watchReportForBarangay(reportId, barangay);
+  return ref.watch(reportRepositoryProvider).watchReportForOrg(reportId, orgId);
 });
 
 final barangayReportAggregateProvider =

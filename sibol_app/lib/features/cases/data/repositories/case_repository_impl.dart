@@ -13,9 +13,10 @@ class CaseRepositoryImpl implements CaseRepository {
   final FirebaseFirestore _firestore;
 
   @override
-  Stream<List<CaseRecord>> watchCases() {
+  Stream<List<CaseRecord>> watchCasesForOrg(String orgId) {
     return _firestore
         .collection(FirestorePaths.cases)
+        .where('orgId', isEqualTo: orgId)
         .orderBy('registeredAt', descending: true)
         .snapshots()
         .map((snap) => snap.docs
@@ -24,9 +25,10 @@ class CaseRepositoryImpl implements CaseRepository {
   }
 
   @override
-  Future<List<CaseRecord>> fetchCases() async {
+  Future<List<CaseRecord>> fetchCasesForOrg(String orgId) async {
     final snap = await _firestore
         .collection(FirestorePaths.cases)
+        .where('orgId', isEqualTo: orgId)
         .orderBy('registeredAt', descending: true)
         .get();
     return snap.docs

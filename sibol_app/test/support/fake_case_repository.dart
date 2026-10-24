@@ -17,10 +17,13 @@ class FakeCaseRepository implements CaseRepository {
   final Map<String, Stream<List<FollowUp>>> _followUpStreams;
 
   @override
-  Stream<List<CaseRecord>> watchCases() => Stream.value(_cases);
+  Stream<List<CaseRecord>> watchCasesForOrg(String orgId) => Stream.value(
+        _cases.where((c) => c.orgId == orgId).toList(),
+      );
 
   @override
-  Future<List<CaseRecord>> fetchCases() async => _cases;
+  Future<List<CaseRecord>> fetchCasesForOrg(String orgId) async =>
+      _cases.where((c) => c.orgId == orgId).toList();
 
   @override
   Stream<CaseRecord?> watchCase(String caseId) {

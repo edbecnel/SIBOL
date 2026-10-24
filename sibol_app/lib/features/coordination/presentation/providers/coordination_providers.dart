@@ -1,7 +1,7 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
-import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/coordination/data/repositories/coordination_repository_impl.dart';
 import 'package:sibol_app/features/coordination/domain/entities/coordination_staff_event.dart';
 import 'package:sibol_app/features/coordination/domain/entities/coordination_thread.dart';
@@ -41,16 +41,17 @@ final mophCoordinationStaffEventsProvider =
 
 final barangaySubmittedReferralsProvider =
     StreamProvider<List<CoordinationThread>>((ref) {
-  final profile = ref.watch(userProfileProvider).value;
-  final barangay = profile?.assignedBarangay;
-  if (barangay == null || barangay.isEmpty) {
+  final orgId = ref.watch(barangayCoordinationOrgIdProvider);
+  if (orgId == null) {
     return Stream.error(
-      StateError('Barangay site is not configured on your profile.'),
+      StateError(
+        'Organization context is not available for barangay coordination.',
+      ),
     );
   }
   return ref
       .watch(coordinationRepositoryProvider)
-      .watchSubmittedReferralsForBarangay(barangay);
+      .watchSubmittedReferralsForOrg(orgId);
 });
 
 final barangayCoordinationThreadProvider =

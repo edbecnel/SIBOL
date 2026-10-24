@@ -6,16 +6,17 @@ abstract class AssistanceRequestRepository {
 
   Stream<AssistanceRequest?> watchRequest(String requestId, String teenUid);
 
-  Stream<List<AssistanceRequest>> watchIncomingForBarangay(String barangay);
+  Stream<List<AssistanceRequest>> watchIncomingForOrg(String orgId);
 
-  Stream<AssistanceRequest?> watchRequestForBarangay(
+  Stream<AssistanceRequest?> watchRequestForOrg(
     String requestId,
-    String barangay,
+    String orgId,
   );
 
   Future<String> createRequest({
     required String teenUid,
     required String barangay,
+    required String orgId,
     required AssistanceRequestCategory category,
     required String description,
   });

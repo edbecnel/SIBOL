@@ -9,6 +9,8 @@ class UserProfile extends Equatable {
     required this.active,
     required this.createdAt,
     this.assignedBarangay,
+    this.primaryOrgId,
+    this.selectedBarangayOrgId,
   });
 
   final String uid;
@@ -20,7 +22,21 @@ class UserProfile extends Equatable {
   /// Provisioned demo site label; used for teen assistance routing (not client-writable).
   final String? assignedBarangay;
 
+  /// Server/migration-set hospital or barangay org context (not client-writable).
+  final String? primaryOrgId;
+
+  /// Teen routing org for assistance (not client-writable).
+  final String? selectedBarangayOrgId;
+
   @override
-  List<Object?> get props =>
-      [uid, role, displayName, active, createdAt, assignedBarangay];
+  List<Object?> get props => [
+        uid,
+        role,
+        displayName,
+        active,
+        createdAt,
+        assignedBarangay,
+        primaryOrgId,
+        selectedBarangayOrgId,
+      ];
 }

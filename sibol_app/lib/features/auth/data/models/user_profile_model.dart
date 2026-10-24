@@ -10,6 +10,8 @@ class UserProfileModel {
     required this.active,
     required this.createdAt,
     this.assignedBarangay,
+    this.primaryOrgId,
+    this.selectedBarangayOrgId,
   });
 
   final String uid;
@@ -18,6 +20,8 @@ class UserProfileModel {
   final bool active;
   final DateTime createdAt;
   final String? assignedBarangay;
+  final String? primaryOrgId;
+  final String? selectedBarangayOrgId;
 
   factory UserProfileModel.fromFirestore(String uid, Map<String, dynamic> data) {
     final created = data['createdAt'];
@@ -28,6 +32,8 @@ class UserProfileModel {
       active: data['active'] as bool? ?? false,
       createdAt: created is Timestamp ? created.toDate() : DateTime.now(),
       assignedBarangay: data['assignedBarangay'] as String?,
+      primaryOrgId: data['primaryOrgId'] as String?,
+      selectedBarangayOrgId: data['selectedBarangayOrgId'] as String?,
     );
   }
 
@@ -43,6 +49,8 @@ class UserProfileModel {
       active: active,
       createdAt: createdAt,
       assignedBarangay: assignedBarangay,
+      primaryOrgId: primaryOrgId,
+      selectedBarangayOrgId: selectedBarangayOrgId,
     );
   }
 }
