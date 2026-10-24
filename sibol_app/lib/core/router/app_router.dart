@@ -27,6 +27,12 @@ import 'package:sibol_app/features/teenager/presentation/screens/assistance_requ
 import 'package:sibol_app/features/teenager/presentation/screens/assistance_request_list_screen.dart';
 import 'package:sibol_app/features/teenager/presentation/screens/teen_home_screen.dart';
 import 'package:sibol_app/features/auth/presentation/screens/unauthorized_screen.dart';
+import 'package:sibol_app/features/admin/presentation/screens/central_admin_org_detail_screen.dart';
+import 'package:sibol_app/features/admin/presentation/screens/central_admin_organizations_screen.dart';
+import 'package:sibol_app/features/admin/presentation/screens/create_organization_screen.dart';
+import 'package:sibol_app/features/admin/presentation/screens/my_invitations_screen.dart';
+import 'package:sibol_app/features/admin/presentation/screens/org_admin_invitations_screen.dart';
+import 'package:sibol_app/features/admin/presentation/screens/org_admin_staff_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -183,6 +189,43 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.settings,
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: Routes.centralAdminOrganizations,
+        builder: (context, state) => const CentralAdminOrganizationsScreen(),
+        routes: [
+          GoRoute(
+            path: 'new',
+            builder: (context, state) => const CreateOrganizationScreen(),
+          ),
+          GoRoute(
+            path: ':orgId',
+            builder: (context, state) {
+              final orgId = state.pathParameters['orgId']!;
+              return CentralAdminOrgDetailScreen(orgId: orgId);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/admin/org/:orgId/staff',
+        builder: (context, state) {
+          final orgId = state.pathParameters['orgId']!;
+          return OrgAdminStaffScreen(orgId: orgId);
+        },
+        routes: [
+          GoRoute(
+            path: 'invitations',
+            builder: (context, state) {
+              final orgId = state.pathParameters['orgId']!;
+              return OrgAdminInvitationsScreen(orgId: orgId);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: Routes.myInvitations,
+        builder: (context, state) => const MyInvitationsScreen(),
       ),
     ],
   );

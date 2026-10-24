@@ -61,4 +61,17 @@ abstract final class Routes {
 
   static const settings = '/settings';
   static const unauthorized = '/unauthorized';
+
+  static const centralAdminOrganizations = '/admin/organizations';
+  static const centralAdminCreateOrganization = '/admin/organizations/new';
+
+  static String centralAdminOrganizationDetail(String orgId) =>
+      '/admin/organizations/$orgId';
+
+  static String orgAdminStaff(String orgId) => '/admin/org/$orgId/staff';
+
+  static String orgAdminInvitations(String orgId) =>
+      '/admin/org/$orgId/staff/invitations';
+
+  static const myInvitations = '/admin/my-invitations';
 }

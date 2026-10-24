@@ -11,6 +11,7 @@ class UserProfile extends Equatable {
     this.assignedBarangay,
     this.primaryOrgId,
     this.selectedBarangayOrgId,
+    this.isCentralAdmin = false,
   });
 
   final String uid;
@@ -28,6 +29,9 @@ class UserProfile extends Equatable {
   /// Teen routing org for assistance (not client-writable).
   final String? selectedBarangayOrgId;
 
+  /// Server-controlled; not client-writable (see Firestore rules).
+  final bool isCentralAdmin;
+
   @override
   List<Object?> get props => [
         uid,
@@ -38,5 +42,6 @@ class UserProfile extends Equatable {
         assignedBarangay,
         primaryOrgId,
         selectedBarangayOrgId,
+        isCentralAdmin,
       ];
 }
