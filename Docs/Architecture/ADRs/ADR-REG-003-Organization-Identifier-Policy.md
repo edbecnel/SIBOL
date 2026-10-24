@@ -24,3 +24,8 @@ Organization names and types change; authorization must not depend on display st
 ## Security
 
 An organization id is not a credential. Access remains membership- and capability-based (REG-A/M2 invariants unchanged).
+
+## Related
+
+- [ADR-REG-003 acceptance package](../../Development/ADR-REG-003-ACCEPTANCE-PACKAGE.md) (M0 — status change requires PA EDF acceptance)
+- [ADR-REG-004](ADR-REG-004-Organization-Geographic-and-Facility-Identity.md) (proposed business identity)

@@ -15,6 +15,8 @@ This directory contains individual Architecture Decision Records.
 | [ADR-0005](ADR-0005-Case-Coordination-Minimum-Information.md) | Case coordination document-path privacy (DEC-CASE-001) | Accepted | 2026-10-24 |
 | [ADR-REG-001](ADR-REG-001-Organization-Identity-and-Membership.md) | Organization `orgId` and membership (DEC-001, DEC-005) | Accepted (architecture) | 2026-10-24 |
 | [ADR-REG-002](ADR-REG-002-Administrative-Authorization-and-Provisioning.md) | Central/org admin and trusted provisioning (DEC-002, DEC-004, DEC-006, DEC-008) | Accepted (architecture) | 2026-10-24 |
+| [ADR-REG-003](ADR-REG-003-Organization-Identifier-Policy.md) | Organization `orgId` generation and validation (INT-001-AMEND-001) | Proposed | 2026-10-24 |
+| [ADR-REG-004](ADR-REG-004-Organization-Geographic-and-Facility-Identity.md) | PSGC/NHFR business identity and identity-key registry (ORG-IDENTITY-001) | Proposed | 2026-10-25 |
 
 ## Navigation
 

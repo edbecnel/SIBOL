@@ -4,6 +4,10 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- SIBOL-ORG-IDENTITY-001 **M0 (AGENT-001):** investigation and implementation plan publication, ADR-REG-003 acceptance package, proposed ADR-REG-004, draft contracts (GEO/NHFR/REG amendments/idempotency), proposed schemas, PSGC/NHFR acquisition docs, G-NHFR register, MVR-ORG-IDENTITY-001 (NR), SEC-REVIEW-001 deferred, roadmap — **no application code** (`SIBOL-ORG-IDENTITY-001-AGENT-001`).
+
 ### Accepted
 
 - SIBOL-REG-001 **REG-A accepted with conditions** (implementation @ `4eafa5e`; closure `SIBOL-REG-001-REG-A-ACCEPT-CLOSE-001`). M1/M2 RC addresses `assertActiveOrganization` tests and membership query indexes in repo; full Functions `npm test` via isolated emulator still required before deploy; separate DEPLOY-R1/M1/M2 gates; MVR-REG-001 **NOT RUN**. **Not** Firebase deployment authorization.

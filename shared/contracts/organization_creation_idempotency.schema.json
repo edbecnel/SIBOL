@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SibolOrganizationCreationIdempotency",
+  "description": "Durable idempotency record for org create callables. Draft M0.",
+  "type": "object",
+  "required": [
+    "idempotencyKey",
+    "centralAdminUid",
+    "operation",
+    "status",
+    "requestFingerprint",
+    "createdAt"
+  ],
+  "properties": {
+    "idempotencyKey": { "type": "string", "format": "uuid" },
+    "centralAdminUid": { "type": "string", "minLength": 20, "maxLength": 128 },
+    "operation": {
+      "enum": [
+        "create_barangay_organization",
+        "create_hospital_organization"
+      ]
+    },
+    "status": {
+      "enum": ["in_progress", "completed", "failed"]
+    },
+    "requestFingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 hex of canonical request body"
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "orgId": { "type": "string" },
+        "invitationId": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "errorCode": { "type": "string" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "completedAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

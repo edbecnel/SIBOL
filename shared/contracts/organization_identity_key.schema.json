@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SibolOrganizationIdentityKey",
+  "description": "Permanent business-identity reservation (v1 — no release fields). Draft M0.",
+  "type": "object",
+  "required": [
+    "identityKey",
+    "identityKind",
+    "businessCode",
+    "orgId",
+    "referenceVersion",
+    "reservedAt"
+  ],
+  "properties": {
+    "identityKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Document id, e.g. barangay:PSGC:0128101001 or synthetic:demo:barangay03"
+    },
+    "identityKind": {
+      "enum": ["barangay_psgc", "hospital_nhfr", "synthetic_demo"]
+    },
+    "businessCode": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "orgId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "referenceVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "psgcVersion or nhfrSnapshotVersion at reservation"
+    },
+    "reservedAt": { "type": "string", "format": "date-time" },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  },
+  "additionalProperties": false
+}
