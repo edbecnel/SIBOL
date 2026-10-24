@@ -15,6 +15,8 @@ Engineering practices, tooling, and environment setup for the SIBOL software del
 |----------|-------------|
 | [WORK_ITEM_REGISTER.md](WORK_ITEM_REGISTER.md) | Index of engineering work items |
 | [SIBOL_REG_001_ARCH_DOC_EXECUTION_REPORT.md](SIBOL_REG_001_ARCH_DOC_EXECUTION_REPORT.md) | SIBOL-REG-001 architecture documentation (handover ARCH-DOC-001) |
+| [SIBOL_REG_001_REG_A_IMPLEMENTATION_SPEC.md](SIBOL_REG_001_REG_A_IMPLEMENTATION_SPEC.md) | REG-A implementation baseline |
+| [SIBOL_REG_001_REG_A_EXECUTION_REPORT.md](SIBOL_REG_001_REG_A_EXECUTION_REPORT.md) | REG-A foundation delivery |
 | [SIBOL_CASE_COORD_001_PLAN.md](SIBOL_CASE_COORD_001_PLAN.md) | Barangay–MOPH case coordination |
 | [SIBOL_CASE_COORD_001_INCREMENT_B_EXECUTION_REPORT.md](SIBOL_CASE_COORD_001_INCREMENT_B_EXECUTION_REPORT.md) | Increment B — referral + MOPH review (local) |
 | [SIBOL_v0.5.0_RELEASE_MILESTONE.md](SIBOL_v0.5.0_RELEASE_MILESTONE.md) | **v0.5.0** Android & iOS demonstration milestone (published 2026-10-22) |

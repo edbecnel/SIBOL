@@ -6,6 +6,7 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- SIBOL-REG-001 REG-A: organization/membership schemas, authz primitives, Firestore rules foundation (not deployed), rules tests (+11), Flutter read-only org repositories (`SIBOL-REG-001-REG-A-AGENT-001`).
 - SIBOL-REG-001: Architecture documentation package — SPEC-REG-001, ADR-REG-001/002, CONTRACT-REG-001, MVR-REG-001 (verification **NOT RUN**); handover `SIBOL-REG-001-ARCH-DOC-001`.
 - SIBOL-CASE-COORD-001: Registry rules v2 operator closure record (4/4 smoke attestation); MVR-0008 assistance-request-id addendum.
 
