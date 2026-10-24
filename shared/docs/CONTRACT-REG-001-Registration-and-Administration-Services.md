@@ -71,6 +71,12 @@ Define **proposed** HTTPS callable interfaces for organization lifecycle, staff 
 - `type` allowed by policy.
 - `name` non-empty.
 - Initial org admin email not already Central Administrator unless policy allows.
+- Caller is Central Administrator (`isCentralAdmin`).
+
+**Organization identifier (INT-001-AMEND-001 / ADR-REG-003 proposed):**
+
+- The server generates `orgId` as the Firestore document id (`generateOrgId()`); clients **must not** supply `orgId` on this callable.
+- Validation: `shared/reg/src/org_id.mjs` (`isValidOrgId`). Demonstration ids: `barangay03`, `hospital01`.
 
 **Effects:**
 

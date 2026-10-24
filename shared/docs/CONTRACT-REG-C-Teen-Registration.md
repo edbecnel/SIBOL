@@ -7,7 +7,7 @@
 
 **Auth:** Optional (unauthenticated allowed).
 
-**Effects:** Returns active `type: barangay` organizations with `orgId`, `name`, optional `legacyBarangayLabel`.
+**Effects:** Returns active `type: barangay` organizations with `orgId`, `name`, optional `legacyBarangayLabel`. Teen `selectedBarangayOrgId` must be a validated org id (e.g. demonstration `barangay03`); routing is org-scoped, not name-based.
 
 **Does not** expose memberships or administrative fields.
 
