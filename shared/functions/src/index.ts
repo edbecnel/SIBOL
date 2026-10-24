@@ -1,17 +1,10 @@
 /**
- * SIBOL Cloud Functions — Tranche 1 stub.
- *
- * Tranche 2 will implement `submitReport` as a trusted callable that:
- * - Verifies the caller is an active barangay user
- * - Validates the case exists and report payload
- * - Writes `reports/{id}` with `reportStatus: submitted` and `acceptedAt`
- * - Updates case `reportStatus` server-side
- *
- * Clients must NOT set MOPH visibility fields directly.
+ * SIBOL Cloud Functions — trusted server operations.
  */
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import { runCreateCoordinationReferral } from "./coordination/createCoordinationReferral";
 
 admin.initializeApp();
 
@@ -23,9 +16,17 @@ export const submitReport = onCall(async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Sign in required.");
   }
-  // Implemented in Tranche 2 (SIBOL-IMP-002).
   throw new HttpsError(
     "failed-precondition",
     "submitReport is not enabled until Tranche 2 authorization.",
+  );
+});
+
+export const createCoordinationReferral = onCall(async (request) => {
+  const db = admin.firestore();
+  return runCreateCoordinationReferral(
+    db,
+    request.auth?.uid,
+    request.data ?? {},
   );
 });

@@ -5,7 +5,8 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
-    "lint": "eslint --ext .js,.ts ."
+    "lint": "eslint --ext .js,.ts .",
+    "test": "npm run build && firebase emulators:exec --only firestore --project demo-sibol-coord-fn \"node --test test/*.test.mjs\""
   },
   "engines": {
     "node": "20"

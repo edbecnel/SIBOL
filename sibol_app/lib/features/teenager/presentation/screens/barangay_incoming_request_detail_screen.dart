@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:sibol_app/core/constants/route_constants.dart';
+import 'package:sibol_app/features/coordination/presentation/providers/coordination_providers.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_status.dart';
@@ -56,6 +59,8 @@ class _BarangayIncomingRequestDetailScreenState
   Widget build(BuildContext context) {
     final requestAsync =
         ref.watch(barangayAssistanceRequestDetailProvider(widget.requestId));
+    final referralExistsAsync =
+        ref.watch(assistanceReferralExistsProvider(widget.requestId));
     final dateFmt = DateFormat.yMMMd().add_jm();
 
     return Scaffold(
@@ -80,6 +85,8 @@ class _BarangayIncomingRequestDetailScreenState
                 }
                 final canAcknowledge =
                     request.status == AssistanceRequestStatus.submitted;
+                final isAcknowledged =
+                    request.status == AssistanceRequestStatus.acknowledged;
                 return ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
@@ -136,6 +143,29 @@ class _BarangayIncomingRequestDetailScreenState
                         label: 'Acknowledge receipt',
                         isLoading: _acknowledging,
                         onPressed: _acknowledging ? null : _acknowledge,
+                      ),
+                    ],
+                    if (isAcknowledged) ...[
+                      const SizedBox(height: 24),
+                      referralExistsAsync.when(
+                        loading: () => const SizedBox.shrink(),
+                        error: (_, __) => const SizedBox.shrink(),
+                        data: (exists) {
+                          if (exists) {
+                            return const Text(
+                              'MOPH coordination referral already submitted '
+                              'for this request.',
+                            );
+                          }
+                          return AppButton.primary(
+                            label: 'Refer to MOPH coordination',
+                            onPressed: () => context.push(
+                              Routes.barangayCoordinationReferral(
+                                widget.requestId,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ],

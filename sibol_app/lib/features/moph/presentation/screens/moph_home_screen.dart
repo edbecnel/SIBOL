@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
+import 'package:sibol_app/features/coordination/presentation/providers/coordination_providers.dart';
 import 'package:sibol_app/features/reporting/presentation/providers/report_providers.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
@@ -13,6 +14,7 @@ class MophHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final coordinationsAsync = ref.watch(mophCoordinationThreadsProvider);
     final reportsAsync = ref.watch(mophSubmittedReportsProvider);
     final dateFmt = DateFormat.yMMMd();
 
@@ -29,56 +31,102 @@ class MophHomeScreen extends ConsumerWidget {
       body: Column(
         children: [
           const FictionalDataBanner(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Text(
-              'Submitted barangay reports (aggregate summaries only).',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
           Expanded(
-            child: reportsAsync.when(
-              loading: () => const AppLoadingIndicator(
-                message: 'Loading submitted reports…',
-              ),
-              error: (e, _) => AppErrorWidget(message: e.toString()),
-              data: (reports) {
-                if (reports.isEmpty) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Text(
-                        'No submitted reports yet. Barangay personnel can submit an '
-                        'aggregate demonstration report from the barangay dashboard.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                }
-                return ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: reports.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
-                  itemBuilder: (context, index) {
-                    final report = reports[index];
-                    return Card(
-                      child: ListTile(
-                        title: Text(report.barangay),
-                        subtitle: Text(
-                          'Submitted ${dateFmt.format(report.submittedAt)}\n'
-                          'Cases represented: ${report.totalCaseCount} · '
-                          'Status: ${report.reportStatus}',
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Text(
+                  'Individual case coordination',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Minimum-information referrals from barangay (not aggregate reports).',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 8),
+                coordinationsAsync.when(
+                  loading: () => const AppLoadingIndicator(
+                    message: 'Loading coordinations…',
+                  ),
+                  error: (e, _) => AppErrorWidget(message: e.toString()),
+                  data: (threads) {
+                    if (threads.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Text(
+                          'No open coordination referrals yet.',
                         ),
-                        isThreeLine: true,
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () => context.push(
-                          Routes.mophReportDetail(report.reportId),
-                        ),
-                      ),
+                      );
+                    }
+                    return Column(
+                      children: threads
+                          .map(
+                            (t) => Card(
+                              child: ListTile(
+                                title: Text(t.displayRef),
+                                subtitle: Text(
+                                  '${t.barangay}\n'
+                                  '${t.category.label} · ${t.phase.label}\n'
+                                  'Referred ${dateFmt.format(t.createdAt)}',
+                                ),
+                                isThreeLine: true,
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () => context.push(
+                                  Routes.mophCoordinationDetail(t.threadId),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
                     );
                   },
-                );
-              },
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Submitted barangay reports',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Aggregate summaries only.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 8),
+                reportsAsync.when(
+                  loading: () => const AppLoadingIndicator(
+                    message: 'Loading submitted reports…',
+                  ),
+                  error: (e, _) => AppErrorWidget(message: e.toString()),
+                  data: (reports) {
+                    if (reports.isEmpty) {
+                      return const Text(
+                        'No submitted aggregate reports yet.',
+                      );
+                    }
+                    return Column(
+                      children: reports
+                          .map(
+                            (report) => Card(
+                              child: ListTile(
+                                title: Text(report.barangay),
+                                subtitle: Text(
+                                  'Submitted ${dateFmt.format(report.submittedAt)}\n'
+                                  'Cases represented: ${report.totalCaseCount}',
+                                ),
+                                isThreeLine: true,
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () => context.push(
+                                  Routes.mophReportDetail(report.reportId),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ],

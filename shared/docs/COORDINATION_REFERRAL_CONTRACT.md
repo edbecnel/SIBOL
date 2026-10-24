@@ -1,6 +1,6 @@
 # Callable contract: `createCoordinationReferral` (planned)
 
-> **Status:** Contract only — **not implemented** in SIBOL-CASE-COORD-001 Increment A  
+> **Status:** Implemented in repository (SIBOL-CASE-COORD-001 Increment B) — **not deployed** to `sibol-286d0` until PA authorizes Functions deploy  
 > **Work item:** SIBOL-CASE-COORD-001  
 > **ADR:** [ADR-0005-Case-Coordination-Minimum-Information.md](../../Docs/Architecture/ADRs/ADR-0005-Case-Coordination-Minimum-Information.md)
 

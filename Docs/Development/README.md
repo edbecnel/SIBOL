@@ -14,7 +14,8 @@ Engineering practices, tooling, and environment setup for the SIBOL software del
 | Document | Description |
 |----------|-------------|
 | [WORK_ITEM_REGISTER.md](WORK_ITEM_REGISTER.md) | Index of engineering work items |
-| [SIBOL_CASE_COORD_001_PLAN.md](SIBOL_CASE_COORD_001_PLAN.md) | Barangay–MOPH case coordination (Increment A foundation) |
+| [SIBOL_CASE_COORD_001_PLAN.md](SIBOL_CASE_COORD_001_PLAN.md) | Barangay–MOPH case coordination |
+| [SIBOL_CASE_COORD_001_INCREMENT_B_EXECUTION_REPORT.md](SIBOL_CASE_COORD_001_INCREMENT_B_EXECUTION_REPORT.md) | Increment B — referral + MOPH review (local) |
 | [SIBOL_v0.5.0_RELEASE_MILESTONE.md](SIBOL_v0.5.0_RELEASE_MILESTONE.md) | **v0.5.0** Android & iOS demonstration milestone (published 2026-10-22) |
 | [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md) | EDF-aligned work-item doc discipline |
 | [TRANCHE_1_EXECUTION_REPORT.md](TRANCHE_1_EXECUTION_REPORT.md) | SIBOL-IMP-001 engineering delivery |

@@ -11,6 +11,8 @@ import 'package:sibol_app/features/cases/presentation/screens/barangay_home_scre
 import 'package:sibol_app/features/cases/presentation/screens/case_detail_screen.dart';
 import 'package:sibol_app/features/cases/presentation/screens/case_edit_screen.dart';
 import 'package:sibol_app/features/moph/presentation/screens/moph_home_screen.dart';
+import 'package:sibol_app/features/coordination/presentation/screens/barangay_coordination_referral_screen.dart';
+import 'package:sibol_app/features/moph/presentation/screens/moph_coordination_detail_screen.dart';
 import 'package:sibol_app/features/moph/presentation/screens/moph_report_detail_screen.dart';
 import 'package:sibol_app/features/reporting/presentation/screens/barangay_report_receipt_screen.dart';
 import 'package:sibol_app/features/reporting/presentation/screens/barangay_submit_report_screen.dart';
@@ -90,6 +92,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     requestId: requestId,
                   );
                 },
+                routes: [
+                  GoRoute(
+                    path: 'coordination-referral',
+                    builder: (context, state) {
+                      final requestId = state.pathParameters['requestId']!;
+                      return BarangayCoordinationReferralScreen(
+                        assistanceRequestId: requestId,
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -135,6 +148,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: Routes.mophHome,
         builder: (context, state) => const MophHomeScreen(),
         routes: [
+          GoRoute(
+            path: '${Routes.mophCoordinationSegment}/:threadId',
+            builder: (context, state) {
+              final threadId = state.pathParameters['threadId']!;
+              return MophCoordinationDetailScreen(threadId: threadId);
+            },
+          ),
           GoRoute(
             path: '${Routes.mophReportsSegment}/:reportId',
             builder: (context, state) {

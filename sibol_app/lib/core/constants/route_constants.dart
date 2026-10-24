@@ -18,6 +18,9 @@ abstract final class Routes {
   static String barangayIncomingRequestDetail(String requestId) =>
       '$barangayHome/$barangayIncomingRequestsSegment/$requestId';
 
+  static String barangayCoordinationReferral(String assistanceRequestId) =>
+      '$barangayHome/$barangayIncomingRequestsSegment/$assistanceRequestId/coordination-referral';
+
   static const barangayCaseSegment = 'cases';
 
   static String barangayCaseDetail(String caseId) =>
@@ -30,7 +33,11 @@ abstract final class Routes {
       '$barangayHome/$barangayCaseSegment/$caseId/edit';
 
   static const mophHome = '/moph';
+  static const mophCoordinationSegment = 'coordinations';
   static const mophReportsSegment = 'reports';
+
+  static String mophCoordinationDetail(String threadId) =>
+      '$mophHome/$mophCoordinationSegment/$threadId';
 
   static String mophReportDetail(String reportId) =>
       '$mophHome/$mophReportsSegment/$reportId';

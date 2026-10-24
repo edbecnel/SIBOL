@@ -1,0 +1,44 @@
+# SIBOL-CASE-COORD-001 Increment B — Firebase Functions deploy readiness
+
+> **Status:** Prepared — **not deployed**  
+> **Handover:** `f5c2a910-7d46-4e3b-8f21-c0a9e647d352`
+
+## Deploy scope (when authorized)
+
+| Artifact | Action |
+|----------|--------|
+| Cloud Function `createCoordinationReferral` | **Deploy** (`shared/functions`) |
+| Existing `healthCheck`, `submitReport` stub | Retained (no behavioral change to stub) |
+| Firestore rules/indexes | **No change** required for Increment B |
+
+## Command (proposed)
+
+```bash
+cd shared/functions && npm ci && npm run build
+firebase deploy --only functions:createCoordinationReferral --project sibol-286d0
+```
+
+Use targeted deploy to avoid unintended function replacement. Verify region matches Flutter `FirebaseFunctions.instance` (default `us-central1`).
+
+## Prerequisites
+
+- Node 20 per `package.json` engines.
+- Firebase CLI authenticated to `sibol-286d0`.
+- Billing enabled if required for Cloud Functions (operator confirmation).
+- Flutter app build pointing at same Firebase project.
+
+## Regression evidence
+
+- Functions: `npm test` — **10/10**
+- Rules: **59/59**
+- Flutter: **60/60**
+
+## Rollback
+
+- `firebase functions:delete createCoordinationReferral --project sibol-286d0` or redeploy prior functions bundle from Git parent commit.
+- Coordination data written after deploy remains; registry prevents duplicate referrals per assistance id.
+
+## Limitations
+
+- No automated live MVR until operator exercises Barangay → MOPH path post-deploy.
+- Increment C still required for MOPH/barangay messaging.
