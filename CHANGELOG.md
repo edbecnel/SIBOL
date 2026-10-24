@@ -10,6 +10,7 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- SIBOL-REG-001 **M1/M2 final corrections:** org-scoped Flutter queries and `OrgContextResolver`, `firestore.rules.cutover-lockdown` + emulator tests, MOPH demo org/membership provisioning, composite indexes for org list queries, rules **94/94**, Flutter **81/81** (`SIBOL-REG-001-M1-M2-FINAL-CORRECTIONS-001`).
 - SIBOL-REG-001 **M1/M2 release-ready:** isolated Functions emulator regression (ports 8226), coordination authz integration tests, migration apply/mapping tests (10), rules security matrix 87/87, deployment cutover runbook, teen `selectedBarangayOrgId` on demo provision (`SIBOL-REG-001-M1-M2-RELEASE-READY-001`).
 - SIBOL-REG-001 **M1/M2 repository RC:** `shared/migration` (dry-run/idempotent plan), org-scoped Firestore rules for cases/assistance/reports/coordination, `createCoordinationReferral` org authz, Flutter `orgId` writes, composite indexes, rules tests 82/82 (`SIBOL-REG-001-M1-M2-AGENT-001`).
 - SIBOL-REG-001 REG-A: organization/membership schemas, authz primitives, Firestore rules foundation (not deployed), rules tests (+11), Flutter read-only org repositories (`SIBOL-REG-001-REG-A-AGENT-001`).

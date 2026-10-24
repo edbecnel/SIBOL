@@ -1,46 +1,46 @@
 # SIBOL-REG-001 — M1/M2 execution report
 
-**Handovers:** M1/M2 AGENT-001, M1/M2 RELEASE-READY-001  
-**Starting HEAD (release-ready):** `4812606de7029abc6d7c6dc09fb0d80ebbd69074`
+**Handovers:** M1/M2 AGENT-001, M1/M2 RELEASE-READY-001, **M1/M2 FINAL-CORRECTIONS-001**  
+**Starting HEAD (final corrections):** `ac1e3cbea2679873c2c7a4ad15f5c1f7bff1802f`
 
 ## Verification summary (repository / emulator)
 
 | Suite | Result | Notes |
 |--------|--------|--------|
 | `shared/migration` npm test | **10/10** | Plan, mapping, apply dry-run/idempotency/conflict |
-| `shared/firestore-rules-test` npm test | **87/87** | Includes `org_scoped_security.rules.test.mjs` |
-| `shared/functions` `npm test` | **24/24** | 6 authz unit + 18 integration (coordination) |
-| `sibol_app` flutter test | **74/74** | Widget/unit |
+| `shared/firestore-rules-test` npm test | **94/94** | Includes cutover lockdown + org-scoped case list queries |
+| `shared/functions` `npm test` | **24/24** | 6 authz unit + 18 coordination integration |
+| `shared/provisioning` npm test | **6/6** | Preflight + `demo_org_membership` idempotency |
+| `sibol_app` flutter test | **81/81** | Includes `org_context_resolver_test` |
+| `sibol_app` flutter analyze | **0 errors** | 18 info/warnings (pre-existing style/deprecation) |
 | MVR-REG-001 production | **NOT RUN** | See [matrix](../Verification/Records/MVR-REG-001-M1-M2-Repository-Security-Matrix.md) |
 
-## Functions regression isolation
+## Final corrections (FINAL-CORRECTIONS-001)
 
-- **Config:** `firebase.emulator-functions-test.json` (Firestore **8226**, hub **4421**, logging **4521**).
-- **Runner:** `shared/functions/scripts/run-firestore-integration-tests.mjs` (invoked by `npm test`).
-- **Conflict cause:** Rules suite uses `firebase.emulator-isolated.json` (8215/4410/4510); reusing hub or stale emulator data caused hub port failures and duplicate referral flakes.
-- **Procedure:** Documented in `shared/functions/test/README.md`.
+### Correction 1 — Org-scoped Flutter queries
 
-## Flutter / workflow compatibility (M2)
+- `OrgContextResolver` + Riverpod providers resolve authoritative `orgId` from profile + memberships (not caller-supplied).
+- Repositories: `watchCasesForOrg`, assistance/report/coordination org-scoped streams; MOPH inbox unchanged at repository layer (`watchOpenThreadsForMoph`).
+- Invalid `primaryOrgId` without matching membership **does not** fall back to another org.
+- Rules tests: barangay case list `orgId` + `registeredAt` allow/deny.
+- Indexes: `cases`, `teenAssistanceRequests`, `caseCoordinationThreads`, `reports` org-scoped composites in `firestore.indexes.json`.
 
-| Workflow | M2 dependency | Demo status |
-|----------|----------------|-------------|
-| Teen assistance create | `selectedBarangayOrgId` on user + `orgId` on request | Demo org constant on write; provisioning sets teen `selectedBarangayOrgId` for canonical barangay |
-| Barangay case create | `orgId` + membership `case.write` | `DemoOrgConstants.barangayTresOrgId` on create |
-| Barangay assistance inbox | Query by `barangay` string; rules enforce `orgId` | Demo label + org on documents |
-| Aggregate report | `orgId` on submit | Demo org constant |
-| Coordination referral | Callable org authz | Emulator-tested |
-| MOPH inbox | `primaryOrgId` + `coordination.hospital` | Requires migration/provisioning of MOPH membership (not in seed script yet) |
-| Case list query | No client `orgId` filter | Rules deny cross-org per document |
+### Correction 2 — Safe deployment cutover
 
-**Production gap (documented, not REG-B):** Full registration/membership provisioning and non-demo org resolution are out of scope; live cutover requires M1 + operator membership grants.
+- Artifact: `firestore.rules.cutover-lockdown` (fail-closed sensitive collections; own profile read only).
+- Tests: `cutover_lockdown.rules.test.mjs`.
+- Runbook: [M2 deployment/cutover](../Operations/REG-001-M2-Deployment-Cutover-Runbook.md) — lockdown **before** live M1 migration; **no** rollback to global barangay case rules.
+- **PA authorization required** before deploying lockdown rules to any environment.
 
-## Indexes
+### Correction 3 — MOPH demonstration provisioning
 
-Verified against Flutter queries: `organizationMemberships` by `accountUid`; reports (MOPH + barangay lists); coordination phase/barangay lists; org-scoped composites added in M2. Single-field `accountUid` equality may use auto-index; composite retained for filtered membership listing.
+- `ensureDemoOrganizationsAndMemberships` in `shared/provisioning/src/demo_org_membership.mjs` (idempotent orgs, memberships, `primaryOrgId`).
+- Hospital demo org `org2222222222222222222222`; MOPH membership `coordination.hospital` only.
+- Case payload validation requires `orgId` in preflight.
 
 ## Deployment boundary
 
-No `firebase deploy`, no live migration, no production exports executed under release-ready handover.
+No `firebase deploy`, no live migration, no production exports under this handover.
 
 ## EDF artifacts
 
@@ -48,3 +48,7 @@ No `firebase deploy`, no live migration, no production exports executed under re
 - [M1 migration runbook](../Operations/REG-001-M1-Migration-Runbook.md)
 - [M2 deployment/cutover runbook](../Operations/REG-001-M2-Deployment-Cutover-Runbook.md)
 - [Repository security matrix](../Verification/Records/MVR-REG-001-M1-M2-Repository-Security-Matrix.md)
+
+## Readiness (repository)
+
+**READY WITH EXPLICIT PRECONDITIONS** — live cutover requires PA-approved lockdown deploy, M1 migration, M2 rules/indexes/functions, compatible app release, and MVR-REG-001 production execution (not done).

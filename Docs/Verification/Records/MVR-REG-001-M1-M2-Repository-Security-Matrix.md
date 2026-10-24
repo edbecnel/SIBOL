@@ -6,6 +6,10 @@
 | Scenario | Evidence | Executed |
 |----------|----------|----------|
 | Same-org case read/write | `cases.rules.test.mjs` | Yes (emulator) |
+| Org-scoped case **list** query (same org / cross org) | `cases.rules.test.mjs` | Yes |
+| Cutover lockdown (no sensitive reads/writes) | `cutover_lockdown.rules.test.mjs` | Yes |
+| Flutter org context (membership / forged primary) | `sibol_app/test/org_context_resolver_test.dart` | Yes (unit) |
+| MOPH demo org + membership seed idempotency | `provisioning/test/demo_org_membership.test.mjs` | Yes (unit) |
 | Cross-org case deny | `cases.rules.test.mjs`, `org_scoped_security.rules.test.mjs` | Yes |
 | Forged `orgId` on create | `cases.rules.test.mjs` | Yes |
 | Missing `orgId` on case | `cases.rules.test.mjs` | Yes |

@@ -14,8 +14,14 @@
 - **Cases / follow-ups:** `orgId` required; `case.read` / `case.write` via `capabilityGranted`; immutable `orgId`; no `isBarangay()` global access.
 - **Assistance / reports / coordination:** resource `orgId` + capabilities (`coordination.barangay`, `report.submit`, `coordination.hospital`); legacy barangay string not used for authorization.
 - **Callable:** `createCoordinationReferral` uses membership + `coordination.barangay` on assistance `orgId`; writes `orgId` on thread and registry.
-- **Flutter:** `orgId` on case, assistance, and aggregate report writes (demo org constants).
+- **Flutter:** `orgId` on case, assistance, and aggregate report writes; list/watch queries filter by membership-resolved `orgId` (`OrgContextResolver` + providers).
+
+## Final corrections (FINAL-CORRECTIONS-001)
+
+- **Cutover lockdown:** `firestore.rules.cutover-lockdown` deployed before live M1 migration; emulator-tested; PA gate for production deploy.
+- **Demo provisioning:** `ensureDemoOrganizationsAndMemberships` — barangay + hospital orgs, capabilities, `primaryOrgId`; idempotent.
+- **Indexes:** org-scoped composites for cases, assistance, coordination, reports list queries.
 
 ## Release bundle
 
-Deploy together: `firestore.rules`, `firestore.indexes.json`, Functions, app build, M1 data migration.
+Deploy together per [M2 cutover runbook](../Operations/REG-001-M2-Deployment-Cutover-Runbook.md): indexes → lockdown rules → Functions → M1 migration → M2 rules → app.
