@@ -28,3 +28,5 @@ shared/integration/node_modules/
 .env.emulator.local
 .emulator-data/
 shared/integration/firestore-debug.log
+shared/functions/firestore-debug.log
+firestore-debug.log

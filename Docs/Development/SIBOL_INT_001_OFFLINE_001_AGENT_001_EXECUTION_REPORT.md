@@ -2,7 +2,7 @@
 
 **Handover:** SIBOL-INT-001-OFFLINE-001-AGENT-001  
 **Starting HEAD:** `7adbcfc`  
-**Ending HEAD:** _(after push)_
+**Ending HEAD:** `84fa5b0` (see follow-up commit if debug-log cleanup applied)
 
 ## Stage A — Connected E2E verification
 
