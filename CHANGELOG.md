@@ -8,7 +8,7 @@ All notable changes to this repository are documented here.
 
 - SIBOL-REL-005: EDF release milestone documentation ([SIBOL_v0.5.0_RELEASE_MILESTONE.md](Docs/Development/SIBOL_v0.5.0_RELEASE_MILESTONE.md)).
 - SIBOL-CASE-COORD-001 Increment A: case coordination Firestore rules, indexes, rules tests (59 scenarios), ADR-0005, referral callable contract (not implemented); **deployed to `sibol-286d0`** 2026-10-24 (ruleset `d1bb212e…`).
-- SIBOL-CASE-COORD-001 Increment B: `createCoordinationReferral` callable (repo), Barangay referral UI, MOPH coordination inbox/detail; Functions **not deployed**; Flutter tests 60/60.
+- SIBOL-CASE-COORD-001 Increment B: `createCoordinationReferral` callable (repo), Barangay referral UI, MOPH coordination inbox/detail; Functions deploy **blocked** (Blaze plan required, 2026-10-24); Flutter tests 60/60.
 
 ## [0.5.0] - 2026-10-22
 

@@ -1,7 +1,7 @@
 # SIBOL-CASE-COORD-001 Increment B — Firebase Functions deploy readiness
 
-> **Status:** Prepared — **not deployed**  
-> **Handover:** `f5c2a910-7d46-4e3b-8f21-c0a9e647d352`
+> **Status:** **Blocked** — Blaze plan required (attempt `d8e3b7a1-…`, 2026-10-24)  
+> **Handover:** `f5c2a910-7d46-4e3b-8f21-c0a9e647d352`, deploy attempt `d8e3b7a1-…`
 
 ## Deploy scope (when authorized)
 
@@ -24,7 +24,8 @@ Use targeted deploy to avoid unintended function replacement. Verify region matc
 
 - Node 20 per `package.json` engines.
 - Firebase CLI authenticated to `sibol-286d0`.
-- Billing enabled if required for Cloud Functions (operator confirmation).
+- **Firebase Blaze (pay-as-you-go) plan** — **required**; deploy failed on Spark (2026-10-24).
+- Cloud Functions, Cloud Build, and Artifact Registry APIs (CLI may enable after Blaze upgrade).
 - Flutter app build pointing at same Firebase project.
 
 ## Regression evidence
