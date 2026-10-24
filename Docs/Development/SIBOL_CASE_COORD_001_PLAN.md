@@ -16,8 +16,8 @@ See ADR-0005 and [`firestore_paths.dart`](../../sibol_app/lib/core/constants/fir
 
 | Increment | Scope | Operational? |
 |-----------|--------|----------------|
-| **A** | Rules, indexes, rules tests, callable contract | **Read paths only** in production until deploy |
-| **B** | `createCoordinationReferral` + Barangay/MOPH UI | **Implemented in repo** — Functions deploy pending |
+| **A** | Rules, indexes, rules tests, callable contract | **Deployed** (`sibol-286d0`) |
+| **B** | `createCoordinationReferral` + Barangay submit + MOPH inbox/detail | **Accepted** (MVR-0008 Pass); callable live |
 | **C** | Staff events + phase transitions | Two-way coordination |
 | **D** | Teen generic progress UI | Teen visibility |
 

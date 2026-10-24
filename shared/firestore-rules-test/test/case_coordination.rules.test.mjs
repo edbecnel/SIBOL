@@ -292,6 +292,41 @@ describe("barangayCoordinationRegistry reads", () => {
       db.collection("barangayCoordinationRegistry").doc(assistanceRequestId).get(),
     );
   });
+
+  it("denies teen registry read", async () => {
+    const db = testEnv.authenticatedContext(teenUid).firestore();
+    await assertFails(
+      db.collection("barangayCoordinationRegistry").doc(assistanceRequestId).get(),
+    );
+  });
+
+  it("denies barangay registry read for other site assistance request (no registry row)", async () => {
+    const otherSiteRequestId = "assist-req-other-site";
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await db.collection("teenAssistanceRequests").doc(otherSiteRequestId).set({
+        teenUid,
+        barangay: otherSite,
+        category: "generalSupport",
+        description: "Fictional request at another barangay site.",
+        status: "acknowledged",
+        createdAt: now,
+        acknowledgedAt: now,
+        acknowledgedByUid: barangayUid2,
+      });
+    });
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertFails(
+      db.collection("barangayCoordinationRegistry").doc(otherSiteRequestId).get(),
+    );
+  });
+
+  it("denies barangay registry read when assistance request does not exist", async () => {
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertFails(
+      db.collection("barangayCoordinationRegistry").doc("assist-req-unknown").get(),
+    );
+  });
 });
 
 describe("teenCoordinationLinks reads", () => {

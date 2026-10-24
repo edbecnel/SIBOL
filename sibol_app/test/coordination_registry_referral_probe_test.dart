@@ -19,7 +19,7 @@ void main() {
       expect(await stream.first, isFalse);
     });
 
-    test('maps permission-denied to false (missing registry doc)', () async {
+    test('legacy probe maps permission-denied to false', () async {
       final stream = mapRegistrySnapshotsToReferralExists(
         Stream.error(
           FirebaseException(
@@ -27,13 +27,37 @@ void main() {
             code: 'permission-denied',
           ),
         ),
+        legacyAbsenceProbe: true,
       );
       expect(await stream.first, isFalse);
+    });
+
+    test('v2 probe surfaces permission-denied', () async {
+      final stream = mapRegistrySnapshotsToReferralExists(
+        Stream.error(
+          FirebaseException(
+            plugin: 'cloud_firestore',
+            code: 'permission-denied',
+          ),
+        ),
+        legacyAbsenceProbe: false,
+      );
+      expect(
+        stream.first,
+        throwsA(
+          isA<FirebaseException>().having(
+            (e) => e.code,
+            'code',
+            'permission-denied',
+          ),
+        ),
+      );
     });
 
     test('rethrows non-permission errors', () async {
       final stream = mapRegistrySnapshotsToReferralExists(
         Stream.error(StateError('network')),
+        legacyAbsenceProbe: false,
       );
       expect(stream.first, throwsA(isA<StateError>()));
     });

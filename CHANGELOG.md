@@ -9,7 +9,9 @@ All notable changes to this repository are documented here.
 - SIBOL-REL-005: EDF release milestone documentation ([SIBOL_v0.5.0_RELEASE_MILESTONE.md](Docs/Development/SIBOL_v0.5.0_RELEASE_MILESTONE.md)).
 - SIBOL-CASE-COORD-001 Increment A: case coordination Firestore rules, indexes, rules tests (59 scenarios), ADR-0005, referral callable contract (not implemented); **deployed to `sibol-286d0`** 2026-10-24 (ruleset `d1bb212e…`).
 - SIBOL-CASE-COORD-001 Increment B: `createCoordinationReferral` callable (repo), Barangay referral UI, MOPH coordination inbox/detail; Functions deploy **blocked** (Blaze plan required, 2026-10-24); Flutter tests 60/60.
-- SIBOL-CASE-COORD-001 Increment B: `createCoordinationReferral` deployed to `sibol-286d0` (`us-central1`, nodejs20, 2026-10-24); operator MVR-0008 pending.
+- SIBOL-CASE-COORD-001 Increment B: `createCoordinationReferral` deployed to `sibol-286d0` (`us-central1`, nodejs20, 2026-10-24).
+- SIBOL-CASE-COORD-001 Increment B: MVR-0008 operator **Pass** (2026-10-24); PA acceptance closure (`3c7e2a91-…`); registry rules v2 in repo, **not deployed**; staged Flutter probe via `SIBOL_COORD_REGISTRY_RULES_V2`.
+- SIBOL-CASE-COORD-001: MVR-0008 defect fix — Barangay referral CTA when registry doc absent (`089ea44`).
 
 ## [0.5.0] - 2026-10-22
 

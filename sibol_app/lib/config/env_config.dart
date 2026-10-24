@@ -11,4 +11,12 @@ abstract final class EnvConfig {
         'USE_FIREBASE_EMULATORS',
         defaultValue: false,
       );
+
+  /// When `true`, Firestore allows barangay registry reads for missing docs
+  /// (rules in repo; deploy pending). When `false` (default), the app maps
+  /// registry `permission-denied` to “no referral” for live Increment A rules.
+  static bool get coordinationRegistryRulesV2 => const bool.fromEnvironment(
+        'SIBOL_COORD_REGISTRY_RULES_V2',
+        defaultValue: false,
+      );
 }

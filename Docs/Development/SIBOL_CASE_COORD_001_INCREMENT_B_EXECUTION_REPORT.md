@@ -3,8 +3,9 @@
 > **Handover UUID:** `f5c2a910-7d46-4e3b-8f21-c0a9e647d352`  
 > **Date:** 2026-10-24  
 > **Git baseline:** `be97478` → *(commit after publication)*  
-> **Firebase / Functions deployed:** **NO** (local implementation and tests only)  
-> **MVR-0008 defect fix:** [SIBOL_CASE_COORD_001_MVR_0008_DEFECT_EXECUTION_REPORT.md](SIBOL_CASE_COORD_001_MVR_0008_DEFECT_EXECUTION_REPORT.md) (handover `e4c7a219-…`)
+> **Firebase:** `createCoordinationReferral` **deployed** 2026-10-24; registry rules v2 in repo **not deployed**  
+> **MVR-0008:** [Pass](../Verification/Records/MVR-0008-case-coord-001-increment-b-referral-live.md) — [acceptance](SIBOL_CASE_COORD_001_INCREMENT_B_ACCEPTANCE_REPORT.md) (`3c7e2a91-…`)  
+> **Defect fix:** [SIBOL_CASE_COORD_001_MVR_0008_DEFECT_EXECUTION_REPORT.md](SIBOL_CASE_COORD_001_MVR_0008_DEFECT_EXECUTION_REPORT.md) (`e4c7a219-…`)
 
 ## 1. Scope delivered
 
@@ -35,14 +36,15 @@ Increment C (clarification, follow-up, closure) **not** started.
 | Command | Result |
 |---------|--------|
 | `cd shared/functions && npm test` | **10/10** pass |
-| `cd shared/firestore-rules-test && npm test` | **59/59** pass |
-| `cd sibol_app && flutter test` | **69/69** pass (post MVR-0008 defect fix) |
+| `cd shared/firestore-rules-test && npm test` | **63/63** pass (post registry security tests) |
+| `cd sibol_app && flutter test` | **70/70** pass (post registry probe staging) |
 | `cd sibol_app && flutter analyze` | 0 errors (pre-existing infos) |
 
-## 5. Operational note
+## 5. Operational notes
 
-Until Functions deploy is authorized, production `createCoordinationReferral` is **unavailable** on `sibol-286d0`; Barangay submit will fail against live project. Firestore coordination **read** rules are already live from Increment A.
+- Callable **live** on `sibol-286d0` (see [deploy report](SIBOL_CASE_COORD_001_INCREMENT_B_FIREBASE_DEPLOY_EXECUTION_REPORT.md)).
+- Coordination **read** rules on live project remain Increment A; registry absence probe in app until [registry rules deploy](SIBOL_CASE_COORD_001_REGISTRY_RULES_DEPLOY_READINESS.md).
 
 ## 6. PA acceptance
 
-Pending review.
+**Accepted** — [SIBOL_CASE_COORD_001_INCREMENT_B_ACCEPTANCE_REPORT.md](SIBOL_CASE_COORD_001_INCREMENT_B_ACCEPTANCE_REPORT.md).
