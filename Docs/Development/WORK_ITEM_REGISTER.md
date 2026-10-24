@@ -24,7 +24,7 @@
 | SIBOL-DEMO-004 | Barangay-to-MOPH aggregate reporting (demo) | **MOPH live verification Pass (MVR-0005)** | [SIBOL_DEMO_004_EXECUTION_REPORT.md](SIBOL_DEMO_004_EXECUTION_REPORT.md) |
 | SIBOL-DEMO-005 | Barangay submission receipt and report history | **Operator Pass (MVR-0006); post-submit nav untested** | [SIBOL_DEMO_005_EXECUTION_REPORT.md](SIBOL_DEMO_005_EXECUTION_REPORT.md) |
 | SIBOL-REL-005 | EDF documentation — v0.5.0 demo milestone | **Published** (handover `0f3e8b29-…`) | [SIBOL_REL_005_EXECUTION_REPORT.md](SIBOL_REL_005_EXECUTION_REPORT.md), [SIBOL_v0.5.0_RELEASE_MILESTONE.md](SIBOL_v0.5.0_RELEASE_MILESTONE.md) |
-| SIBOL-CASE-COORD-001 | Individual teen case coordination (Barangay–MOPH) | **Increment B code complete**; Callable deploy **blocked (Blaze)**; A rules live | [SIBOL_CASE_COORD_001_INCREMENT_B_FIREBASE_DEPLOY_EXECUTION_REPORT.md](SIBOL_CASE_COORD_001_INCREMENT_B_FIREBASE_DEPLOY_EXECUTION_REPORT.md), [MVR-0008](../Verification/Records/MVR-0008-case-coord-001-increment-b-referral-live.md) |
+| SIBOL-CASE-COORD-001 | Individual teen case coordination (Barangay–MOPH) | **Increment B callable live**; operator MVR-0008 pending | [SIBOL_CASE_COORD_001_INCREMENT_B_FIREBASE_DEPLOY_EXECUTION_REPORT.md](SIBOL_CASE_COORD_001_INCREMENT_B_FIREBASE_DEPLOY_EXECUTION_REPORT.md), [MVR-0008](../Verification/Records/MVR-0008-case-coord-001-increment-b-referral-live.md) |
 
 ## Tranche 2 implementation gate
 

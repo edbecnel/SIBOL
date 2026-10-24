@@ -1,6 +1,6 @@
 # SIBOL-CASE-COORD-001 Increment B — Firebase Functions deploy readiness
 
-> **Status:** **Blocked** — Blaze plan required (attempt `d8e3b7a1-…`, 2026-10-24)  
+> **Status:** **Deployed** — `createCoordinationReferral` live `us-central1` (retry `e9b43c72-…`, 2026-10-24)  
 > **Handover:** `f5c2a910-7d46-4e3b-8f21-c0a9e647d352`, deploy attempt `d8e3b7a1-…`
 
 ## Deploy scope (when authorized)

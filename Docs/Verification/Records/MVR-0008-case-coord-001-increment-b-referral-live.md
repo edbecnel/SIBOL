@@ -1,8 +1,8 @@
 # MVR-0008 — CASE-COORD-001 Increment B live referral (operator procedure)
 
 > **Status:** Prepared — **not executed** by EA  
-> **Prerequisite:** `createCoordinationReferral` deployed on `sibol-286d0` (Blaze plan + Functions deploy)  
-> **Handover:** `d8e3b7a1-5c94-4f26-8b01-6e72a9d0c453`
+> **Prerequisite:** `createCoordinationReferral` deployed on `sibol-286d0` — **met** 2026-10-24 (`e9b43c72-…`)  
+> **Handover:** `d8e3b7a1-…`, deploy retry `e9b43c72-…`
 
 ## Accounts (fictional)
 
