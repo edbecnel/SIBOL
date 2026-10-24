@@ -26,6 +26,60 @@ class AdminApi {
     return Map<String, dynamic>.from(result.data as Map);
   }
 
+  Future<Map<String, dynamic>> createBarangayOrganization({
+    required String idempotencyKey,
+    required String psgcVersion,
+    required String psgcRegionCode,
+    String? psgcProvinceCode,
+    required String psgcCityMunCode,
+    required String psgcBarangayCode,
+    required String initialOrgAdminEmail,
+    String? displayNameAlias,
+    String? legacyBarangayLabel,
+  }) async {
+    final result =
+        await _functions.httpsCallable('regCreateBarangayOrganization').call({
+      'idempotencyKey': idempotencyKey,
+      'psgcVersion': psgcVersion,
+      'psgcRegionCode': psgcRegionCode,
+      if (psgcProvinceCode != null) 'psgcProvinceCode': psgcProvinceCode,
+      'psgcCityMunCode': psgcCityMunCode,
+      'psgcBarangayCode': psgcBarangayCode,
+      'initialOrgAdminEmail': initialOrgAdminEmail,
+      if (displayNameAlias != null) 'displayNameAlias': displayNameAlias,
+      if (legacyBarangayLabel != null) 'legacyBarangayLabel': legacyBarangayLabel,
+    });
+    return Map<String, dynamic>.from(result.data as Map);
+  }
+
+  Future<Map<String, dynamic>> createHospitalOrganization({
+    required String idempotencyKey,
+    required String nhfrSnapshotVersion,
+    required String nhfrFacilityCode,
+    required String psgcVersion,
+    required String psgcRegionCode,
+    String? psgcProvinceCode,
+    required String psgcCityMunCode,
+    String? psgcBarangayCode,
+    required String initialOrgAdminEmail,
+    String? displayNameAlias,
+  }) async {
+    final result =
+        await _functions.httpsCallable('regCreateHospitalOrganization').call({
+      'idempotencyKey': idempotencyKey,
+      'nhfrSnapshotVersion': nhfrSnapshotVersion,
+      'nhfrFacilityCode': nhfrFacilityCode,
+      'psgcVersion': psgcVersion,
+      'psgcRegionCode': psgcRegionCode,
+      if (psgcProvinceCode != null) 'psgcProvinceCode': psgcProvinceCode,
+      'psgcCityMunCode': psgcCityMunCode,
+      if (psgcBarangayCode != null) 'psgcBarangayCode': psgcBarangayCode,
+      'initialOrgAdminEmail': initialOrgAdminEmail,
+      if (displayNameAlias != null) 'displayNameAlias': displayNameAlias,
+    });
+    return Map<String, dynamic>.from(result.data as Map);
+  }
+
   Future<List<Map<String, dynamic>>> listOrganizations() async {
     final result = await _functions.httpsCallable('regListOrganizations').call();
     final list = (result.data as Map)['organizations'] as List<dynamic>? ?? [];

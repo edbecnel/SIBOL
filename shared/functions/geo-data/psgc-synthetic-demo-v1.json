@@ -1,0 +1,50 @@
+{
+  "version": "psgc-synthetic-demo-v1",
+  "synthetic": true,
+  "nodes": [
+    {
+      "code": "SYNTH_R10",
+      "level": "region",
+      "officialName": "Synthetic Demo Region",
+      "parentCode": null
+    },
+    {
+      "code": "SYNTH_P102",
+      "level": "province",
+      "officialName": "Synthetic Demo Province",
+      "parentCode": "SYNTH_R10"
+    },
+    {
+      "code": "SYNTH_M301",
+      "level": "city_mun",
+      "officialName": "Synthetic Municipality Alpha",
+      "parentCode": "SYNTH_P102",
+      "cityClass": "municipality"
+    },
+    {
+      "code": "SYNTH_B401",
+      "level": "barangay",
+      "officialName": "San Jose",
+      "parentCode": "SYNTH_M301"
+    },
+    {
+      "code": "SYNTH_B403",
+      "level": "barangay",
+      "officialName": "Poblacion",
+      "parentCode": "SYNTH_M301"
+    },
+    {
+      "code": "SYNTH_C201",
+      "level": "city_mun",
+      "officialName": "Synthetic HUC City",
+      "parentCode": "SYNTH_R10",
+      "cityClass": "HUC"
+    },
+    {
+      "code": "SYNTH_B402",
+      "level": "barangay",
+      "officialName": "San Jose",
+      "parentCode": "SYNTH_C201"
+    }
+  ]
+}

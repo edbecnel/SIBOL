@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/core/errors/failure.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/geo/presentation/geo_providers.dart';
+import 'package:sibol_app/features/geo/presentation/psgc_geo_picker.dart';
 import 'package:sibol_app/features/teen_registration/domain/teen_onboarding_policy.dart';
 import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_providers.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
@@ -25,7 +27,7 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
   final _confirmPasswordController = TextEditingController();
   final _displayNameController = TextEditingController();
   bool _consent = false;
-  String? _selectedOrgId;
+  PsgcSelection? _psgcSelection;
   bool _submitting = false;
   String? _error;
   bool _authCreated = false;
@@ -78,7 +80,7 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
   }
 
   Future<void> _submitProfile() async {
-    if (_selectedOrgId == null) {
+    if (_psgcSelection == null) {
       setState(() => _error = 'Select a Barangay for assistance routing.');
       return;
     }
@@ -91,8 +93,13 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
       _error = null;
     });
     try {
+      final sel = _psgcSelection!;
       await ref.read(teenRegistrationApiProvider).registerTeenAccount(
-            selectedBarangayOrgId: _selectedOrgId!,
+            selectedBarangayPsgcCode: sel.psgcBarangayCode,
+            psgcVersion: sel.psgcVersion,
+            psgcRegionCode: sel.psgcRegionCode,
+            psgcProvinceCode: sel.psgcProvinceCode,
+            psgcCityMunCode: sel.psgcCityMunCode,
             displayName: _displayNameController.text.trim(),
             privacyConsentAcknowledged: true,
           );
@@ -114,7 +121,7 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
 
   @override
   Widget build(BuildContext context) {
-    final directory = ref.watch(barangayDirectoryProvider);
+    final psgcBundle = ref.watch(psgcBundleProvider);
     final authUser = ref.watch(authStateChangesProvider).value;
     if (authUser != null && _authCreated) {
       _step = _step < 2 ? 2 : _step;
@@ -183,37 +190,19 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Select the Barangay that should receive your assistance requests.',
+                      'Select the Barangay that should receive your assistance requests. '
+                      'Geographic choices load from bundled reference data; submitting registration '
+                      'requires a server connection.',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 8),
-                    directory.when(
+                    psgcBundle.when(
                       loading: () => const Center(child: CircularProgressIndicator()),
-                      error: (e, _) => Text(
-                        'Could not load Barangays. Check your connection and try again.\n$e',
+                      error: (e, _) => Text('Could not load geographic reference data.\n$e'),
+                      data: (bundle) => PsgcGeoPicker(
+                        bundle: bundle,
+                        onChanged: (v) => setState(() => _psgcSelection = v),
                       ),
-                      data: (orgs) {
-                        if (orgs.isEmpty) {
-                          return const Text(
-                            'No Barangay organizations are available for registration.',
-                          );
-                        }
-                        return DropdownButtonFormField<String>(
-                          value: _selectedOrgId,
-                          items: orgs
-                              .map(
-                                (o) => DropdownMenuItem(
-                                  value: o.orgId,
-                                  child: Text(o.name),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (v) => setState(() => _selectedOrgId = v),
-                          decoration: const InputDecoration(
-                            labelText: 'Barangay (assistance routing)',
-                          ),
-                        );
-                      },
                     ),
                     const SizedBox(height: 16),
                     CheckboxListTile(

@@ -6,14 +6,57 @@ import {
   resolveTeenOnboardingStatus,
   TEEN_ONBOARDING_POLICY,
 } from "./onboardingPolicy";
+import {
+  resolveBarangayOrgIdFromPsgc,
+  resolveLegacyTeenOrgId,
+} from "./resolveBarangayOrg";
+import { allowLegacyTeenOrgBinding } from "../geo/demoFlags";
 
 const STAFF_ROLES = new Set(["barangay", "moph"]);
 
 export type RegisterTeenInput = {
-  selectedBarangayOrgId: string;
+  selectedBarangayPsgcCode?: string;
+  psgcVersion?: string;
+  psgcRegionCode?: string;
+  psgcProvinceCode?: string | null;
+  psgcCityMunCode?: string;
+  selectedBarangayOrgId?: string;
   displayName?: string;
   privacyConsentAcknowledged?: boolean;
 };
+
+async function resolveTargetOrgId(
+  db: Firestore,
+  data: RegisterTeenInput,
+): Promise<string> {
+  const psgcCode = data.selectedBarangayPsgcCode?.trim();
+  if (psgcCode) {
+    const version = data.psgcVersion?.trim();
+    if (!version) {
+      throw new AuthzError("psgcVersion is required.", "invalid-argument");
+    }
+    return resolveBarangayOrgIdFromPsgc(db, version, {
+      psgcRegionCode: data.psgcRegionCode?.trim() ?? "",
+      psgcProvinceCode: data.psgcProvinceCode ?? null,
+      psgcCityMunCode: data.psgcCityMunCode?.trim() ?? "",
+      psgcBarangayCode: psgcCode,
+    });
+  }
+  const legacyOrgId = data.selectedBarangayOrgId?.trim();
+  if (legacyOrgId && allowLegacyTeenOrgBinding()) {
+    return resolveLegacyTeenOrgId(db, legacyOrgId);
+  }
+  if (legacyOrgId && isValidOrgId(legacyOrgId)) {
+    throw new AuthzError(
+      "Use geographic Barangay selection. Legacy org binding is disabled.",
+      "invalid-argument",
+    );
+  }
+  throw new AuthzError(
+    "selectedBarangayPsgcCode or authorized legacy binding is required.",
+    "invalid-argument",
+  );
+}
 
 export async function runRegisterTeenAccount(
   db: Firestore,
@@ -22,10 +65,8 @@ export async function runRegisterTeenAccount(
   data: RegisterTeenInput,
 ) {
   const uid = assertAuthenticated(authUid);
-  const orgId = data.selectedBarangayOrgId?.trim();
-  if (!orgId || !isValidOrgId(orgId)) {
-    throw new AuthzError("selectedBarangayOrgId is invalid.", "invalid-argument");
-  }
+  const orgId = await resolveTargetOrgId(db, data);
+
   if (data.privacyConsentAcknowledged !== true) {
     throw new AuthzError(
       "Privacy notice acknowledgment is required.",
@@ -67,12 +108,18 @@ export async function runRegisterTeenAccount(
           throw new AuthzError("Account is suspended.", "permission-denied");
         }
         const sameOrg = existing.selectedBarangayOrgId === orgId;
+        if (!sameOrg) {
+          throw new AuthzError(
+            "Barangay selection cannot be changed by repeating registration.",
+            "failed-precondition",
+          );
+        }
         return {
           created: false,
           uid,
           onboardingStatus: existing.onboardingStatus ?? "complete",
           selectedBarangayOrgId: existing.selectedBarangayOrgId ?? orgId,
-          idempotent: sameOrg,
+          idempotent: true,
         };
       }
       throw new AuthzError(
@@ -85,6 +132,9 @@ export async function runRegisterTeenAccount(
       throw new AuthzError("Selected Barangay is not available.", "not-found");
     }
     const org = orgSnap.data()!;
+    if (org.orgId && org.orgId !== orgSnap.id) {
+      throw new AuthzError("Organization record invalid.", "failed-precondition");
+    }
     if (org.type !== "barangay" || org.status !== "active") {
       throw new AuthzError(
         "Selected Barangay is not active for assistance routing.",

@@ -301,6 +301,7 @@ describe("REG-B admin operations", () => {
     const snap = await db
       .collection("auditEvents")
       .where("operation", "==", "organization_created")
+      .where("actorUid", "==", centralUid)
       .limit(1)
       .get();
     assert.ok(!snap.empty);

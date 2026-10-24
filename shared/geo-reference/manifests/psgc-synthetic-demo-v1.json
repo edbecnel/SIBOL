@@ -1,0 +1,7 @@
+{
+  "version": "psgc-synthetic-demo-v1",
+  "synthetic": true,
+  "description": "Demonstration-only PSGC graph. Not authoritative PSA data.",
+  "artifactFile": "fixtures/psgc-synthetic-demo-v1.json",
+  "sha256": "pending-build"
+}

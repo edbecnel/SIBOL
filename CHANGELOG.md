@@ -6,6 +6,7 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- SIBOL-ORG-IDENTITY-001 **AGENT-002 (M1–M3):** synthetic PSGC/NHFR reference packages, Functions geographic identity (barangay/hospital create, identity keys, idempotency, teen PSGC resolution), Flutter bundled geo picker and registration/admin flows, integration tests (`org_identity.test.mjs`), MVR partial execution — **no production deploy** (`SIBOL-ORG-IDENTITY-001-AGENT-002`).
 - SIBOL-ORG-IDENTITY-001 **M0 (AGENT-001):** investigation and implementation plan publication, ADR-REG-003 acceptance package, proposed ADR-REG-004, draft contracts (GEO/NHFR/REG amendments/idempotency), proposed schemas, PSGC/NHFR acquisition docs, G-NHFR register, MVR-ORG-IDENTITY-001 (NR), SEC-REVIEW-001 deferred, roadmap — **no application code** (`SIBOL-ORG-IDENTITY-001-AGENT-001`).
 
 ### Accepted

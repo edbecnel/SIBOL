@@ -11,6 +11,8 @@ import {
   runApproveMembership,
   runBootstrapCentralAdminForEmulator,
   runCreateOrganization,
+  runCreateBarangayOrganization,
+  runCreateHospitalOrganization,
   runInviteStaffMember,
   runListMyPendingInvitations,
   runListOrganizationMemberships,
@@ -29,6 +31,7 @@ import {
   runRegisterTeenAccount,
 } from "./teen/exportHandlers";
 import type { RegisterTeenInput } from "./teen/registerTeenAccount";
+import { runGetReferenceManifest } from "./geo/referenceManifest";
 
 admin.initializeApp();
 
@@ -95,6 +98,13 @@ export const bootstrapCentralAdminForEmulator = onCall(async (request) => {
 export const regCreateOrganization = adminCallable((db, uid, _email, data) =>
   runCreateOrganization(db, uid, data),
 );
+export const regCreateBarangayOrganization = adminCallable((db, uid, _email, data) =>
+  runCreateBarangayOrganization(db, uid, data),
+);
+export const regCreateHospitalOrganization = adminCallable((db, uid, _email, data) =>
+  runCreateHospitalOrganization(db, uid, data),
+);
+export const regGetReferenceManifest = onCall(async () => runGetReferenceManifest());
 export const regListOrganizations = adminCallable((db, uid) =>
   runListOrganizations(db, uid),
 );

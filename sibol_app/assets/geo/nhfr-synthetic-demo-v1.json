@@ -1,0 +1,13 @@
+{
+  "version": "nhfr-synthetic-demo-v1",
+  "synthetic": true,
+  "facilities": [
+    {
+      "nhfrFacilityCode": "SYNTHNHFR000000000001",
+      "facilityOfficialName": "Synthetic Demo Hospital One",
+      "facilityType": "hospital",
+      "psgcCityMunCode": "SYNTH_C201",
+      "psgcRegionCode": "SYNTH_R10"
+    }
+  ]
+}

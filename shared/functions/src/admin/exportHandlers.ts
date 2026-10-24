@@ -1,3 +1,5 @@
+export { runCreateBarangayOrganization } from "./createBarangayOrganization";
+export { runCreateHospitalOrganization } from "./createHospitalOrganization";
 export {
   runAcceptStaffInvitation,
   runAppointOrganizationAdmin,

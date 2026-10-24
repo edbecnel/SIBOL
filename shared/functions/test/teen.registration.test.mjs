@@ -3,14 +3,18 @@ import assert from "node:assert/strict";
 import { initializeApp, deleteApp, getApps } from "firebase-admin/app";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
 import { AuthzError } from "../lib/authz/assert.js";
+import { runCreateBarangayOrganization } from "../lib/admin/exportHandlers.js";
 import { runListBarangayDirectory } from "../lib/teen/exportHandlers.js";
 import { runRegisterTeenAccount } from "../lib/teen/exportHandlers.js";
+
+process.env.SIBOL_ALLOW_LEGACY_TEEN_ORG_BINDING = "true";
 
 const projectId = "demo-sibol-coord-fn";
 const activeOrgId = "barangay03";
 const suspendedOrgId = "org0999999999999999999999";
 const teenUid = "teenRegisterUid1234567890123";
 const staffUid = "barangayStaffUid123456789012";
+const centralUid = "centralTeenRegUid1234567890123";
 
 let db;
 
@@ -52,6 +56,13 @@ before(async () => {
     role: "barangay",
     displayName: "Staff",
     active: true,
+    createdAt: now,
+  });
+  await db.collection("users").doc(centralUid).set({
+    role: "barangay",
+    displayName: "Central",
+    active: true,
+    isCentralAdmin: true,
     createdAt: now,
   });
 });
@@ -103,11 +114,24 @@ describe("REG-C teen registration", () => {
   });
 
   it("rejects inactive barangay", async () => {
+    const suspendedPsgc = "SYNTH_B402";
+    const created = await runCreateBarangayOrganization(db, centralUid, {
+      idempotencyKey: `idem-suspended-${Date.now()}`,
+      psgcVersion: "psgc-synthetic-demo-v1",
+      psgcRegionCode: "SYNTH_R10",
+      psgcCityMunCode: "SYNTH_C201",
+      psgcBarangayCode: suspendedPsgc,
+      initialOrgAdminEmail: "suspended.b402@sibol.local",
+    });
+    await db.collection("organizations").doc(created.orgId).update({ status: "suspended" });
     const otherUid = "teenSuspendedOrgUid12345678901";
     await expectDenied(
       () =>
         runRegisterTeenAccount(db, otherUid, true, {
-          selectedBarangayOrgId: suspendedOrgId,
+          selectedBarangayPsgcCode: suspendedPsgc,
+          psgcVersion: "psgc-synthetic-demo-v1",
+          psgcRegionCode: "SYNTH_R10",
+          psgcCityMunCode: "SYNTH_C201",
           privacyConsentAcknowledged: true,
         }),
       "failed-precondition",

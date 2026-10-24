@@ -34,12 +34,20 @@ class TeenRegistrationApi {
   }
 
   Future<Map<String, dynamic>> registerTeenAccount({
-    required String selectedBarangayOrgId,
+    required String selectedBarangayPsgcCode,
+    required String psgcVersion,
+    required String psgcRegionCode,
+    String? psgcProvinceCode,
+    required String psgcCityMunCode,
     String? displayName,
     required bool privacyConsentAcknowledged,
   }) async {
     final result = await _functions.httpsCallable('regRegisterTeenAccount').call({
-      'selectedBarangayOrgId': selectedBarangayOrgId,
+      'selectedBarangayPsgcCode': selectedBarangayPsgcCode,
+      'psgcVersion': psgcVersion,
+      'psgcRegionCode': psgcRegionCode,
+      if (psgcProvinceCode != null) 'psgcProvinceCode': psgcProvinceCode,
+      'psgcCityMunCode': psgcCityMunCode,
       if (displayName != null && displayName.isNotEmpty) 'displayName': displayName,
       'privacyConsentAcknowledged': privacyConsentAcknowledged,
     });
