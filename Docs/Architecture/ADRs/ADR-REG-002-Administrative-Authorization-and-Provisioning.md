@@ -87,6 +87,12 @@ Additional rules:
 - Demo seed remains for fictional accounts until PA authorizes migration.
 - MVR-REG-001 defines verification; no MVR execution in this documentation handover.
 
+## REG-A implementation (historical note)
+
+**REG-A** delivered capability vocabulary, `users.isCentralAdmin` client-write denial in rules, and authz assertion helpers — **not** admin callables, bootstrap, invitations, or audit writes. PA **accepted REG-A A0–A7 with conditions** at git `4eafa5e` (`SIBOL-REG-001-REG-A-ACCEPT-CLOSE-001`, 2026-10-24).
+
+Administrative provisioning per this ADR awaits **REG-B** and later increments. **M1** / **M2** are separately gated.
+
 ## Related
 
 - [SPEC-REG-001](../../Specifications/SPEC-REG-001-Registration-and-Organization-Authorization.md)

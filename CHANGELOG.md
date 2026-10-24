@@ -4,6 +4,10 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+### Accepted
+
+- SIBOL-REG-001 **REG-A accepted with conditions** (implementation @ `4eafa5e`; closure `SIBOL-REG-001-REG-A-ACCEPT-CLOSE-001`). Outstanding: `assertActiveOrganization` tests, full Functions suite rerun before deploy, membership query indexes, separate DEPLOY-R1/M1/M2 gates; MVR-REG-001 **NOT RUN**. **Not** Firebase deployment authorization.
+
 ### Added
 
 - SIBOL-REG-001 REG-A: organization/membership schemas, authz primitives, Firestore rules foundation (not deployed), rules tests (+11), Flutter read-only org repositories (`SIBOL-REG-001-REG-A-AGENT-001`).

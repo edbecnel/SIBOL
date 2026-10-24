@@ -79,6 +79,12 @@ Do not delete historical string fields until backfill and verification complete.
 - Flutter must add active-org UX for multi-membership staff.
 - SpeakUp Connect may reuse **membership patterns** via DEC-007 interfaces; no SpeakUp changes in this work item.
 
+## REG-A implementation (historical note)
+
+**REG-A foundation** (organizations + `organizationMemberships` schemas, identifier helpers, Firestore rules for org/membership paths, authz primitives, read-only Flutter org layer) was **accepted with conditions** in repository at git `4eafa5e` under handover `SIBOL-REG-001-REG-A-AGENT-001` (2026-10-24). Acceptance closure: `SIBOL-REG-001-REG-A-ACCEPT-CLOSE-001`.
+
+This ADR status remains **Accepted (architecture)**. **REG-B**, **REG-C**, **M1** backfill, and **M2** case authorization are **not** implemented by REG-A. Live demo case rules were unchanged in REG-A.
+
 ## Related
 
 - [SPEC-REG-001](../../Specifications/SPEC-REG-001-Registration-and-Organization-Authorization.md)

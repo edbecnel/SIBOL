@@ -54,7 +54,25 @@ MVR-REG-001 scenarios — **NOT RUN** (plan only).
 
 ## 7. PA acceptance
 
-**Pending** operator/PA review.
+**PA decision: ACCEPTED WITH CONDITIONS**
+
+| Field | Value |
+|-------|-------|
+| **Scope** | REG-A A0–A7 **repository implementation only** (not Firebase deploy, M1, M2, REG-B, or REG-C) |
+| **Handover (implementation)** | `SIBOL-REG-001-REG-A-AGENT-001` |
+| **Handover (verification)** | `SIBOL-REG-001-REG-A-ACCEPT-VERIFY-001` |
+| **Handover (acceptance closure)** | `SIBOL-REG-001-REG-A-ACCEPT-CLOSE-001` |
+| **Accepted implementation HEAD** | `4eafa5e6b1245cb682da564849077c09da40fa46` |
+| **Independent audit** | 2026-10-24 (acceptance verification report) |
+| **MVR-REG-001** | **NOT RUN** — unchanged |
+
+### Outstanding obligations (conditions of acceptance)
+
+1. Add `assertActiveOrganization` unit test coverage in `shared/functions/src/authz/`.
+2. Independently rerun the **full** Functions coordination suite (`cd shared/functions && npm test`) before deployment consideration (DEPLOY-R1).
+3. Verify **Firestore indexes** for `organizationMemberships` queries (e.g. `accountUid`) before production use of membership list queries.
+4. **DEPLOY-R1**, **M1** (data backfill), and **M2** (organization-scoped case authorization) remain **separate PA authorization gates** — implementation acceptance does not authorize them.
+5. **No real sensitive multi-organization production use** until M2 security cutover is implemented, deployed, and verified.
 
 ## 8. Git record
 
