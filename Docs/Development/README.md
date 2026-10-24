@@ -14,6 +14,7 @@ Engineering practices, tooling, and environment setup for the SIBOL software del
 | Document | Description |
 |----------|-------------|
 | [WORK_ITEM_REGISTER.md](WORK_ITEM_REGISTER.md) | Index of engineering work items |
+| [SIBOL_REG_001_ARCH_DOC_EXECUTION_REPORT.md](SIBOL_REG_001_ARCH_DOC_EXECUTION_REPORT.md) | SIBOL-REG-001 architecture documentation (handover ARCH-DOC-001) |
 | [SIBOL_CASE_COORD_001_PLAN.md](SIBOL_CASE_COORD_001_PLAN.md) | Barangay–MOPH case coordination |
 | [SIBOL_CASE_COORD_001_INCREMENT_B_EXECUTION_REPORT.md](SIBOL_CASE_COORD_001_INCREMENT_B_EXECUTION_REPORT.md) | Increment B — referral + MOPH review (local) |
 | [SIBOL_v0.5.0_RELEASE_MILESTONE.md](SIBOL_v0.5.0_RELEASE_MILESTONE.md) | **v0.5.0** Android & iOS demonstration milestone (published 2026-10-22) |
@@ -42,6 +43,7 @@ Engineering practices, tooling, and environment setup for the SIBOL software del
 | [shared/docs/PROVISIONING.md](../../shared/docs/PROVISIONING.md) | Demo seed procedure |
 | [shared/docs/OFFLINE_SYNC_MODEL.md](../../shared/docs/OFFLINE_SYNC_MODEL.md) | Offline/sync design |
 | [shared/docs/REPORTING_CONTRACT.md](../../shared/docs/REPORTING_CONTRACT.md) | Server reporting contract (Tranche 2) |
+| [shared/docs/CONTRACT-REG-001-Registration-and-Administration-Services.md](../../shared/docs/CONTRACT-REG-001-Registration-and-Administration-Services.md) | REG proposed callables (not implemented) |
 
 ## Application
 

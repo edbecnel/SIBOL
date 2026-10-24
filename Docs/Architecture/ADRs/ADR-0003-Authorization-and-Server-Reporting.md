@@ -25,3 +25,7 @@ The prototype has three roles (`teen`, `barangay`, `moph`). MOPH must not see un
 
 - [`firestore.rules`](../../../firestore.rules)
 - [REPORTING_CONTRACT.md](../../../shared/docs/REPORTING_CONTRACT.md)
+
+## Successor architecture (not yet implemented)
+
+Registration and organization-scoped authorization are specified in [SPEC-REG-001](../../Specifications/SPEC-REG-001-Registration-and-Organization-Authorization.md) and [ADR-REG-001](ADR-REG-001-Organization-Identity-and-Membership.md) / [ADR-REG-002](ADR-REG-002-Administrative-Authorization-and-Provisioning.md). **This ADR remains authoritative for current demo behavior** on `sibol-286d0` until REG rules and services are deployed and verified (MVR-REG-001).

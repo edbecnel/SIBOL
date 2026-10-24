@@ -18,6 +18,9 @@ Individual ADRs belong in [docs/Architecture/ADRs/](docs/Architecture/ADRs/READM
 | [ADR-0002](docs/Architecture/ADRs/ADR-0002-Mobile-Stack-and-Firebase.md) | Flutter mobile + Firebase; Flutter Web prohibited | Accepted | 2026-10-20 |
 | [ADR-0003](docs/Architecture/ADRs/ADR-0003-Authorization-and-Server-Reporting.md) | Three-role rules; server-authoritative reporting | Accepted | 2026-10-20 |
 | [ADR-0004](docs/Architecture/ADRs/ADR-0004-Offline-Sync-and-Common-Core-Boundaries.md) | Firestore offline; common-core extraction boundaries | Accepted | 2026-10-20 |
+| [ADR-0005](Docs/Architecture/ADRs/ADR-0005-Case-Coordination-Minimum-Information.md) | Case coordination minimum-information boundary | Accepted | 2026-10-24 |
+| [ADR-REG-001](Docs/Architecture/ADRs/ADR-REG-001-Organization-Identity-and-Membership.md) | Organization identity and membership (REG; architecture only) | Accepted (architecture) | 2026-10-24 |
+| [ADR-REG-002](Docs/Architecture/ADRs/ADR-REG-002-Administrative-Authorization-and-Provisioning.md) | Administrative authorization and provisioning (REG; architecture only) | Accepted (architecture) | 2026-10-24 |
 
 ## Related Documents
 

@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-24 (SIBOL-CASE-COORD-001 B-HISTORY accepted)  
+> **Last updated:** 2026-10-24 (SIBOL-REG-001 architecture documentation)  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -24,7 +24,8 @@
 | SIBOL-DEMO-004 | Barangay-to-MOPH aggregate reporting (demo) | **MOPH live verification Pass (MVR-0005)** | [SIBOL_DEMO_004_EXECUTION_REPORT.md](SIBOL_DEMO_004_EXECUTION_REPORT.md) |
 | SIBOL-DEMO-005 | Barangay submission receipt and report history | **Operator Pass (MVR-0006); post-submit nav untested** | [SIBOL_DEMO_005_EXECUTION_REPORT.md](SIBOL_DEMO_005_EXECUTION_REPORT.md) |
 | SIBOL-REL-005 | EDF documentation — v0.5.0 demo milestone | **Published** (handover `0f3e8b29-…`) | [SIBOL_REL_005_EXECUTION_REPORT.md](SIBOL_REL_005_EXECUTION_REPORT.md), [SIBOL_v0.5.0_RELEASE_MILESTONE.md](SIBOL_v0.5.0_RELEASE_MILESTONE.md) |
-| SIBOL-CASE-COORD-001 | Individual teen case coordination (Barangay–MOPH) | **Increment B + B-HISTORY accepted**; registry rules v2 **ready to deploy** (not deployed); **Increment C not started** | [Registry v2 readiness](SIBOL_CASE_COORD_001_REGISTRY_RULES_DEPLOY_READINESS.md), [readiness execution](SIBOL_CASE_COORD_001_REGISTRY_RULES_V2_READINESS_EXECUTION_REPORT.md) |
+| SIBOL-CASE-COORD-001 | Individual teen case coordination (Barangay–MOPH) | **Increment B + B-HISTORY accepted**; registry rules v2 **deployed** 2026-10-24; **Increment C not started** | [Registry v2 deploy report](SIBOL_CASE_COORD_001_REGISTRY_RULES_V2_DEPLOY_EXECUTION_REPORT.md), [operator closure](SIBOL_CASE_COORD_001_REGISTRY_RULES_V2_OPERATOR_CLOSURE.md) |
+| SIBOL-REG-001 | User registration and organization authorization | **Architecture documented** — implementation **not authorized** | [SPEC-REG-001](../Specifications/SPEC-REG-001-Registration-and-Organization-Authorization.md), [ARCH-DOC execution report](SIBOL_REG_001_ARCH_DOC_EXECUTION_REPORT.md), [MVR-REG-001](../Verification/Records/MVR-REG-001-registration-authorization-verification-plan.md) |
 
 ## Tranche 2 implementation gate
 

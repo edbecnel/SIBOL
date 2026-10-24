@@ -6,7 +6,10 @@ All notable changes to this repository are documented here.
 
 ### Added
 
-- SIBOL-CASE-COORD-001 registry rules v2: deploy/rollback procedure and isolated emulator test harness (`b6d2f814-…`); **not deployed** to `sibol-286d0`.
+- SIBOL-REG-001: Architecture documentation package — SPEC-REG-001, ADR-REG-001/002, CONTRACT-REG-001, MVR-REG-001 (verification **NOT RUN**); handover `SIBOL-REG-001-ARCH-DOC-001`.
+- SIBOL-CASE-COORD-001: Registry rules v2 operator closure record (4/4 smoke attestation); MVR-0008 assistance-request-id addendum.
+
+- SIBOL-CASE-COORD-001 registry rules v2: deploy/rollback procedure and isolated emulator test harness (`b6d2f814-…`); deployed 2026-10-24 (see deploy execution report).
 - SIBOL-CASE-COORD-001 **B-HISTORY:** Barangay **Submitted referrals** list and detail (`a4e9c2d7-…`, `3e18c4b`).
 - SIBOL-CASE-COORD-001 **B-HISTORY:** MVR-0009 operator **Pass (7/7)**; PA acceptance (`f2a7c619-…`).
 

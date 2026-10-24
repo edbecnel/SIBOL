@@ -24,6 +24,10 @@ Planning artifacts in `Docs/Development/` declare what was verified; this domain
 | [Records/MVR-0006-demo-005-barangay-report-history-emulator.md](Records/MVR-0006-demo-005-barangay-report-history-emulator.md) | SIBOL-DEMO-005 Barangay report history/receipt — live Firebase, Android emulator (**Pass 7/7**, 2026-10-22) |
 | [Records/MVR-0008-case-coord-001-increment-b-referral-live.md](Records/MVR-0008-case-coord-001-increment-b-referral-live.md) | SIBOL-CASE-COORD-001 Increment B — live referral (**Pass** steps 1–9, 2026-10-24; `displayRef` not recorded) |
 | [Records/MVR-0009-case-coord-001-b-history-barangay-referrals.md](Records/MVR-0009-case-coord-001-b-history-barangay-referrals.md) | SIBOL-CASE-COORD-001 B-HISTORY — Barangay submitted referrals (**Pass 7/7**, 2026-10-24; `displayRef` not recorded) |
+| [Records/MVR-0008-ADDENDUM-assistance-request-id.md](Records/MVR-0008-ADDENDUM-assistance-request-id.md) | MVR-0008 canonical assistance request id (does not reopen Pass) |
+| [Records/MVR-REG-001-registration-authorization-verification-plan.md](Records/MVR-REG-001-registration-authorization-verification-plan.md) | SIBOL-REG-001 verification plan (**NOT RUN**) |
+
+**Closure (coordination, separate from REG):** [SIBOL_CASE_COORD_001_REGISTRY_RULES_V2_OPERATOR_CLOSURE.md](../Development/SIBOL_CASE_COORD_001_REGISTRY_RULES_V2_OPERATOR_CLOSURE.md)
 
 ## Navigation
 

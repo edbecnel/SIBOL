@@ -44,3 +44,7 @@ Use [shared/docs/DEMO_ACCOUNTS.md](../../../shared/docs/DEMO_ACCOUNTS.md). Do no
 | Role | Result | Date |
 |------|--------|------|
 | Operator | **Pass** | 2026-10-24 |
+
+## Canonical assistance request id
+
+The execution summary id may contain a transcription typo. Canonical live document id: **`3odtqzgOTgIaIL8wuWue`** — see [MVR-0008-ADDENDUM-assistance-request-id.md](MVR-0008-ADDENDUM-assistance-request-id.md). MVR acceptance is **not** reopened.
