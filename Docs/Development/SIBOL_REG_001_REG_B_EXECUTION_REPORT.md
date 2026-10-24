@@ -1,13 +1,15 @@
 # SIBOL-REG-001 — REG-B execution report
 
 **Handover:** `SIBOL-REG-001-REG-B-AGENT-001`  
-**Starting HEAD:** `a8dcccda027026cd65d572bab5264b8a7ef70925`
+**Handover UUID:** `f3c8a271-6b49-4d0e-9a52-7e14c6b8d903`  
+**Starting HEAD:** `a8dcccda027026cd65d572bab5264b8a7ef70925`  
+**Ending HEAD:** (see git log after closure commit)
 
 ## Verification (repository / emulator)
 
 | Suite | Result |
 |--------|--------|
-| `shared/functions` `npm test` | **41/41** (6 authz unit + 35 integration incl. REG-B admin) |
+| `shared/functions` `npm test` | **44/44** (6 authz unit + 38 integration incl. REG-B admin) |
 | `shared/firestore-rules-test` `npm test` | **96/96** (incl. staff invitation deny) |
 | `shared/migration` `npm test` | **10/10** |
 | `shared/provisioning` `npm test` | **6/6** |

@@ -12,6 +12,7 @@ import {
   runInviteStaffMember,
   runListOrganizationMemberships,
   runRevokeInvitation,
+  runReactivateMembership,
   runRevokeMembership,
   runSetOrganizationStatus,
   runSuspendMembership,
@@ -325,5 +326,55 @@ describe("REG-B admin operations", () => {
       email: backupAdminEmail,
     });
     assert.ok(appointed.invitationId);
+  });
+
+  it("denies inactive account administration", async () => {
+    const inactiveUid = "inactiveAdminUid1234567890123";
+    await db.collection("users").doc(inactiveUid).set({
+      role: "barangay",
+      displayName: "Inactive",
+      active: false,
+      createdAt: new Date(),
+      isCentralAdmin: true,
+    });
+    await expectDenied(
+      () =>
+        runCreateOrganization(db, inactiveUid, {
+          type: "barangay",
+          name: "Inactive Org",
+          initialOrgAdminEmail: "x@sibol.local",
+        }),
+      "permission-denied",
+    );
+  });
+
+  it("allows only one concurrent invitation acceptance", async () => {
+    const concurrentUid = "concurrentAcceptUid1234567890123";
+    await seedUser(concurrentUid, { role: "barangay" });
+    const invite = await runInviteStaffMember(db, orgAdminUid, {
+      orgId,
+      email: "concurrent.accept@sibol.local",
+    });
+    const results = await Promise.allSettled([
+      runAcceptStaffInvitation(db, concurrentUid, "concurrent.accept@sibol.local", {
+        invitationId: invite.invitationId,
+      }),
+      runAcceptStaffInvitation(db, concurrentUid, "concurrent.accept@sibol.local", {
+        invitationId: invite.invitationId,
+      }),
+    ]);
+    const fulfilled = results.filter((r) => r.status === "fulfilled");
+    const rejected = results.filter((r) => r.status === "rejected");
+    assert.equal(fulfilled.length, 1);
+    assert.equal(rejected.length, 1);
+  });
+
+  it("reactivates suspended staff membership", async () => {
+    const membershipId = membershipIdFor(orgId, "staffInviteUid12345678901234");
+    await runSuspendMembership(db, orgAdminUid, { membershipId });
+    const reactivated = await runReactivateMembership(db, orgAdminUid, {
+      membershipId,
+    });
+    assert.equal(reactivated.status, "active");
   });
 });

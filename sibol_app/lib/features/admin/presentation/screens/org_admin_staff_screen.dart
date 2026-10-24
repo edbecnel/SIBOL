@@ -223,7 +223,23 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
                                         ),
                                       ],
                                     )
-                                  : null,
+                                  : status == 'suspended'
+                                      ? TextButton(
+                                          onPressed: () async {
+                                            try {
+                                              await ref
+                                                  .read(adminApiProvider)
+                                                  .reactivateMembership(membershipId);
+                                              await _load();
+                                            } catch (e) {
+                                              if (!context.mounted) return;
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(content: Text('$e')));
+                                            }
+                                          },
+                                          child: const Text('Reactivate'),
+                                        )
+                                      : null,
                         );
                       },
                     ),

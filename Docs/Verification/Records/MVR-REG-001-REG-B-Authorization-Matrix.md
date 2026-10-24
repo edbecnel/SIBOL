@@ -1,6 +1,7 @@
 # MVR-REG-001 — REG-B repository authorization matrix
 
-**Scope:** Emulator/unit tests. **Not** production MVR execution.
+**Scope:** Emulator/unit tests. **Not** production MVR execution.  
+**Handover UUID:** `f3c8a271-6b49-4d0e-9a52-7e14c6b8d903`
 
 | Scenario | Evidence | Executed |
 |----------|----------|----------|
@@ -21,3 +22,7 @@
 | Emulator-only central bootstrap | `admin.operations.test.mjs` | Yes |
 | Client invitation read/write denied | `staff_invitations.rules.test.mjs` | Yes |
 | Client audit denied | `organizations_memberships.rules.test.mjs` | Yes |
+| Inactive account admin denied | `admin.operations.test.mjs` | Yes |
+| Concurrent invitation accept (single winner) | `admin.operations.test.mjs` | Yes |
+| Reactivate suspended membership | `admin.operations.test.mjs` | Yes |
+| Org admin without case.read (cases) | `org_scoped_security.rules.test.mjs` | Yes |

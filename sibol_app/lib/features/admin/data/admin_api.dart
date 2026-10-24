@@ -122,6 +122,12 @@ class AdminApi {
     });
   }
 
+  Future<void> reactivateMembership(String membershipId) async {
+    await _functions.httpsCallable('regReactivateMembership').call({
+      'membershipId': membershipId,
+    });
+  }
+
   Future<void> revokeMembership(String membershipId) async {
     await _functions.httpsCallable('regRevokeMembership').call({
       'membershipId': membershipId,

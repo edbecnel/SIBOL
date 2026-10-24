@@ -2,6 +2,7 @@
 
 **Work item:** SIBOL-REG-001 / REG-B  
 **Handover:** `SIBOL-REG-001-REG-B-AGENT-001`  
+**Handover UUID:** `f3c8a271-6b49-4d0e-9a52-7e14c6b8d903`  
 **SPEC-REG-001:** Remains **Draft**.
 
 ## Scope
