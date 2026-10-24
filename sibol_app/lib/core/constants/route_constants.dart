@@ -1,6 +1,8 @@
 abstract final class Routes {
   static const splash = '/';
+  static const welcome = '/welcome';
   static const login = '/login';
+  static const accountNotProvisioned = '/account-not-provisioned';
   static const passwordReset = '/password-reset';
   static const teenRegister = '/teen-register';
   static const teenRegisterVerifyEmail = '/teen-register/verify-email';

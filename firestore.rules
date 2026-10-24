@@ -239,6 +239,7 @@ service cloud.firestore {
 
     match /organizationMemberships/{membershipId} {
       allow read: if isSignedIn()
+          && resource.data.keys().hasAll(['accountUid', 'orgId'])
           && resource.data.accountUid == request.auth.uid
           && isValidOrgId(resource.data.orgId)
           && membershipId == membershipDocIdForOrg(resource.data.orgId);

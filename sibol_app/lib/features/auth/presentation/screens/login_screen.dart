@@ -40,7 +40,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final error = authOp.error;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('${AppConfig.appName} — Sign in')),
+      appBar: AppBar(
+        title: const Text('${AppConfig.appName} — Sign in'),
+        leading: BackButton(onPressed: () => context.go(Routes.welcome)),
+      ),
       body: Column(
         children: [
           const FictionalDataBanner(),
@@ -87,10 +90,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   TextButton(
                     onPressed: () => context.push(Routes.passwordReset),
                     child: const Text('Forgot password?'),
-                  ),
-                  TextButton(
-                    onPressed: () => context.push(Routes.teenRegister),
-                    child: const Text('Create Teen account'),
                   ),
                   const SizedBox(height: 16),
                   Text(

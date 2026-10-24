@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sibol_app/core/permissions/sibol_role.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/org/domain/org_context_resolver.dart';
@@ -13,8 +14,12 @@ final organizationRepositoryProvider = Provider<OrganizationRepository>((ref) {
 final accountMembershipsProvider =
     StreamProvider<List<OrganizationMembership>>((ref) {
   final auth = ref.watch(authStateChangesProvider).value;
-  if (auth == null) {
+  final profile = ref.watch(userProfileProvider).value;
+  if (auth == null || profile == null) {
     return const Stream.empty();
+  }
+  if (profile.role == SibolRole.teen) {
+    return Stream.value(const []);
   }
   return ref
       .watch(organizationRepositoryProvider)

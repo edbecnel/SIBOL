@@ -5,7 +5,9 @@ import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/core/router/app_navigator_key.dart';
 import 'package:sibol_app/core/router/app_redirect.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/auth/presentation/screens/account_not_provisioned_screen.dart';
 import 'package:sibol_app/features/auth/presentation/screens/login_screen.dart';
+import 'package:sibol_app/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:sibol_app/features/auth/presentation/screens/password_reset_screen.dart';
 import 'package:sibol_app/features/teen_registration/presentation/screens/teen_register_complete_screen.dart';
 import 'package:sibol_app/features/teen_registration/presentation/screens/teen_register_verify_email_screen.dart';
@@ -54,6 +56,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.splash,
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: Routes.welcome,
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: Routes.accountNotProvisioned,
+        builder: (context, state) => const AccountNotProvisionedScreen(),
       ),
       GoRoute(
         path: Routes.login,

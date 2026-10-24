@@ -22,7 +22,7 @@ cd sibol_app && flutter test
 | `test/login_screen_test.dart` | Login render + field focus/input |
 | `test/app_redirect_test.dart` | Auth redirect matrix |
 | `test/auth_profile_provider_test.dart` | Profile provider / retry |
-| `test/startup_navigation_test.dart` | Signed-out → login |
+| `test/startup_navigation_test.dart` | Signed-out → Welcome; Sign in / Register as Teen navigation |
 
 ```bash
 cd sibol_app && flutter analyze

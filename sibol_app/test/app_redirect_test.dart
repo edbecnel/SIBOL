@@ -23,14 +23,14 @@ void main() {
   }
 
   group('resolveAppRedirect', () {
-    test('signed-out on splash → login', () {
+    test('signed-out on splash → welcome', () {
       expect(
         resolveAppRedirect(
           location: Routes.splash,
           authAsync: const AsyncData(null),
           profileAsync: const AsyncData(null),
         ),
-        Routes.login,
+        Routes.welcome,
       );
     });
 
@@ -41,7 +41,18 @@ void main() {
           authAsync: const AsyncData(null),
           profileAsync: const AsyncLoading(),
         ),
-        Routes.login,
+        Routes.welcome,
+      );
+    });
+
+    test('signed-out already on welcome → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.welcome,
+          authAsync: const AsyncData(null),
+          profileAsync: const AsyncData(null),
+        ),
+        isNull,
       );
     });
 
@@ -67,14 +78,14 @@ void main() {
       );
     });
 
-    test('authenticated missing profile → teen registration', () {
+    test('authenticated missing profile → account not provisioned', () {
       expect(
         resolveAppRedirect(
           location: Routes.splash,
           authAsync: const AsyncData(user),
           profileAsync: const AsyncData(null),
         ),
-        Routes.teenRegister,
+        Routes.accountNotProvisioned,
       );
     });
 
@@ -273,6 +284,26 @@ void main() {
           profileAsync: AsyncData(profile(role: SibolRole.moph)),
         ),
         Routes.mophHome,
+      );
+    });
+
+    test('authenticated central admin → settings home', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.splash,
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(
+            UserProfile(
+              uid: 'u1',
+              role: SibolRole.barangay,
+              displayName: 'Admin',
+              active: true,
+              createdAt: DateTime(2026),
+              isCentralAdmin: true,
+            ),
+          ),
+        ),
+        Routes.settings,
       );
     });
   });

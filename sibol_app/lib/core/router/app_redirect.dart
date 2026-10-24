@@ -4,7 +4,7 @@ import 'package:sibol_app/core/permissions/sibol_role.dart';
 import 'package:sibol_app/features/auth/domain/entities/auth_user.dart';
 import 'package:sibol_app/features/auth/domain/entities/user_profile.dart';
 
-String? homeForRole(SibolRole role) {
+String homeForRole(SibolRole role) {
   switch (role) {
     case SibolRole.teen:
       return Routes.teenHome;
@@ -15,6 +15,13 @@ String? homeForRole(SibolRole role) {
   }
 }
 
+String homeForProfile(UserProfile profile) {
+  if (profile.isCentralAdmin) {
+    return Routes.settings;
+  }
+  return homeForRole(profile.role);
+}
+
 bool isTeenRegistrationRoute(String location) {
   return location == Routes.teenRegister ||
       location == Routes.teenRegisterVerifyEmail ||
@@ -22,8 +29,20 @@ bool isTeenRegistrationRoute(String location) {
       location.startsWith('${Routes.teenRegister}/');
 }
 
+bool isPublicUnauthenticatedRoute(String location) {
+  return location == Routes.welcome ||
+      location == Routes.login ||
+      location == Routes.passwordReset ||
+      isTeenRegistrationRoute(location);
+}
+
 bool isRoleHome(String location, SibolRole role) {
   final home = homeForRole(role);
+  return location == home || location.startsWith('$home/');
+}
+
+bool isProfileHome(String location, UserProfile profile) {
+  final home = homeForProfile(profile);
   return location == home || location.startsWith('$home/');
 }
 
@@ -33,10 +52,12 @@ String? resolveAppRedirect({
   required AsyncValue<AuthUser?> authAsync,
   required AsyncValue<UserProfile?> profileAsync,
 }) {
+  final onSplash = location == Routes.splash;
+  final onWelcome = location == Routes.welcome;
   final onLogin = location == Routes.login;
   final onPasswordReset = location == Routes.passwordReset;
-  final onSplash = location == Routes.splash;
   final onTeenRegister = isTeenRegistrationRoute(location);
+  final onAccountNotProvisioned = location == Routes.accountNotProvisioned;
 
   if (authAsync.isLoading) {
     return onSplash ? null : Routes.splash;
@@ -48,12 +69,12 @@ String? resolveAppRedirect({
 
   final user = authAsync.value;
   if (user == null) {
-    if (onLogin || onPasswordReset || location == Routes.teenRegister) return null;
-    return Routes.login;
+    if (isPublicUnauthenticatedRoute(location)) return null;
+    return Routes.welcome;
   }
 
   if (profileAsync.isLoading) {
-    return onSplash ? null : Routes.splash;
+    return onSplash || onAccountNotProvisioned ? null : Routes.splash;
   }
 
   if (profileAsync.hasError) {
@@ -64,7 +85,8 @@ String? resolveAppRedirect({
 
   if (profile == null) {
     if (onTeenRegister || onPasswordReset) return null;
-    return Routes.teenRegister;
+    if (onLogin || onWelcome || onAccountNotProvisioned) return null;
+    return Routes.accountNotProvisioned;
   }
 
   if (!profile.active) {
@@ -72,8 +94,8 @@ String? resolveAppRedirect({
     return Routes.unauthorized;
   }
 
-  final home = homeForRole(profile.role);
-  if (onLogin || onSplash) return home;
+  final home = homeForProfile(profile);
+  if (onLogin || onSplash || onWelcome || onAccountNotProvisioned) return home;
 
   if (location == Routes.settings) return null;
 
@@ -81,13 +103,18 @@ String? resolveAppRedirect({
     return home;
   }
 
-  if (!isRoleHome(location, profile.role) &&
+  if (profile.isCentralAdmin) {
+    if (location.startsWith('/admin') || location == Routes.settings) return null;
+  }
+
+  if (!isProfileHome(location, profile) &&
       location != Routes.unauthorized &&
-      location != Routes.settings) {
+      location != Routes.settings &&
+      !location.startsWith('/admin')) {
     return home;
   }
 
-  if (isRoleHome(location, profile.role)) return null;
+  if (isProfileHome(location, profile)) return null;
 
   if (location == Routes.teenHome && profile.role != SibolRole.teen) {
     return home;

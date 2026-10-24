@@ -123,13 +123,12 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
   Widget build(BuildContext context) {
     final psgcBundle = ref.watch(psgcBundleProvider);
     final authUser = ref.watch(authStateChangesProvider).value;
-    if (authUser != null && _authCreated) {
-      _step = _step < 2 ? 2 : _step;
-    }
+    final profile = ref.watch(userProfileProvider).value;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Teen registration'),
+        leading: BackButton(onPressed: () => context.go(Routes.welcome)),
         actions: [
           if (authUser != null)
             TextButton(
@@ -155,7 +154,13 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
                     const SizedBox(height: 24),
                     AppButton.primary(
                       label: 'Continue',
-                      onPressed: () => setState(() => _step = 1),
+                      onPressed: () => setState(() {
+                        if (authUser != null && profile == null) {
+                          _step = 2;
+                        } else {
+                          _step = 1;
+                        }
+                      }),
                     ),
                   ],
                   if (_step == 1 && authUser == null) ...[
@@ -181,6 +186,17 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
                     AppButton.primary(
                       label: _submitting ? 'Creating account…' : 'Create sign-in',
                       onPressed: _submitting ? null : _createAuthAccount,
+                    ),
+                  ],
+                  if (_step == 1 && authUser != null && profile == null && !_authCreated) ...[
+                    const Text(
+                      'You are already signed in. Continue to complete your Teen profile, '
+                      'or sign out to use a different account.',
+                    ),
+                    const SizedBox(height: 16),
+                    AppButton.primary(
+                      label: 'Continue profile setup',
+                      onPressed: () => setState(() => _step = 2),
                     ),
                   ],
                   if (_step >= 2) ...[
