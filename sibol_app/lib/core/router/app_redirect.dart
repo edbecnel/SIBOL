@@ -15,6 +15,13 @@ String? homeForRole(SibolRole role) {
   }
 }
 
+bool isTeenRegistrationRoute(String location) {
+  return location == Routes.teenRegister ||
+      location == Routes.teenRegisterVerifyEmail ||
+      location == Routes.teenRegisterComplete ||
+      location.startsWith('${Routes.teenRegister}/');
+}
+
 bool isRoleHome(String location, SibolRole role) {
   final home = homeForRole(role);
   return location == home || location.startsWith('$home/');
@@ -27,7 +34,9 @@ String? resolveAppRedirect({
   required AsyncValue<UserProfile?> profileAsync,
 }) {
   final onLogin = location == Routes.login;
+  final onPasswordReset = location == Routes.passwordReset;
   final onSplash = location == Routes.splash;
+  final onTeenRegister = isTeenRegistrationRoute(location);
 
   if (authAsync.isLoading) {
     return onSplash ? null : Routes.splash;
@@ -39,7 +48,7 @@ String? resolveAppRedirect({
 
   final user = authAsync.value;
   if (user == null) {
-    if (onLogin) return null;
+    if (onLogin || onPasswordReset || location == Routes.teenRegister) return null;
     return Routes.login;
   }
 
@@ -53,7 +62,12 @@ String? resolveAppRedirect({
 
   final profile = profileAsync.value;
 
-  if (profile == null || !profile.active) {
+  if (profile == null) {
+    if (onTeenRegister || onPasswordReset) return null;
+    return Routes.teenRegister;
+  }
+
+  if (!profile.active) {
     if (location == Routes.unauthorized) return null;
     return Routes.unauthorized;
   }
@@ -62,6 +76,10 @@ String? resolveAppRedirect({
   if (onLogin || onSplash) return home;
 
   if (location == Routes.settings) return null;
+
+  if (onTeenRegister && profile.role == SibolRole.teen) {
+    return home;
+  }
 
   if (!isRoleHome(location, profile.role) &&
       location != Routes.unauthorized &&

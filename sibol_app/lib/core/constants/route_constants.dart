@@ -1,6 +1,10 @@
 abstract final class Routes {
   static const splash = '/';
   static const login = '/login';
+  static const passwordReset = '/password-reset';
+  static const teenRegister = '/teen-register';
+  static const teenRegisterVerifyEmail = '/teen-register/verify-email';
+  static const teenRegisterComplete = '/teen-register/complete';
   static const teenHome = '/teen';
   static const teenAssistanceSegment = 'assistance';
 

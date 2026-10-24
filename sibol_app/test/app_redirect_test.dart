@@ -67,14 +67,25 @@ void main() {
       );
     });
 
-    test('authenticated missing profile → unauthorized', () {
+    test('authenticated missing profile → teen registration', () {
       expect(
         resolveAppRedirect(
           location: Routes.splash,
           authAsync: const AsyncData(user),
           profileAsync: const AsyncData(null),
         ),
-        Routes.unauthorized,
+        Routes.teenRegister,
+      );
+    });
+
+    test('authenticated missing profile on teen register → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.teenRegister,
+          authAsync: const AsyncData(user),
+          profileAsync: const AsyncData(null),
+        ),
+        isNull,
       );
     });
 

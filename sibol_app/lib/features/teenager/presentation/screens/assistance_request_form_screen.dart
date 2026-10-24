@@ -87,6 +87,19 @@ class _AssistanceRequestFormScreenState
 
   @override
   Widget build(BuildContext context) {
+    final profile = ref.watch(userProfileProvider).value;
+    if (profile != null && !profile.teenAssistanceAllowed) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('New support request')),
+        body: const Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'Assistance requests are unavailable until registration and '
+            'onboarding requirements are complete.',
+          ),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(title: const Text('New support request')),
       body: Column(

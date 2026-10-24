@@ -24,6 +24,22 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() => throw UnimplementedError();
+
+  @override
+  Future<AuthUser> registerWithEmail({
+    required String email,
+    required String password,
+  }) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> sendEmailVerification() => throw UnimplementedError();
+
+  @override
+  Future<AuthUser> reloadCurrentUser() => throw UnimplementedError();
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) => throw UnimplementedError();
 }
 
 class FakeUserProfileRepository implements UserProfileRepository {
@@ -66,4 +82,20 @@ class RetryableAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() => throw UnimplementedError();
+
+  @override
+  Future<AuthUser> registerWithEmail({
+    required String email,
+    required String password,
+  }) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> sendEmailVerification() => throw UnimplementedError();
+
+  @override
+  Future<AuthUser> reloadCurrentUser() => throw UnimplementedError();
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) => throw UnimplementedError();
 }

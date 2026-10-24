@@ -6,6 +6,10 @@ import 'package:sibol_app/core/router/app_navigator_key.dart';
 import 'package:sibol_app/core/router/app_redirect.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/auth/presentation/screens/login_screen.dart';
+import 'package:sibol_app/features/auth/presentation/screens/password_reset_screen.dart';
+import 'package:sibol_app/features/teen_registration/presentation/screens/teen_register_complete_screen.dart';
+import 'package:sibol_app/features/teen_registration/presentation/screens/teen_register_verify_email_screen.dart';
+import 'package:sibol_app/features/teen_registration/presentation/screens/teen_registration_screen.dart';
 import 'package:sibol_app/features/auth/presentation/screens/splash_screen.dart';
 import 'package:sibol_app/features/cases/presentation/screens/barangay_home_screen.dart';
 import 'package:sibol_app/features/cases/presentation/screens/case_detail_screen.dart';
@@ -54,6 +58,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.login,
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: Routes.passwordReset,
+        builder: (context, state) => const PasswordResetScreen(),
+      ),
+      GoRoute(
+        path: Routes.teenRegister,
+        builder: (context, state) => const TeenRegistrationScreen(),
+        routes: [
+          GoRoute(
+            path: 'verify-email',
+            builder: (context, state) => const TeenRegisterVerifyEmailScreen(),
+          ),
+          GoRoute(
+            path: 'complete',
+            builder: (context, state) => const TeenRegisterCompleteScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: Routes.unauthorized,
