@@ -24,6 +24,11 @@ import {
   runUpdateMembershipCapabilities,
 } from "./admin/exportHandlers";
 import { runCreateCoordinationReferral } from "./coordination/createCoordinationReferral";
+import {
+  runListBarangayDirectory,
+  runRegisterTeenAccount,
+} from "./teen/exportHandlers";
+import type { RegisterTeenInput } from "./teen/registerTeenAccount";
 
 admin.initializeApp();
 
@@ -132,3 +137,26 @@ export const regRevokeMembership = adminCallable((db, uid, _email, data) =>
 export const regRevokeInvitation = adminCallable((db, uid, _email, data) =>
   runRevokeInvitation(db, uid, data),
 );
+
+export const regListBarangayDirectory = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runListBarangayDirectory(db);
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regRegisterTeenAccount = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runRegisterTeenAccount(
+      db,
+      request.auth?.uid,
+      request.auth?.token.email_verified === true,
+      (request.data ?? {}) as RegisterTeenInput,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
