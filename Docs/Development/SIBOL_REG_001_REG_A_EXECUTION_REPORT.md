@@ -58,4 +58,9 @@ MVR-REG-001 scenarios — **NOT RUN** (plan only).
 
 ## 8. Git record
 
-Recorded at commit completion (see completion message).
+| Field | Value |
+|-------|-------|
+| Start HEAD | `21b2c02999c38c0a2926d6fd0cddf3a0c8c18879` |
+| End HEAD | `a287e53e7be170eca97976038f099694e6bb4ae6` |
+| Commits | `3244e2c` (foundation), `a287e53` (docs) |
+| Push | `origin/main` success |
