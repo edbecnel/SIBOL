@@ -1,7 +1,16 @@
 # SIBOL-REG-001 — M1/M2 execution report
 
 **Handover:** SIBOL-REG-001-M1-M2-AGENT-001  
-**Starting HEAD:** `eff05cb41c0c228bd28be1cd26748793ef0255cb`
+**Starting HEAD:** `eff05cb41c0c228bd28be1cd26748793ef0255cb`  
+**Ending HEAD:** `38d7677a5c1bb4196d6771bd34ebe9e9b0ae4a03`
+
+## Git checkpoints (pushed `origin/main`)
+
+| Commit | Summary |
+|--------|---------|
+| `ce75ac4` | M1 migration tooling |
+| `12b1646` | M2 rules, indexes, Functions coordination authz, rules tests |
+| `38d7677` | Flutter/provisioning `orgId`, EDF docs |
 
 ## Verification summary
 
