@@ -1,7 +1,7 @@
 # SIBOL-CASE-COORD-001 — Registry rules v2 deploy readiness
 
-> **Status:** Ready for PA-authorized deploy (rules **not** deployed as of this record)  
-> **Handovers:** `3c7e2a91-…`, readiness `b6d2f814-…`  
+> **Status:** **Deployed** 2026-10-24 — registry rules v2 live on `sibol-286d0` (ruleset `cd5f9e6c-…`). See [deploy execution report](SIBOL_CASE_COORD_001_REGISTRY_RULES_V2_DEPLOY_EXECUTION_REPORT.md).  
+> **Handovers:** `3c7e2a91-…`, readiness `b6d2f814-…`, deploy `d8a41c73-…`  
 > **Git (rules source):** `firestore.rules` — registry function `barangayCanReadCoordinationRegistry(assistanceRequestId)`  
 > **Repo rules SHA-256:** `e5a899c250d1c3c5ffdb092bda29357ef18828a3511ea58369ab2d0baed47bb3` (verify at deploy time)
 
@@ -34,11 +34,10 @@ Barangay registry `get`/listen on a **missing** `barangayCoordinationRegistry/{a
 |-------|--------|
 | Firebase project | `sibol-286d0` |
 | Last coordination rules deploy | Increment A — 2026-10-24T05:10:17Z |
-| Live ruleset (post Increment A) | `d1bb212e-53a3-44a9-95df-c91a083b9e09` |
-| Live rules SHA-256 at that deploy | `3d8b82cb54c9b8ec0e4a5181f9cc7d926792345dafc097a8636866bc57e7c601` |
-| Artifact | [firestore.rules.post-case-coord-001-deploy-2026-10-24.metadata.json](../Verification/Artifacts/firestore.rules.post-case-coord-001-deploy-2026-10-24.metadata.json) |
-
-**Registry v2 is in git but not reflected in live SHA above.** Do not modify production data during readiness; deploy only changes rules metadata.
+| Live ruleset (post registry v2) | `cd5f9e6c-ccd7-404c-b75d-ef1cebae36c1` (release updated **2026-10-24T08:46:38Z**) |
+| Live rules SHA-256 | `e5a899c250d1c3c5ffdb092bda29357ef18828a3511ea58369ab2d0baed47bb3` |
+| Prior ruleset (rollback) | `d1bb212e-53a3-44a9-95df-c91a083b9e09` — artifact [pre-registry-v2](../Verification/Artifacts/firestore.rules.pre-registry-v2-deploy-2026-10-24.rules) |
+| Deploy artifact | [firestore.rules.post-registry-v2-deploy-2026-10-24.metadata.json](../Verification/Artifacts/firestore.rules.post-registry-v2-deploy-2026-10-24.metadata.json) |
 
 ## 4. Local verification (handover `b6d2f814-…`)
 

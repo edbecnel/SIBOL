@@ -1,0 +1,17 @@
+{
+  "workItem": "SIBOL-CASE-COORD-001",
+  "increment": "registry-rules-v2",
+  "handoverUuid": "d8a41c73-5e29-4f60-b192-7c3e8a65f204",
+  "targetProject": "sibol-286d0",
+  "gitCommitAtCapture": "a1b22a0737c37e9b1845bc23bd6d9f54d10a0dc3",
+  "capturedAtUtc": "2026-10-24T08:48:00Z",
+  "captureMethod": "Firebase Rules API GET rulesets/d1bb212e-53a3-44a9-95df-c91a083b9e09",
+  "liveRelease": "projects/sibol-286d0/releases/cloud.firestore",
+  "liveRuleset": "projects/sibol-286d0/rulesets/d1bb212e-53a3-44a9-95df-c91a083b9e09",
+  "liveReleaseUpdatedUtc": "2026-10-24T05:10:17.443335Z",
+  "rulesSourceFile": "Docs/Verification/Artifacts/firestore.rules.pre-registry-v2-deploy-2026-10-24.rules",
+  "rulesSha256": "3d8b82cb54c9b8ec0e4a5181f9cc7d926792345dafc097a8636866bc57e7c601",
+  "rollbackDeployCommand": "firebase deploy --only firestore:rules --project sibol-286d0",
+  "rollbackNote": "Redeploy captured .rules file by temporarily replacing repo firestore.rules or using firebase deploy with that file at repo root.",
+  "postDeployTargetRulesSha256": "e5a899c250d1c3c5ffdb092bda29357ef18828a3511ea58369ab2d0baed47bb3"
+}

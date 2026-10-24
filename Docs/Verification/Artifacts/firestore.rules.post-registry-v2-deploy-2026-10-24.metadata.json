@@ -1,0 +1,27 @@
+{
+  "workItem": "SIBOL-CASE-COORD-001",
+  "increment": "registry-rules-v2",
+  "handoverUuid": "d8a41c73-5e29-4f60-b192-7c3e8a65f204",
+  "targetProject": "sibol-286d0",
+  "gitCommit": "a1b22a0737c37e9b1845bc23bd6d9f54d10a0dc3",
+  "deployCommand": "firebase deploy --only firestore:rules --project sibol-286d0",
+  "deployResult": "success",
+  "deployCompletedAtUtc": "2026-10-24T08:46:38.360561Z",
+  "rulesSourceFile": "firestore.rules",
+  "rulesSha256": "e5a899c250d1c3c5ffdb092bda29357ef18828a3511ea58369ab2d0baed47bb3",
+  "priorLiveRuleset": "projects/sibol-286d0/rulesets/d1bb212e-53a3-44a9-95df-c91a083b9e09",
+  "priorLiveRulesSha256": "3d8b82cb54c9b8ec0e4a5181f9cc7d926792345dafc097a8636866bc57e7c601",
+  "priorLiveRollbackArtifact": "Docs/Verification/Artifacts/firestore.rules.pre-registry-v2-deploy-2026-10-24.rules",
+  "postDeployRuleset": "projects/sibol-286d0/rulesets/cd5f9e6c-ccd7-404c-b75d-ef1cebae36c1",
+  "rulesTestSuite": "shared/firestore-rules-test — 66/66 pass (pre-deploy, isolated emulator 8215)",
+  "liveClientVerification": {
+    "method": "Deployed ruleset SHA verified via Firebase Rules API; fixture ids confirmed via Admin SDK (data plane only). Client-signed registry reads require demo Auth passwords (not in EA env); operator smoke per readiness §5.4 recommended.",
+    "fixtures": {
+      "existingRegistryAssistanceRequestId": "3odtqzgOTgIaIL8wuWue",
+      "missingRegistryAssistanceRequestId": "OHRs1h1Us6HrxSzflubR"
+    }
+  },
+  "indexesDeployed": false,
+  "functionsDeployed": false,
+  "notes": "Registry rules v2 only. MVR-0008/0009 acceptance records unchanged."
+}
