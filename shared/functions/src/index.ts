@@ -29,6 +29,7 @@ import { runCreateCoordinationReferral } from "./coordination/createCoordination
 import {
   runListBarangayDirectory,
   runRegisterTeenAccount,
+  runSubmitTeenAssistanceRequest,
 } from "./teen/exportHandlers";
 import type { RegisterTeenInput } from "./teen/registerTeenAccount";
 import { runGetReferenceManifest } from "./geo/referenceManifest";
@@ -165,6 +166,19 @@ export const regRegisterTeenAccount = onCall(async (request) => {
       request.auth?.uid,
       request.auth?.token.email_verified === true,
       (request.data ?? {}) as RegisterTeenInput,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regSubmitTeenAssistanceRequest = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runSubmitTeenAssistanceRequest(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
     );
   } catch (err) {
     mapAuthzToHttps(err);
