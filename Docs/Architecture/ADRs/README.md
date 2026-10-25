@@ -17,6 +17,7 @@ This directory contains individual Architecture Decision Records.
 | [ADR-REG-002](ADR-REG-002-Administrative-Authorization-and-Provisioning.md) | Central/org admin and trusted provisioning (DEC-002, DEC-004, DEC-006, DEC-008) | Accepted (architecture) | 2026-10-24 |
 | [ADR-REG-003](ADR-REG-003-Organization-Identifier-Policy.md) | Organization `orgId` generation and validation (INT-001-AMEND-001) | Proposed | 2026-10-24 |
 | [ADR-REG-004](ADR-REG-004-Organization-Geographic-and-Facility-Identity.md) | PSGC/NHFR business identity and identity-key registry (ORG-IDENTITY-001) | Proposed | 2026-10-25 |
+| [ADR-REG-005](ADR-REG-005-Organization-Management-and-Operational-Capabilities.md) | Management vs operational capabilities (DEC-ORG-001) | Accepted | 2026-10-25 |
 
 ## Navigation
 

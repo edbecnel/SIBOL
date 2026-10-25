@@ -64,6 +64,44 @@ void main() {
     expect(org, orgA);
   });
 
+  test('barangayGrantsCapability mirrors case read resolution', () {
+    expect(
+      OrgContextResolver.barangayGrantsCapability(
+        _profile(primaryOrgId: orgA),
+        [_membership(orgA, [OrgCapabilities.caseRead])],
+        OrgCapabilities.caseRead,
+      ),
+      isTrue,
+    );
+    expect(
+      OrgContextResolver.barangayGrantsCapability(
+        _profile(primaryOrgId: orgA),
+        [_membership(orgA, [OrgCapabilities.orgManageMembers])],
+        OrgCapabilities.caseRead,
+      ),
+      isFalse,
+    );
+  });
+
+  test('barangayHasCapabilityOnCaseOrg requires case org plus capability', () {
+    expect(
+      OrgContextResolver.barangayHasCapabilityOnCaseOrg(
+        _profile(primaryOrgId: orgA),
+        [_membership(orgA, [OrgCapabilities.caseRead, OrgCapabilities.caseWrite])],
+        OrgCapabilities.caseWrite,
+      ),
+      isTrue,
+    );
+    expect(
+      OrgContextResolver.barangayHasCapabilityOnCaseOrg(
+        _profile(primaryOrgId: orgA),
+        [_membership(orgA, [OrgCapabilities.caseRead])],
+        OrgCapabilities.caseWrite,
+      ),
+      isFalse,
+    );
+  });
+
   test('barangay case org null when capability missing', () {
     final org = OrgContextResolver.barangayOrgForCases(
       _profile(primaryOrgId: orgA),

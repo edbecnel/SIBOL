@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/core/constants/demo_org_constants.dart';
+import 'package:sibol_app/features/auth/domain/entities/auth_user.dart';
+import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/cases/presentation/screens/barangay_home_screen.dart';
 import 'package:sibol_app/features/cases/presentation/screens/case_detail_screen.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
@@ -43,6 +45,11 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          authStateChangesProvider.overrideWith(
+            (ref) => Stream.value(
+              const AuthUser(uid: 'testUid', email: 'test@sibol.local'),
+            ),
+          ),
           caseRepositoryProvider.overrideWithValue(repo),
           barangayCaseOrgIdProvider.overrideWithValue(
             DemoOrgConstants.barangayTresOrgId,

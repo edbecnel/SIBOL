@@ -6,6 +6,7 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- SIBOL-ORG-001-FIX-001: capability-aware Barangay dashboard (DEC-ORG-001); INV-001 report; ADR-REG-005; preserve org-admin vs staff capability separation.
 - SIBOL-GEO-001-FIX-003: emulator repair for `barangay03` PSGC display name and QA Teen 03 `assignedBarangay`; canonical demo seed naming; guarded repair script.
 - SIBOL-GEO-001-FIX-002: persist `assignedBarangay` at teen registration from PSGC bundle or org `legacyBarangayLabel`; INV-002 report and QA Teen 03 repair procedure.
 - SIBOL-GEO-001-FIX-001: investigation report for Barangay 3 registration routing; emulator-only demo flag documentation and `start-demo-emulators.sh` sourcing `.env.emulator.local`.

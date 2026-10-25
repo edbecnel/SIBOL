@@ -19,6 +19,32 @@ class OrgContextResolver {
     );
   }
 
+  /// True when [barangayOrgForCases] (or the matching feature resolver) would return an org id.
+  static bool barangayGrantsCapability(
+    UserProfile? profile,
+    List<OrganizationMembership> memberships,
+    String capability,
+  ) {
+    return _resolveOrg(
+          profile: profile,
+          memberships: memberships,
+          requiredCapability: capability,
+          role: SibolRole.barangay,
+        ) !=
+        null;
+  }
+
+  /// Additional capability on the org already authorized for case read (e.g. case.write).
+  static bool barangayHasCapabilityOnCaseOrg(
+    UserProfile? profile,
+    List<OrganizationMembership> memberships,
+    String capability,
+  ) {
+    final orgId = barangayOrgForCases(profile, memberships);
+    if (orgId == null) return false;
+    return _membershipGrants(orgId, memberships, capability);
+  }
+
   static String? barangayOrgForAssistanceInbox(
     UserProfile? profile,
     List<OrganizationMembership> memberships,

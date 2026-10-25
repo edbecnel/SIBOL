@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/core/permissions/sibol_role.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/org/domain/org_capabilities.dart';
 import 'package:sibol_app/features/org/domain/org_context_resolver.dart';
 import 'package:sibol_app/features/org/domain/entities/organization_membership.dart';
 import 'package:sibol_app/features/org/data/repositories/organization_repository_impl.dart';
@@ -30,6 +31,28 @@ final barangayCaseOrgIdProvider = Provider<String?>((ref) {
   final profile = ref.watch(userProfileProvider).value;
   final memberships = ref.watch(accountMembershipsProvider).value ?? [];
   return OrgContextResolver.barangayOrgForCases(profile, memberships);
+});
+
+final barangayCanReadCasesProvider = Provider<bool>((ref) {
+  return ref.watch(barangayCaseOrgIdProvider) != null;
+});
+
+final barangayCanWriteCasesProvider = Provider<bool>((ref) {
+  final profile = ref.watch(userProfileProvider).value;
+  final memberships = ref.watch(accountMembershipsProvider).value ?? [];
+  return OrgContextResolver.barangayHasCapabilityOnCaseOrg(
+    profile,
+    memberships,
+    OrgCapabilities.caseWrite,
+  );
+});
+
+final barangayCanAccessAssistanceInboxProvider = Provider<bool>((ref) {
+  return ref.watch(barangayAssistanceOrgIdProvider) != null;
+});
+
+final barangayCanSubmitReportsProvider = Provider<bool>((ref) {
+  return ref.watch(barangayReportOrgIdProvider) != null;
 });
 
 final barangayAssistanceOrgIdProvider = Provider<String?>((ref) {

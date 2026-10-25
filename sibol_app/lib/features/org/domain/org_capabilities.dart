@@ -6,4 +6,5 @@ abstract final class OrgCapabilities {
   static const coordinationBarangay = 'coordination.barangay';
   static const coordinationHospital = 'coordination.hospital';
   static const orgManageMembers = 'org.manage_members';
+  static const orgManageRoles = 'org.manage_roles';
 }
