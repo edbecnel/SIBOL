@@ -164,10 +164,7 @@ class _BarangayIncomingRequestDetailScreenState
                       label: 'Status',
                       value: request.status.label,
                     ),
-                    OrganizationIdentityDetailRows(
-                      orgId: request.orgId,
-                      historicalSiteLabel: request.barangay,
-                    ),
+                    OrganizationIdentityDetailRows(orgId: request.orgId),
                     if (request.acknowledgedAt != null) ...[
                       _DetailRow(
                         label: 'Acknowledged',

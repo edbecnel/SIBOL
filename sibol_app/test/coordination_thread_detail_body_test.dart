@@ -64,6 +64,8 @@ void main() {
 
     expect(find.textContaining('SIBOL-REF-DEMO'), findsOneWidget);
     expect(find.text('Barangay 3 (Poblacion)'), findsOneWidget);
+    expect(find.text('Geographic site'), findsNothing);
+    expect(find.text('Historical site label'), findsNothing);
     expect(find.textContaining('Fictional coordination summary'), findsOneWidget);
     expect(find.textContaining('teenUid'), findsNothing);
     expect(find.textContaining('Teen original'), findsNothing);

@@ -24,7 +24,6 @@ class AggregateReportDetailBody extends ConsumerWidget {
         AggregateReportDetailRow(label: 'Reference', value: report.reportId),
         OrganizationIdentityDetailRows(
           orgId: report.orgId.isNotEmpty ? report.orgId : null,
-          historicalSiteLabel: report.barangay,
         ),
         AggregateReportDetailRow(
           label: 'Submitted',

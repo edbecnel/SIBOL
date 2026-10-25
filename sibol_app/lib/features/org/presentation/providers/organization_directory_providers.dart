@@ -39,7 +39,7 @@ final organizationDirectoryEntryProvider =
   return ref.watch(organizationDirectoryRepositoryProvider).watchEntry(trimmed);
 });
 
-/// Canonical organization name + optional geographic site from directory.
+/// Canonical organization name and case/report site label from directory.
 final organizationDirectoryPresentationProvider =
     Provider.family<AsyncValue<BarangayOrganizationPresentation>, String>(
         (ref, orgId) {

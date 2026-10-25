@@ -28,10 +28,7 @@ class CoordinationThreadDetailBody extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         _Row(label: 'Reference', value: thread.displayRef),
-        OrganizationIdentityDetailRows(
-          orgId: thread.orgId,
-          historicalSiteLabel: thread.barangay,
-        ),
+        OrganizationIdentityDetailRows(orgId: thread.orgId),
         _Row(label: 'Category', value: thread.category.label),
         _Row(label: 'Phase', value: thread.phase.label),
         _Row(

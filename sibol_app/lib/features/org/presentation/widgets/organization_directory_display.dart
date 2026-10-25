@@ -33,78 +33,36 @@ class OrganizationDirectoryNameText extends ConsumerWidget {
   }
 }
 
+/// Detail row for canonical barangay organization name (directory only).
 class OrganizationIdentityDetailRows extends ConsumerWidget {
   const OrganizationIdentityDetailRows({
     super.key,
     required this.orgId,
-    this.historicalSiteLabel,
-    this.showGeographicSite = true,
   });
 
   final String? orgId;
-  final String? historicalSiteLabel;
-  final bool showGeographicSite;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final id = orgId?.trim();
     if (id == null || id.isEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _Row(
-            label: 'Barangay organization',
-            value: 'Organization identity unavailable',
-          ),
-          if (showGeographicSite &&
-              historicalSiteLabel != null &&
-              historicalSiteLabel!.trim().isNotEmpty)
-            _Row(
-              label: 'Historical site label',
-              value: historicalSiteLabel!.trim(),
-            ),
-        ],
+      return const _Row(
+        label: 'Barangay organization',
+        value: 'Organization identity unavailable',
       );
     }
 
     final entryAsync = ref.watch(organizationDirectoryEntryProvider(id));
     return entryAsync.when(
       loading: () => const Text('Loading organization…'),
-      error: (_, __) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const _Row(
-            label: 'Barangay organization',
-            value: 'Organization name unavailable',
-          ),
-          if (showGeographicSite &&
-              historicalSiteLabel != null &&
-              historicalSiteLabel!.trim().isNotEmpty)
-            _Row(
-              label: 'Historical site label',
-              value: historicalSiteLabel!.trim(),
-            ),
-        ],
+      error: (_, __) => const _Row(
+        label: 'Barangay organization',
+        value: 'Organization name unavailable',
       ),
-      data: (entry) {
-        final site = entry?.geographicSiteLabel?.trim();
-        final historical = historicalSiteLabel?.trim();
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _Row(
-              label: 'Barangay organization',
-              value: entry?.name ?? 'Organization name unavailable',
-            ),
-            if (showGeographicSite) ...[
-              if (site != null && site.isNotEmpty)
-                _Row(label: 'Geographic site', value: site)
-              else if (historical != null && historical.isNotEmpty)
-                _Row(label: 'Historical site label', value: historical),
-            ],
-          ],
-        );
-      },
+      data: (entry) => _Row(
+        label: 'Barangay organization',
+        value: entry?.name ?? 'Organization name unavailable',
+      ),
     );
   }
 }

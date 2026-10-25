@@ -199,7 +199,6 @@ class _BarangayCoordinationReferralScreenState
                       return _PreviewStep(
                         categoryLabel: request.category.label,
                         orgId: request.orgId,
-                        historicalSiteLabel: request.barangay,
                         summary: _summaryController.text.trim(),
                         submitting: _submitting,
                         error: _error,
@@ -222,10 +221,7 @@ class _BarangayCoordinationReferralScreenState
                         ),
                         const SizedBox(height: 16),
                         Text('Category: ${request.category.label}'),
-                        OrganizationIdentityDetailRows(
-                          orgId: request.orgId,
-                          historicalSiteLabel: request.barangay,
-                        ),
+                        OrganizationIdentityDetailRows(orgId: request.orgId),
                         const SizedBox(height: 16),
                         TextField(
                           controller: _summaryController,
@@ -273,7 +269,6 @@ class _PreviewStep extends ConsumerWidget {
   const _PreviewStep({
     required this.categoryLabel,
     required this.orgId,
-    required this.historicalSiteLabel,
     required this.summary,
     required this.submitting,
     required this.error,
@@ -283,7 +278,6 @@ class _PreviewStep extends ConsumerWidget {
 
   final String categoryLabel;
   final String orgId;
-  final String historicalSiteLabel;
   final String summary;
   final bool submitting;
   final String? error;
@@ -306,10 +300,7 @@ class _PreviewStep extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         _PreviewRow(label: 'Category', value: categoryLabel),
-        OrganizationIdentityDetailRows(
-          orgId: orgId,
-          historicalSiteLabel: historicalSiteLabel,
-        ),
+        OrganizationIdentityDetailRows(orgId: orgId),
         _PreviewRow(label: 'Summary', value: summary),
         if (error != null) ...[
           const SizedBox(height: 12),

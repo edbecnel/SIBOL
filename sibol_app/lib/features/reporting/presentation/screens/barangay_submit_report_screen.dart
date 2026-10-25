@@ -177,10 +177,7 @@ class _BarangaySubmitReportScreenState
                     Builder(
                       builder: (context) {
                         final orgId = ref.watch(barangayReportOrgIdProvider);
-                        return OrganizationIdentityDetailRows(
-                          orgId: orgId,
-                          historicalSiteLabel: counts.barangay,
-                        );
+                        return OrganizationIdentityDetailRows(orgId: orgId);
                       },
                     ),
                     _SummaryRow(
