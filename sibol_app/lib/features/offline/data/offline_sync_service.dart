@@ -10,6 +10,7 @@ import 'package:sibol_app/features/reporting/data/repositories/report_repository
 import 'package:sibol_app/features/reporting/domain/barangay_report_queue_payload.dart';
 import 'package:sibol_app/features/offline/data/offline_sync_error.dart';
 import 'package:sibol_app/features/offline/data/pending_operation_store.dart';
+import 'package:sibol_app/features/offline/domain/offline_sync_summary.dart';
 import 'package:sibol_app/features/offline/domain/pending_operation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -59,15 +60,35 @@ class OfflineSyncService {
               o.ownerUid == uid &&
               (o.state == PendingOperationState.savedLocally ||
                   o.state == PendingOperationState.waitingToSubmit ||
+                  o.state == PendingOperationState.submitting ||
                   o.state == PendingOperationState.failedRetryable),
         )
         .toList();
   }
 
-  Future<void> syncForUser(String uid) async {
+  Future<OfflineSyncSummary> syncForUser(String uid) async {
     final current = _authenticatedUid();
-    if (current == null || current != uid) return;
-    if (!await hasConnectivity()) return;
+    if (current == null || current != uid) {
+      return const OfflineSyncSummary(
+        offline: false,
+        attempted: 0,
+        confirmed: 0,
+        stillPending: 0,
+      );
+    }
+    final pendingBefore = await pendingForUser(uid);
+    if (!await hasConnectivity()) {
+      return OfflineSyncSummary(
+        offline: true,
+        attempted: 0,
+        confirmed: 0,
+        stillPending: pendingBefore.length,
+      );
+    }
+    final beforeConfirmed = (await _store.loadForUser(uid))
+        .where((o) => o.state == PendingOperationState.submittedConfirmed)
+        .map((o) => o.operationId)
+        .toSet();
     final ops = await _store.loadForUser(uid);
     for (final op in ops) {
       if (op.ownerUid != uid) continue;
@@ -78,6 +99,34 @@ class OfflineSyncService {
       }
       await _processOne(op, authenticatedUid: uid);
     }
+    final afterAll = await _store.loadForUser(uid);
+    final confirmed = afterAll
+        .where(
+          (o) =>
+              o.state == PendingOperationState.submittedConfirmed &&
+              !beforeConfirmed.contains(o.operationId),
+        )
+        .length;
+    final stillPending = (await pendingForUser(uid)).length;
+    String? lastError;
+    if (stillPending > 0 && confirmed == 0) {
+      final retryable = afterAll.where(
+        (o) =>
+            o.ownerUid == uid &&
+            (o.state == PendingOperationState.failedRetryable ||
+                o.state == PendingOperationState.failedPermanent),
+      );
+      if (retryable.isNotEmpty) {
+        lastError = retryable.last.lastError;
+      }
+    }
+    return OfflineSyncSummary(
+      offline: false,
+      attempted: pendingBefore.length,
+      confirmed: confirmed,
+      stillPending: stillPending,
+      lastError: lastError,
+    );
   }
 
   /// Runs one pending operation and returns its persisted state (for UI feedback).

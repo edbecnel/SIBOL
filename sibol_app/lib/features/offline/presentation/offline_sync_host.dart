@@ -15,19 +15,32 @@ class OfflineSyncHost extends ConsumerStatefulWidget {
   ConsumerState<OfflineSyncHost> createState() => _OfflineSyncHostState();
 }
 
-class _OfflineSyncHostState extends ConsumerState<OfflineSyncHost> {
+class _OfflineSyncHostState extends ConsumerState<OfflineSyncHost>
+    with WidgetsBindingObserver {
   StreamSubscription<List<ConnectivityResult>>? _subscription;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _subscription = Connectivity().onConnectivityChanged.listen((_) => _sync());
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _subscription?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      final uid = ref.read(authStateChangesProvider).value?.uid;
+      if (uid != null) {
+        ref.invalidate(pendingOperationsProvider(uid));
+      }
+    }
   }
 
   Future<void> _sync() async {

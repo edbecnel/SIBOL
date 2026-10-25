@@ -59,7 +59,8 @@ void main() {
           FollowUpTimelineEntry(
             followUp: entry,
             isFromCache: true,
-            hasPendingWrites: true,
+            hasPendingWrites: false,
+            awaitingServerConfirmation: true,
           ),
         ]),
       },

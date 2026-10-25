@@ -7,6 +7,7 @@ import 'package:sibol_app/features/cases/data/models/follow_up_model.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up_timeline_entry.dart';
+import 'package:sibol_app/features/cases/domain/follow_up_sync_state.dart';
 import 'package:sibol_app/features/cases/domain/follow_up_validation.dart';
 import 'package:sibol_app/features/cases/domain/case_write_policy.dart';
 import 'package:sibol_app/features/cases/domain/repositories/case_repository.dart';
@@ -131,16 +132,23 @@ class CaseRepositoryImpl implements CaseRepository {
         .orderBy('scheduledAt')
         .snapshots()
         .map(
-          (snap) => snap.docs
-              .map(
-                (d) => FollowUpTimelineEntry(
-                  followUp:
-                      FollowUpModel.fromFirestore(d.id, d.data()).toEntity(),
-                  isFromCache: d.metadata.isFromCache,
-                  hasPendingWrites: d.metadata.hasPendingWrites,
-                ),
-              )
-              .toList(),
+          (snap) => snap.docs.map((d) {
+            final data = d.data();
+            final followUp =
+                FollowUpModel.fromFirestore(d.id, data).toEntity();
+            final createdAtPresent = data['createdAt'] != null;
+            final awaiting = FollowUpSyncState.awaitingServerConfirmation(
+              hasPendingWrites: d.metadata.hasPendingWrites,
+              createdAtPresentInDocument: createdAtPresent,
+              createdByUid: data['createdByUid'] as String?,
+            );
+            return FollowUpTimelineEntry(
+              followUp: followUp,
+              isFromCache: d.metadata.isFromCache,
+              hasPendingWrites: d.metadata.hasPendingWrites,
+              awaitingServerConfirmation: awaiting,
+            );
+          }).toList(),
         );
   }
 

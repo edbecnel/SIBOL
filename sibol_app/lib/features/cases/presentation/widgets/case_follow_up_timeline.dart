@@ -82,7 +82,7 @@ class _FollowUpTile extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
-              if (entry.hasPendingWrites)
+              if (entry.awaitingServerConfirmation)
                 Chip(
                   label: const Text('Pending sync'),
                   visualDensity: VisualDensity.compact,
@@ -94,7 +94,7 @@ class _FollowUpTile extends StatelessWidget {
                 )
               else if (entry.isFromCache)
                 Chip(
-                  label: const Text('Cached'),
+                  label: const Text('Cached only'),
                   visualDensity: VisualDensity.compact,
                 ),
             ],

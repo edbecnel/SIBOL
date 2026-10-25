@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
+import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/cases/domain/case_status.dart';
 import 'package:sibol_app/features/cases/domain/case_validation.dart';
@@ -55,21 +56,27 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
     _caseStatus = record.caseStatus;
   }
 
-  String? _validateForm() {
+  String? _validateForm({required String? assignedBarangay}) {
     final nameError = CaseValidation.validateDemoName(_demoNameController.text);
     if (nameError != null) return nameError;
     final age = int.tryParse(_ageController.text.trim());
     final ageError = CaseValidation.validateAge(age);
     if (ageError != null) return ageError;
-    final barangayError =
-        CaseValidation.validateBarangay(_barangayController.text);
-    if (barangayError != null) return barangayError;
+    if (widget.isCreate) {
+      if (assignedBarangay == null || assignedBarangay.trim().isEmpty) {
+        return 'Your profile has no assigned barangay site. Contact the administrator.';
+      }
+    } else {
+      final barangayError =
+          CaseValidation.validateBarangay(_barangayController.text);
+      if (barangayError != null) return barangayError;
+    }
     final statusError = CaseValidation.validateCaseStatus(_caseStatus);
     if (statusError != null) return statusError;
     return null;
   }
 
-  CaseRecord _buildRecord() {
+  CaseRecord _buildRecord({required String barangayLabel}) {
     final now = DateTime.now();
     final age = int.parse(_ageController.text.trim());
     if (widget.isCreate) {
@@ -81,7 +88,7 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
         caseId: '',
         demoName: _demoNameController.text.trim(),
         age: age,
-        barangay: _barangayController.text.trim(),
+        barangay: barangayLabel.trim(),
         orgId: orgId,
         caseStatus: _caseStatus,
         registeredAt: now,
@@ -108,9 +115,9 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
     );
   }
 
-  Future<void> _save() async {
+  Future<void> _save({required String barangayLabel}) async {
     setState(() => _formError = null);
-    final validation = _validateForm();
+    final validation = _validateForm(assignedBarangay: barangayLabel);
     if (validation != null) {
       setState(() => _formError = validation);
       return;
@@ -118,7 +125,7 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
     setState(() => _saving = true);
     try {
       final repo = ref.read(caseRepositoryProvider);
-      final record = _buildRecord();
+      final record = _buildRecord(barangayLabel: barangayLabel);
       if (widget.isCreate) {
         final id = await repo.createCase(record);
         if (mounted) {
@@ -177,16 +184,52 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
           return _buildFormScaffold(
             title: 'Edit case',
             headerNote: 'Case ID: ${record.caseId}',
+            barangayLabel: record.barangay,
+            barangayReadOnly: true,
           );
         },
       );
     }
-    return _buildFormScaffold(title: 'New demonstration case');
+    final profile = ref.watch(userProfileProvider);
+    return profile.when(
+      loading: () => const Scaffold(
+        body: AppLoadingIndicator(message: 'Loading profile…'),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(title: const Text('New demonstration case')),
+        body: AppErrorWidget(message: e.toString()),
+      ),
+      data: (user) {
+        final assigned = user?.assignedBarangay;
+        if (assigned == null || assigned.trim().isEmpty) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('New demonstration case')),
+            body: const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Text(
+                  'Your account has no assigned barangay site. Cases cannot be '
+                  'created until an administrator sets assignedBarangay on your profile.',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          );
+        }
+        return _buildFormScaffold(
+          title: 'New demonstration case',
+          barangayLabel: assigned,
+          barangayReadOnly: true,
+        );
+      },
+    );
   }
 
   Widget _buildFormScaffold({
     required String title,
     String? headerNote,
+    required String barangayLabel,
+    bool barangayReadOnly = false,
   }) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
@@ -212,9 +255,13 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 12),
-                AppTextField(
-                  controller: _barangayController,
-                  label: 'Barangay',
+                InputDecorator(
+                  decoration: const InputDecoration(
+                    labelText: 'Barangay site (from your organization)',
+                  ),
+                  child: Text(
+                    barangayReadOnly ? barangayLabel : _barangayController.text,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<CaseStatus>(
@@ -248,7 +295,7 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
                 AppButton.primary(
                   label: widget.isCreate ? 'Create case' : 'Save changes',
                   isLoading: _saving,
-                  onPressed: _saving ? null : _save,
+                  onPressed: _saving ? null : () => _save(barangayLabel: barangayLabel),
                 ),
               ],
             ),

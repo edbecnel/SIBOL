@@ -7,12 +7,19 @@ class FollowUpTimelineEntry extends Equatable {
     required this.followUp,
     required this.isFromCache,
     this.hasPendingWrites = false,
+    this.awaitingServerConfirmation = false,
   });
 
   final FollowUp followUp;
   final bool isFromCache;
   final bool hasPendingWrites;
+  final bool awaitingServerConfirmation;
 
   @override
-  List<Object?> get props => [followUp, isFromCache, hasPendingWrites];
+  List<Object?> get props => [
+        followUp,
+        isFromCache,
+        hasPendingWrites,
+        awaitingServerConfirmation,
+      ];
 }
