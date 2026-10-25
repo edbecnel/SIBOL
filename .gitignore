@@ -24,6 +24,12 @@ shared/firestore-rules-test/firestore-debug.log
 shared/functions/lib/
 shared/integration/node_modules/
 
+# Local Firebase QA backups (emulator exports; not committed)
+.firebase-qa-backups/
+
+# Installed dependencies for the geographic reference tooling
+shared/geo-reference/node_modules/
+
 # Emulator demonstration (local only)
 .env.emulator.local
 .emulator-data/
