@@ -35,6 +35,14 @@ void main() {
     expect(find.text('Fictional demonstration case for academic review.'),
         findsOneWidget);
     expect(find.byType(TextField), findsNothing);
+    await tester.scrollUntilVisible(
+      find.textContaining('edit action above'),
+      200,
+    );
+    expect(
+      find.textContaining('edit action above'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('shows not-found message when case is missing', (tester) async {

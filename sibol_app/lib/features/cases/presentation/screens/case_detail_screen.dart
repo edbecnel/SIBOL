@@ -124,7 +124,7 @@ class CaseDetailBody extends StatelessWidget {
         CaseFollowUpTimeline(caseId: caseId),
         const SizedBox(height: 24),
         Text(
-          'Read-only view. Case editing is not available in this release.',
+          'Use the edit action above to update this fictional demonstration case.',
           style: Theme.of(context).textTheme.bodySmall,
           textAlign: TextAlign.center,
         ),
