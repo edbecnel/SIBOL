@@ -63,6 +63,16 @@ class OfflineSyncService {
     }
   }
 
+  /// Runs one pending operation and returns its persisted state (for UI feedback).
+  Future<PendingOperation> processOperation(PendingOperation op) async {
+    await _processOne(op);
+    final all = await _store.loadForUser(op.ownerUid);
+    return all.firstWhere(
+      (o) => o.operationId == op.operationId,
+      orElse: () => op,
+    );
+  }
+
   Future<void> _processOne(PendingOperation op) async {
     if (op.attemptCount >= maxAttempts) {
       await _store.upsert(
@@ -129,10 +139,16 @@ class OfflineSyncService {
   }
 
   Future<void> _syncBarangayAck(PendingOperation op) async {
+    final orgId = op.payload['orgId'] as String?;
+    if (orgId == null || orgId.isEmpty) {
+      throw StateError(
+        'Pending acknowledgment is missing organization routing. Retry from the request screen.',
+      );
+    }
     final repo = AssistanceRequestRepositoryImpl(_firestore);
     await repo.acknowledgeRequest(
       requestId: op.payload['requestId']!,
-      barangay: op.payload['barangay']!,
+      orgId: orgId,
       barangayStaffUid: op.ownerUid,
     );
     await _store.upsert(

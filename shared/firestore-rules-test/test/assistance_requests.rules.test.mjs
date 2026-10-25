@@ -7,7 +7,13 @@ import {
   assertFails,
   assertSucceeds,
 } from "@firebase/rules-unit-testing";
-import { ORG_BARANGAY_DEMO, ORG_BARANGAY_OTHER, setupM2DemoAuth } from "./helpers/org_auth_seed.mjs";
+import {
+  CAPS,
+  ORG_BARANGAY_DEMO,
+  ORG_BARANGAY_OTHER,
+  seedMembership,
+  setupM2DemoAuth,
+} from "./helpers/org_auth_seed.mjs";
 
 const rulesPath = resolve(
   fileURLToPath(new URL(".", import.meta.url)),
@@ -170,6 +176,53 @@ describe("teenAssistanceRequests rules", () => {
     await assertFails(
       db.collection("teenAssistanceRequests").doc("req-1").update({
         description: "Changed",
+      }),
+    );
+  });
+
+  it("allows barangay acknowledge for PSGC-aligned barangay label", async () => {
+    const site = "Barangay 3, Balingasag";
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().collection("teenAssistanceRequests").doc("req-psgc").set(
+        validRequest({
+          barangay: site,
+          description: "Counseling referral demo request.",
+          category: "counselingReferral",
+        }),
+      );
+    });
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    const now = new Date();
+    await assertSucceeds(
+      db.collection("teenAssistanceRequests").doc("req-psgc").update({
+        status: "acknowledged",
+        acknowledgedAt: now,
+        acknowledgedByUid: barangayUid,
+      }),
+    );
+  });
+
+  it("denies org admin without coordination.barangay capability", async () => {
+    const adminUid = "barangay-admin-only-uid123456";
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      const db = ctx.firestore();
+      await db.collection("users").doc(adminUid).set({
+        role: "barangay",
+        displayName: "Org Admin",
+        active: true,
+        createdAt: new Date(),
+        assignedBarangay: DEMO_BARANGAY,
+        primaryOrgId: ORG_BARANGAY_DEMO,
+      });
+      await seedMembership(db, ORG_BARANGAY_DEMO, adminUid, CAPS.orgAdminOnly);
+      await db.collection("teenAssistanceRequests").doc("req-admin-deny").set(validRequest());
+    });
+    const db = testEnv.authenticatedContext(adminUid).firestore();
+    await assertFails(
+      db.collection("teenAssistanceRequests").doc("req-admin-deny").update({
+        status: "acknowledged",
+        acknowledgedAt: new Date(),
+        acknowledgedByUid: adminUid,
       }),
     );
   });

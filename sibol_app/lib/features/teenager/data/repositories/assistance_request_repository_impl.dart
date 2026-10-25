@@ -75,7 +75,7 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
   @override
   Future<void> acknowledgeRequest({
     required String requestId,
-    required String barangay,
+    required String orgId,
     required String barangayStaffUid,
   }) async {
     final ref = _collection.doc(requestId);
@@ -85,8 +85,8 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
         throw StateError('Request not found.');
       }
       final data = snap.data()!;
-      if (data['barangay'] != barangay) {
-        throw StateError('Request is not assigned to your barangay.');
+      if (data['orgId'] != orgId) {
+        throw StateError('Request is not assigned to your organization.');
       }
       if (data['status'] != AssistanceRequestStatus.submitted.firestoreValue) {
         throw StateError('Request has already been acknowledged.');

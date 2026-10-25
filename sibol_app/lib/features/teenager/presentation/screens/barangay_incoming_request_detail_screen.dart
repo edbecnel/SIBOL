@@ -8,6 +8,7 @@ import 'package:sibol_app/features/coordination/presentation/widgets/barangay_mo
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_status.dart';
+import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/teenager/presentation/providers/barangay_assistance_providers.dart';
 import 'package:sibol_app/features/offline/domain/pending_operation.dart';
 import 'package:sibol_app/features/offline/presentation/offline_providers.dart';
@@ -37,10 +38,14 @@ class _BarangayIncomingRequestDetailScreenState
   String? _actionError;
 
   Future<void> _acknowledge() async {
-    final profile = ref.read(userProfileProvider).value;
-    final barangay = profile?.assignedBarangay;
     final uid = ref.read(authStateChangesProvider).value?.uid;
-    if (barangay == null || uid == null) return;
+    final orgId = ref.read(barangayAssistanceOrgIdProvider);
+    if (uid == null) return;
+    if (orgId == null) {
+      setState(() => _actionError =
+          'Your account is not authorized to acknowledge requests for this organization.');
+      return;
+    }
 
     setState(() {
       _actionError = null;
@@ -58,7 +63,7 @@ class _BarangayIncomingRequestDetailScreenState
         createdAt: DateTime.now(),
         payload: {
           'requestId': widget.requestId,
-          'barangay': barangay,
+          'orgId': orgId,
         },
       );
       if (!await sync.hasConnectivity()) {
@@ -76,8 +81,19 @@ class _BarangayIncomingRequestDetailScreenState
         return;
       }
       await sync.enqueue(pending);
-      await sync.syncForUser(uid);
+      final outcome = await sync.processOperation(pending);
       ref.invalidate(pendingOperationsProvider(uid));
+      if (outcome.state != PendingOperationState.submittedConfirmed) {
+        throw StateError(
+          outcome.lastError ??
+              'Acknowledgment could not be confirmed. Try again or check your connection.',
+        );
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Receipt acknowledged.')),
+        );
+      }
     } catch (e) {
       setState(() => _actionError = e.toString());
     } finally {
