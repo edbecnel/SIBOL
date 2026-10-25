@@ -7,6 +7,7 @@ class AssistanceRequest extends Equatable {
     required this.requestId,
     required this.teenUid,
     required this.barangay,
+    required this.orgId,
     required this.category,
     required this.description,
     required this.status,
@@ -18,6 +19,7 @@ class AssistanceRequest extends Equatable {
   final String requestId;
   final String teenUid;
   final String barangay;
+  final String orgId;
   final AssistanceRequestCategory category;
   final String description;
   final AssistanceRequestStatus status;
@@ -30,6 +32,7 @@ class AssistanceRequest extends Equatable {
         requestId,
         teenUid,
         barangay,
+        orgId,
         category,
         description,
         status,

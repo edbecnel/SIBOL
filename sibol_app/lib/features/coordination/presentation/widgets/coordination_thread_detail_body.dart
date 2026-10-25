@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/features/coordination/domain/entities/coordination_staff_event.dart';
 import 'package:sibol_app/features/coordination/domain/entities/coordination_thread.dart';
+import 'package:sibol_app/features/org/presentation/widgets/organization_directory_display.dart';
 
-class CoordinationThreadDetailBody extends StatelessWidget {
+class CoordinationThreadDetailBody extends ConsumerWidget {
   const CoordinationThreadDetailBody({
     super.key,
     required this.thread,
@@ -14,7 +16,7 @@ class CoordinationThreadDetailBody extends StatelessWidget {
   final List<CoordinationStaffEvent> events;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final dateFmt = DateFormat.yMMMd().add_jm();
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -26,7 +28,10 @@ class CoordinationThreadDetailBody extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         _Row(label: 'Reference', value: thread.displayRef),
-        _Row(label: 'Barangay', value: thread.barangay),
+        OrganizationIdentityDetailRows(
+          orgId: thread.orgId,
+          historicalSiteLabel: thread.barangay,
+        ),
         _Row(label: 'Category', value: thread.category.label),
         _Row(label: 'Phase', value: thread.phase.label),
         _Row(

@@ -11,6 +11,7 @@ import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/offline/domain/pending_operation.dart';
 import 'package:sibol_app/features/offline/presentation/offline_providers.dart';
+import 'package:sibol_app/features/org/presentation/widgets/organization_directory_display.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
 import 'dart:math';
 
@@ -197,7 +198,8 @@ class _BarangayCoordinationReferralScreenState
                     if (_showPreview) {
                       return _PreviewStep(
                         categoryLabel: request.category.label,
-                        barangay: request.barangay,
+                        orgId: request.orgId,
+                        historicalSiteLabel: request.barangay,
                         summary: _summaryController.text.trim(),
                         submitting: _submitting,
                         error: _error,
@@ -220,7 +222,10 @@ class _BarangayCoordinationReferralScreenState
                         ),
                         const SizedBox(height: 16),
                         Text('Category: ${request.category.label}'),
-                        Text('Barangay: ${request.barangay}'),
+                        OrganizationIdentityDetailRows(
+                          orgId: request.orgId,
+                          historicalSiteLabel: request.barangay,
+                        ),
                         const SizedBox(height: 16),
                         TextField(
                           controller: _summaryController,
@@ -264,10 +269,11 @@ class _BarangayCoordinationReferralScreenState
   }
 }
 
-class _PreviewStep extends StatelessWidget {
+class _PreviewStep extends ConsumerWidget {
   const _PreviewStep({
     required this.categoryLabel,
-    required this.barangay,
+    required this.orgId,
+    required this.historicalSiteLabel,
     required this.summary,
     required this.submitting,
     required this.error,
@@ -276,7 +282,8 @@ class _PreviewStep extends StatelessWidget {
   });
 
   final String categoryLabel;
-  final String barangay;
+  final String orgId;
+  final String historicalSiteLabel;
   final String summary;
   final bool submitting;
   final String? error;
@@ -284,7 +291,7 @@ class _PreviewStep extends StatelessWidget {
   final Future<void> Function() onSubmit;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -299,7 +306,10 @@ class _PreviewStep extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         _PreviewRow(label: 'Category', value: categoryLabel),
-        _PreviewRow(label: 'Barangay', value: barangay),
+        OrganizationIdentityDetailRows(
+          orgId: orgId,
+          historicalSiteLabel: historicalSiteLabel,
+        ),
         _PreviewRow(label: 'Summary', value: summary),
         if (error != null) ...[
           const SizedBox(height: 12),

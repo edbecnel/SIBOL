@@ -10,6 +10,7 @@ abstract final class FirestorePaths {
   static const barangayCoordinationRegistry = 'barangayCoordinationRegistry';
   static const teenCoordinationLinks = 'teenCoordinationLinks';
   static const organizations = 'organizations';
+  static const organizationDirectory = 'organizationDirectory';
   static const organizationMemberships = 'organizationMemberships';
   static const auditEvents = 'auditEvents';
 }

@@ -70,6 +70,7 @@ class AssistanceRequestModel {
       requestId: requestId,
       teenUid: teenUid,
       barangay: barangay,
+      orgId: orgId,
       category: cat,
       description: description,
       status: st,

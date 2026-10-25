@@ -10,9 +10,12 @@ import 'package:sibol_app/features/coordination/domain/entities/coordination_thr
 import 'package:sibol_app/features/teenager/domain/assistance_request_category.dart';
 import 'package:sibol_app/features/coordination/presentation/providers/coordination_providers.dart';
 import 'package:sibol_app/features/moph/presentation/screens/moph_home_screen.dart';
+import 'package:sibol_app/features/org/domain/entities/organization.dart';
+import 'package:sibol_app/features/org/domain/entities/organization_directory_entry.dart';
 import 'package:sibol_app/features/org/domain/entities/organization_membership.dart';
 import 'package:sibol_app/features/org/domain/org_capabilities.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
+import 'package:sibol_app/features/org/presentation/providers/organization_directory_providers.dart';
 import 'package:sibol_app/features/reporting/domain/entities/moph_aggregate_report.dart';
 import 'package:sibol_app/features/reporting/presentation/providers/report_providers.dart';
 
@@ -47,6 +50,7 @@ CoordinationThread _sampleThread() {
   final now = DateTime(2026, 10, 25);
   return CoordinationThread(
     threadId: 'thread-1',
+    orgId: 'barangay03',
     displayRef: 'SIBOL-REF-DEMO',
     barangay: 'Barangay 3, Balingasag',
     category: AssistanceRequestCategory.counselingReferral,
@@ -64,6 +68,7 @@ MophAggregateReport _sampleReport() {
   return MophAggregateReport(
     reportId: 'report-1',
     barangay: 'Barangay 3, Balingasag',
+    orgId: 'barangay03',
     submittedAt: now,
     submittedByUid: 'barangay-uid',
     totalCaseCount: 3,
@@ -106,6 +111,18 @@ void main() {
           mophSubmittedReportsProvider.overrideWith(
             (ref) => Stream.value(reports),
           ),
+          organizationDirectoryEntryProvider('barangay03').overrideWith(
+            (ref) => Stream.value(
+              OrganizationDirectoryEntry(
+                orgId: 'barangay03',
+                type: OrganizationType.barangay,
+                name: 'Barangay 3 (Poblacion)',
+                status: OrganizationStatus.active,
+                updatedAt: DateTime(2026, 1, 1),
+                geographicSiteLabel: 'Barangay 3, Balingasag',
+              ),
+            ),
+          ),
         ],
         child: const MaterialApp(home: MophHomeScreen()),
       ),
@@ -127,7 +144,7 @@ void main() {
     );
 
     expect(find.text('SIBOL-REF-DEMO'), findsOneWidget);
-    expect(find.text('Barangay 3, Balingasag'), findsWidgets);
+    expect(find.text('Barangay 3 (Poblacion)'), findsWidgets);
     expect(find.textContaining('permission-denied'), findsNothing);
   });
 

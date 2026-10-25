@@ -70,6 +70,7 @@ class MophAggregateReportModel {
     return MophAggregateReport(
       reportId: reportId,
       barangay: barangay,
+      orgId: orgId,
       submittedAt: submittedAt,
       submittedByUid: submittedByUid,
       totalCaseCount: totalCaseCount,

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/coordination/presentation/providers/coordination_providers.dart';
+import 'package:sibol_app/features/org/presentation/widgets/organization_directory_display.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/reporting/presentation/providers/report_providers.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
@@ -72,10 +73,17 @@ class MophHomeScreen extends ConsumerWidget {
                             (t) => Card(
                               child: ListTile(
                                 title: Text(t.displayRef),
-                                subtitle: Text(
-                                  '${t.barangay}\n'
-                                  '${t.category.label} · ${t.phase.label}\n'
-                                  'Referred ${dateFmt.format(t.createdAt)}',
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    OrganizationDirectoryNameText(
+                                      orgId: t.orgId,
+                                    ),
+                                    Text(
+                                      '${t.category.label} · ${t.phase.label}\n'
+                                      'Referred ${dateFmt.format(t.createdAt)}',
+                                    ),
+                                  ],
                                 ),
                                 isThreeLine: true,
                                 trailing: const Icon(Icons.chevron_right),
@@ -116,7 +124,11 @@ class MophHomeScreen extends ConsumerWidget {
                           .map(
                             (report) => Card(
                               child: ListTile(
-                                title: Text(report.barangay),
+                                title: OrganizationDirectoryNameText(
+                                  orgId: report.orgId.isNotEmpty
+                                      ? report.orgId
+                                      : null,
+                                ),
                                 subtitle: Text(
                                   'Submitted ${dateFmt.format(report.submittedAt)}\n'
                                   'Cases represented: ${report.totalCaseCount}',

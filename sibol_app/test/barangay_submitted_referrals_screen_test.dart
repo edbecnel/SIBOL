@@ -27,6 +27,7 @@ void main() {
     final when = DateTime.utc(2026, 10, 24);
     return CoordinationThread(
       threadId: 'thread-1',
+      orgId: 'barangay03',
       barangay: 'Barangay Tres, Balingasag',
       displayRef: 'SIBOL-REF-DEMO12345678',
       category: AssistanceRequestCategory.healthInformation,

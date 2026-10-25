@@ -6,6 +6,7 @@ import 'package:sibol_app/features/teenager/domain/assistance_request_category.d
 class CoordinationThreadModel {
   CoordinationThreadModel({
     required this.threadId,
+    this.orgId,
     required this.barangay,
     required this.displayRef,
     required this.category,
@@ -18,6 +19,7 @@ class CoordinationThreadModel {
   });
 
   final String threadId;
+  final String? orgId;
   final String barangay;
   final String displayRef;
   final String category;
@@ -34,6 +36,7 @@ class CoordinationThreadModel {
   ) {
     return CoordinationThreadModel(
       threadId: threadId,
+      orgId: data['orgId'] as String?,
       barangay: data['barangay'] as String,
       displayRef: data['displayRef'] as String,
       category: data['category'] as String,
@@ -54,6 +57,7 @@ class CoordinationThreadModel {
     }
     return CoordinationThread(
       threadId: threadId,
+      orgId: orgId,
       barangay: barangay,
       displayRef: displayRef,
       category: cat,

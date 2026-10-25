@@ -9,6 +9,7 @@ import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_status.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
+import 'package:sibol_app/features/org/presentation/widgets/organization_directory_display.dart';
 import 'package:sibol_app/features/teenager/presentation/providers/barangay_assistance_providers.dart';
 import 'package:sibol_app/features/offline/domain/pending_operation.dart';
 import 'package:sibol_app/features/offline/presentation/offline_providers.dart';
@@ -163,9 +164,9 @@ class _BarangayIncomingRequestDetailScreenState
                       label: 'Status',
                       value: request.status.label,
                     ),
-                    _DetailRow(
-                      label: 'Barangay site',
-                      value: request.barangay,
+                    OrganizationIdentityDetailRows(
+                      orgId: request.orgId,
+                      historicalSiteLabel: request.barangay,
                     ),
                     if (request.acknowledgedAt != null) ...[
                       _DetailRow(

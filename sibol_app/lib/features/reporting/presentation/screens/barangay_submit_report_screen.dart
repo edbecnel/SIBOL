@@ -12,6 +12,7 @@ import 'package:sibol_app/features/offline/presentation/offline_providers.dart';
 import 'package:sibol_app/features/reporting/domain/barangay_report_aggregate.dart';
 import 'package:sibol_app/features/reporting/domain/barangay_report_queue_payload.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
+import 'package:sibol_app/features/org/presentation/widgets/organization_directory_display.dart';
 import 'package:sibol_app/features/reporting/presentation/providers/report_providers.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
@@ -166,26 +167,40 @@ class _BarangaySubmitReportScreenState
                             ),
                       ),
                     ],
-                    const SizedBox(height: 24),
-                    _SummaryRow(label: 'Reporting barangay', value: counts.barangay),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Counts reflect each case’s caseStatus (one bucket per case). '
+                      'Follow-up visit records are not counted separately.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 16),
+                    Builder(
+                      builder: (context) {
+                        final orgId = ref.watch(barangayReportOrgIdProvider);
+                        return OrganizationIdentityDetailRows(
+                          orgId: orgId,
+                          historicalSiteLabel: counts.barangay,
+                        );
+                      },
+                    ),
                     _SummaryRow(
                       label: 'Total cases represented',
                       value: '${counts.totalCaseCount}',
                     ),
                     _SummaryRow(
-                      label: 'Active',
+                      label: 'Cases — status: Active',
                       value: '${counts.activeCaseCount}',
                     ),
                     _SummaryRow(
-                      label: 'Follow-up scheduled',
+                      label: 'Cases — status: Follow-up scheduled',
                       value: '${counts.followUpScheduledCount}',
                     ),
                     _SummaryRow(
-                      label: 'Follow-up completed',
+                      label: 'Cases — status: Follow-up completed',
                       value: '${counts.followUpCompletedCount}',
                     ),
                     _SummaryRow(
-                      label: 'Closed',
+                      label: 'Cases — status: Closed',
                       value: '${counts.closedCaseCount}',
                     ),
                     const SizedBox(height: 16),

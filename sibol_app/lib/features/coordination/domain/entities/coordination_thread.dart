@@ -5,6 +5,7 @@ import 'package:sibol_app/features/teenager/domain/assistance_request_category.d
 class CoordinationThread extends Equatable {
   const CoordinationThread({
     required this.threadId,
+    this.orgId,
     required this.barangay,
     required this.displayRef,
     required this.category,
@@ -17,6 +18,7 @@ class CoordinationThread extends Equatable {
   });
 
   final String threadId;
+  final String? orgId;
   final String barangay;
   final String displayRef;
   final AssistanceRequestCategory category;
@@ -30,6 +32,7 @@ class CoordinationThread extends Equatable {
   @override
   List<Object?> get props => [
         threadId,
+        orgId,
         barangay,
         displayRef,
         category,

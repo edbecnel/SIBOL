@@ -5,6 +5,7 @@ class MophAggregateReport extends Equatable {
   const MophAggregateReport({
     required this.reportId,
     required this.barangay,
+    required this.orgId,
     required this.submittedAt,
     required this.submittedByUid,
     required this.totalCaseCount,
@@ -18,6 +19,7 @@ class MophAggregateReport extends Equatable {
 
   final String reportId;
   final String barangay;
+  final String orgId;
   final DateTime submittedAt;
   final String submittedByUid;
   final int totalCaseCount;
@@ -32,6 +34,7 @@ class MophAggregateReport extends Equatable {
   List<Object?> get props => [
         reportId,
         barangay,
+        orgId,
         submittedAt,
         submittedByUid,
         totalCaseCount,
