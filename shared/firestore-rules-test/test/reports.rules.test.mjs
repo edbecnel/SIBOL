@@ -133,6 +133,32 @@ describe("reports collection (DEMO-004 aggregate)", () => {
     );
   });
 
+  it("denies barangay get on nonexistent report document", async () => {
+    const barangayDb = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertFails(
+      barangayDb.collection("reports").doc("rpt-missing-read-check").get(),
+    );
+  });
+
+  it("allows barangay create with deterministic document id via set", async () => {
+    const reportId = "rpt-deterministic-set-create";
+    const barangayDb = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertSucceeds(
+      barangayDb.collection("reports").doc(reportId).set(validAggregateReport()),
+    );
+  });
+
+  it("denies barangay set on existing report (update path)", async () => {
+    const reportId = "rpt-dup-set-denied";
+    const barangayDb = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertSucceeds(
+      barangayDb.collection("reports").doc(reportId).set(validAggregateReport()),
+    );
+    await assertFails(
+      barangayDb.collection("reports").doc(reportId).set(validAggregateReport()),
+    );
+  });
+
   it("denies teen and MOPH client create on reports", async () => {
     const teenDb = testEnv.authenticatedContext(teenUid).firestore();
     const mophDb = testEnv.authenticatedContext(mophUid).firestore();

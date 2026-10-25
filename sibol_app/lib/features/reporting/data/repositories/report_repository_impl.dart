@@ -128,15 +128,40 @@ class ReportRepositoryImpl implements ReportRepository {
       acceptedAt: now,
     );
     final ref = _collection.doc(reportId);
-    final existing = await ref.get();
-    if (existing.exists) {
-      throw FirebaseException(
-        plugin: 'cloud_firestore',
-        code: 'already-exists',
-        message: 'Report document already exists.',
-      );
+    try {
+      // Create-only: no pre-read (read rules require an existing submitted doc).
+      await ref.set(model.toFirestoreCreate());
+      return;
+    } on FirebaseException catch (e) {
+      if (e.code != 'permission-denied') {
+        rethrow;
+      }
+      // Update is denied; distinguish idempotent duplicate from failed create.
+      if (await barangayReportMatchesQueuedPayload(
+        reportId: reportId,
+        orgId: orgId,
+        submittedByUid: submittedByUid,
+        counts: counts,
+      )) {
+        return;
+      }
+      try {
+        final snap = await ref.get();
+        if (snap.exists) {
+          throw FirebaseException(
+            plugin: 'cloud_firestore',
+            code: 'already-exists',
+            message: 'Report document already exists.',
+          );
+        }
+      } on FirebaseException catch (readError) {
+        if (readError.code == 'already-exists') {
+          rethrow;
+        }
+        // Nonexistent or unreadable — propagate the original create denial.
+      }
+      rethrow;
     }
-    await ref.set(model.toFirestoreCreate());
   }
 
   @override
