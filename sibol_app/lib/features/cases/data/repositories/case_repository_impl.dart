@@ -6,6 +6,8 @@ import 'package:sibol_app/features/cases/data/models/case_record_model.dart';
 import 'package:sibol_app/features/cases/data/models/follow_up_model.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
+import 'package:sibol_app/features/cases/domain/entities/follow_up_timeline_entry.dart';
+import 'package:sibol_app/features/cases/domain/follow_up_validation.dart';
 import 'package:sibol_app/features/cases/domain/case_write_policy.dart';
 import 'package:sibol_app/features/cases/domain/repositories/case_repository.dart';
 
@@ -120,7 +122,7 @@ class CaseRepositoryImpl implements CaseRepository {
   }
 
   @override
-  Stream<List<FollowUp>> watchFollowUps(String caseId) {
+  Stream<List<FollowUpTimelineEntry>> watchFollowUps(String caseId) {
     // Chronological timeline: earliest scheduledAt first.
     return _firestore
         .collection(FirestorePaths.cases)
@@ -128,13 +130,32 @@ class CaseRepositoryImpl implements CaseRepository {
         .collection(FirestorePaths.followUps)
         .orderBy('scheduledAt')
         .snapshots()
-        .map((snap) => snap.docs
-            .map((d) => FollowUpModel.fromFirestore(d.id, d.data()).toEntity())
-            .toList());
+        .map(
+          (snap) => snap.docs
+              .map(
+                (d) => FollowUpTimelineEntry(
+                  followUp:
+                      FollowUpModel.fromFirestore(d.id, d.data()).toEntity(),
+                  isFromCache: d.metadata.isFromCache,
+                  hasPendingWrites: d.metadata.hasPendingWrites,
+                ),
+              )
+              .toList(),
+        );
   }
 
   @override
-  Future<String> createFollowUp(FollowUp followUp) async {
+  Future<String> createFollowUp({
+    required FollowUp followUp,
+    required String createdByUid,
+  }) async {
+    if (createdByUid.isEmpty) {
+      throw FormatException('Staff identity is required to record a follow-up.');
+    }
+    final notesError = FollowUpValidation.validateNotes(followUp.notes);
+    if (notesError != null) {
+      throw FormatException(notesError);
+    }
     if (followUp.caseId.isEmpty) {
       throw FormatException('Follow-up is missing caseId.');
     }
@@ -154,7 +175,7 @@ class CaseRepositoryImpl implements CaseRepository {
         notes: followUp.notes,
       ),
     );
-    await ref.set(model.toFirestoreCreate());
+    await ref.set(model.toFirestoreCreate(createdByUid: createdByUid));
     return ref.id;
   }
 }

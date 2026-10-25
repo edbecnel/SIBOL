@@ -13,9 +13,10 @@ void main() {
       notes: 'Check-in',
     );
     final model = FollowUpModel.fromEntity(entity);
-    final map = model.toFirestoreCreate();
+    final map = model.toFirestoreCreate(createdByUid: 'staff-uid-1');
     expect(map['caseId'], 'case-1');
     expect(map['status'], 'scheduled');
     expect(map['notes'], 'Check-in');
+    expect(map['createdByUid'], 'staff-uid-1');
   });
 }

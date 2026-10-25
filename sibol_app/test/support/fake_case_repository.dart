@@ -2,13 +2,15 @@ import 'package:sibol_app/core/domain/firestore_document_snapshot.dart';
 import 'package:sibol_app/core/domain/firestore_list_snapshot.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
+import 'package:sibol_app/features/cases/domain/entities/follow_up_timeline_entry.dart';
+import 'package:sibol_app/features/cases/domain/follow_up_validation.dart';
 import 'package:sibol_app/features/cases/domain/repositories/case_repository.dart';
 
 class FakeCaseRepository implements CaseRepository {
   FakeCaseRepository({
     List<CaseRecord>? cases,
     Map<String, Stream<FirestoreDocumentSnapshot<CaseRecord>>>? caseStreams,
-    Map<String, Stream<List<FollowUp>>>? followUpStreams,
+    Map<String, Stream<List<FollowUpTimelineEntry>>>? followUpStreams,
   })  : _cases = List<CaseRecord>.from(cases ?? const []),
         _caseStreams = caseStreams ?? {},
         _followUpStreams = followUpStreams ?? {};
@@ -17,7 +19,7 @@ class FakeCaseRepository implements CaseRepository {
   int _idSeq = 0;
   final Map<String, Stream<FirestoreDocumentSnapshot<CaseRecord>>> _caseStreams;
   final List<FollowUp> _followUps = [];
-  final Map<String, Stream<List<FollowUp>>> _followUpStreams;
+  final Map<String, Stream<List<FollowUpTimelineEntry>>> _followUpStreams;
 
   @override
   Stream<FirestoreListSnapshot<CaseRecord>> watchCasesForOrg(String orgId) =>
@@ -69,25 +71,32 @@ class FakeCaseRepository implements CaseRepository {
   }
 
   @override
-  Stream<List<FollowUp>> watchFollowUps(String caseId) {
-    return _followUpStreams[caseId] ?? Stream<List<FollowUp>>.value(const []);
+  Stream<List<FollowUpTimelineEntry>> watchFollowUps(String caseId) {
+    return _followUpStreams[caseId] ??
+        Stream<List<FollowUpTimelineEntry>>.value(const []);
   }
 
   @override
-  Future<String> createFollowUp(FollowUp followUp) async {
+  Future<String> createFollowUp({
+    required FollowUp followUp,
+    required String createdByUid,
+  }) async {
+    final notesError = FollowUpValidation.validateNotes(followUp.notes);
+    if (notesError != null) throw FormatException(notesError);
     final id = followUp.followUpId.isEmpty
         ? 'fu-${++_idSeq}'
         : followUp.followUpId;
-    _followUps.add(
-      FollowUp(
-        followUpId: id,
-        caseId: followUp.caseId,
-        scheduledAt: followUp.scheduledAt,
-        completedAt: followUp.completedAt,
-        status: followUp.status,
-        notes: followUp.notes,
-      ),
+    final stored = FollowUp(
+      followUpId: id,
+      caseId: followUp.caseId,
+      scheduledAt: followUp.scheduledAt,
+      completedAt: followUp.completedAt,
+      status: followUp.status,
+      notes: followUp.notes,
+      createdAt: DateTime.now().toUtc(),
+      createdByUid: createdByUid,
     );
+    _followUps.add(stored);
     return id;
   }
 }

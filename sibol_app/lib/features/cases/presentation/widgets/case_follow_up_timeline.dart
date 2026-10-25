@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
+import 'package:sibol_app/features/cases/domain/entities/follow_up_timeline_entry.dart';
 import 'package:sibol_app/features/cases/presentation/providers/case_providers.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
 
-/// Read-only follow-up list for a case (T2-2).
-///
-/// Ordering: ascending by [FollowUp.scheduledAt] (matches Firestore query in
-/// [CaseRepositoryImpl.watchFollowUps]).
+/// Follow-up list for a case (chronological by scheduledAt).
 class CaseFollowUpTimeline extends ConsumerWidget {
   const CaseFollowUpTimeline({super.key, required this.caseId});
 
@@ -31,8 +28,8 @@ class CaseFollowUpTimeline extends ConsumerWidget {
           message: 'Could not load follow-ups. ${e.toString()}',
         ),
       ),
-      data: (followUps) {
-        if (followUps.isEmpty) {
+      data: (entries) {
+        if (entries.isEmpty) {
           return Padding(
             padding: const EdgeInsets.only(top: 8, bottom: 16),
             child: Text(
@@ -44,12 +41,12 @@ class CaseFollowUpTimeline extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            for (var i = 0; i < followUps.length; i++) ...[
+            for (var i = 0; i < entries.length; i++) ...[
               _FollowUpTile(
-                followUp: followUps[i],
+                entry: entries[i],
                 dateTimeFmt: dateTimeFmt,
               ),
-              if (i < followUps.length - 1) const Divider(height: 1),
+              if (i < entries.length - 1) const Divider(height: 1),
             ],
           ],
         );
@@ -60,30 +57,56 @@ class CaseFollowUpTimeline extends ConsumerWidget {
 
 class _FollowUpTile extends StatelessWidget {
   const _FollowUpTile({
-    required this.followUp,
+    required this.entry,
     required this.dateTimeFmt,
   });
 
-  final FollowUp followUp;
+  final FollowUpTimelineEntry entry;
   final DateFormat dateTimeFmt;
 
   @override
   Widget build(BuildContext context) {
+    final followUp = entry.followUp;
     final notes = followUp.notes.trim();
+    final recordedAt = followUp.createdAt ?? followUp.scheduledAt;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            dateTimeFmt.format(followUp.scheduledAt),
-            style: Theme.of(context).textTheme.titleSmall,
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  dateTimeFmt.format(recordedAt),
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+              if (entry.hasPendingWrites)
+                Chip(
+                  label: const Text('Pending sync'),
+                  visualDensity: VisualDensity.compact,
+                  avatar: Icon(
+                    Icons.sync,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                )
+              else if (entry.isFromCache)
+                Chip(
+                  label: const Text('Cached'),
+                  visualDensity: VisualDensity.compact,
+                ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Text('Status: ${followUp.status.firestoreValue}'),
-          if (followUp.completedAt != null)
-            Text(
-              'Completed: ${dateTimeFmt.format(followUp.completedAt!)}',
+          if (followUp.createdByUid != null &&
+              followUp.createdByUid!.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                'Recorded by staff (${followUp.createdByUid})',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
           if (notes.isNotEmpty) ...[
             const SizedBox(height: 4),

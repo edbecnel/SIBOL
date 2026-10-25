@@ -155,6 +155,44 @@ describe("cases collection", () => {
     );
   });
 
+  it("allows barangay to create follow-up on authorized case", async () => {
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertSucceeds(
+      db
+        .collection("cases")
+        .doc("demo-case-read")
+        .collection("followUps")
+        .doc("fu-create-1")
+        .set({
+          caseId: "demo-case-read",
+          scheduledAt: new Date("2026-11-07T10:00:00.000Z"),
+          completedAt: new Date("2026-11-07T11:00:00.000Z"),
+          status: "completed",
+          notes: "Fictional home visit documented.",
+          createdByUid: barangayUid,
+          createdAt: new Date("2026-11-07T11:00:00.000Z"),
+        }),
+    );
+  });
+
+  it("denies teen creating follow-up on case", async () => {
+    const db = testEnv.authenticatedContext(teenUid).firestore();
+    await assertFails(
+      db
+        .collection("cases")
+        .doc("demo-case-read")
+        .collection("followUps")
+        .doc("fu-teen")
+        .set({
+          caseId: "demo-case-read",
+          scheduledAt: new Date(),
+          notes: "teen attempt",
+          createdByUid: teenUid,
+          createdAt: new Date(),
+        }),
+    );
+  });
+
   it("allows barangay to read provisioned demo-style case and follow-ups", async () => {
     const db = testEnv.authenticatedContext(barangayUid).firestore();
     await assertSucceeds(db.collection("cases").doc("demo-case-read").get());

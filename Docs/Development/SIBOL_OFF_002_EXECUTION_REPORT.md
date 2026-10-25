@@ -27,7 +27,7 @@
 
 - Case list/detail expose cache and `hasPendingWrites` via `FirestoreListSnapshot` / `FirestoreDocumentSnapshot`.
 - Create/edit/follow-up use direct Firestore writes (no duplicate custom queue).
-- Minimal **Record follow-up** dialog + `CaseRepository.createFollowUp`.
+- Minimal follow-up create (superseded/refined by **SIBOL-CASE-FOLLOWUP-001** — staff UID, `createdAt`, validation, pending chips; see [SIBOL_CASE_FOLLOWUP_001_EXECUTION_REPORT.md](SIBOL_CASE_FOLLOWUP_001_EXECUTION_REPORT.md)).
 - **Limitation:** concurrent edits are last-write-wins; UI does not claim conflict detection.
 
 ### W3 — Barangay → MOPH reporting (queue + idempotent doc id)

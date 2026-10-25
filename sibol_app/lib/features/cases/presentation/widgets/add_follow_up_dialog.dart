@@ -1,19 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
-
-class AddFollowUpDialogResult {
-  const AddFollowUpDialogResult({
-    required this.scheduledAt,
-    required this.status,
-    required this.notes,
-    this.completedAt,
-  });
-
-  final DateTime scheduledAt;
-  final FollowUpStatus status;
-  final String notes;
-  final DateTime? completedAt;
-}
+import 'package:sibol_app/features/cases/domain/follow_up_validation.dart';
 
 class AddFollowUpDialog extends StatefulWidget {
   const AddFollowUpDialog({super.key});
@@ -23,9 +9,8 @@ class AddFollowUpDialog extends StatefulWidget {
 }
 
 class _AddFollowUpDialogState extends State<AddFollowUpDialog> {
-  DateTime _scheduledAt = DateTime.now();
-  FollowUpStatus _status = FollowUpStatus.scheduled;
   final _notesController = TextEditingController();
+  String? _error;
 
   @override
   void dispose() {
@@ -33,65 +18,48 @@ class _AddFollowUpDialogState extends State<AddFollowUpDialog> {
     super.dispose();
   }
 
-  Future<void> _pickDateTime() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: _scheduledAt,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
-    );
-    if (date == null || !mounted) return;
-    final time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(_scheduledAt),
-    );
-    if (time == null || !mounted) return;
-    setState(() {
-      _scheduledAt = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time.hour,
-        time.minute,
-      );
-    });
+  void _save() {
+    final error = FollowUpValidation.validateNotes(_notesController.text);
+    if (error != null) {
+      setState(() => _error = error);
+      return;
+    }
+    Navigator.of(context).pop(_notesController.text.trim());
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Record follow-up'),
+      title: const Text('Add follow-up'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            OutlinedButton(
-              onPressed: _pickDateTime,
-              child: Text('Scheduled: ${_scheduledAt.toLocal()}'),
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<FollowUpStatus>(
-              value: _status,
-              decoration: const InputDecoration(labelText: 'Status'),
-              items: FollowUpStatus.values
-                  .map(
-                    (s) => DropdownMenuItem(
-                      value: s,
-                      child: Text(s.firestoreValue),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                if (value != null) setState(() => _status = value);
-              },
+            Text(
+              'Record what was done, observed, or planned for this fictional case.',
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _notesController,
-              decoration: const InputDecoration(labelText: 'Notes'),
-              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Observation or action taken',
+                alignLabelWithHint: true,
+              ),
+              maxLines: 5,
+              autofocus: true,
+              onChanged: (_) {
+                if (_error != null) setState(() => _error = null);
+              },
             ),
+            if (_error != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                _error!,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ],
           ],
         ),
       ),
@@ -101,17 +69,7 @@ class _AddFollowUpDialogState extends State<AddFollowUpDialog> {
           child: const Text('Cancel'),
         ),
         FilledButton(
-          onPressed: () {
-            Navigator.of(context).pop(
-              AddFollowUpDialogResult(
-                scheduledAt: _scheduledAt.toUtc(),
-                status: _status,
-                notes: _notesController.text.trim(),
-                completedAt:
-                    _status == FollowUpStatus.completed ? DateTime.now().toUtc() : null,
-              ),
-            );
-          },
+          onPressed: _save,
           child: const Text('Save'),
         ),
       ],

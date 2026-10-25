@@ -26,6 +26,8 @@ class FollowUp extends Equatable {
     this.completedAt,
     required this.status,
     this.notes = '',
+    this.createdAt,
+    this.createdByUid,
   });
 
   final String followUpId;
@@ -34,8 +36,18 @@ class FollowUp extends Equatable {
   final DateTime? completedAt;
   final FollowUpStatus status;
   final String notes;
+  final DateTime? createdAt;
+  final String? createdByUid;
 
   @override
-  List<Object?> get props =>
-      [followUpId, caseId, scheduledAt, completedAt, status, notes];
+  List<Object?> get props => [
+        followUpId,
+        caseId,
+        scheduledAt,
+        completedAt,
+        status,
+        notes,
+        createdAt,
+        createdByUid,
+      ];
 }

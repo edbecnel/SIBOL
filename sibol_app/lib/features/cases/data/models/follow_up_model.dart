@@ -9,6 +9,8 @@ class FollowUpModel {
     this.completedAt,
     required this.status,
     required this.notes,
+    this.createdAt,
+    this.createdByUid,
   });
 
   final String followUpId;
@@ -17,6 +19,8 @@ class FollowUpModel {
   final DateTime? completedAt;
   final String status;
   final String notes;
+  final DateTime? createdAt;
+  final String? createdByUid;
 
   factory FollowUpModel.fromFirestore(String id, Map<String, dynamic> data) {
     return FollowUpModel(
@@ -28,16 +32,22 @@ class FollowUpModel {
           : _toDate(data['completedAt']),
       status: data['status'] as String? ?? 'scheduled',
       notes: data['notes'] as String? ?? '',
+      createdAt: data['createdAt'] == null
+          ? null
+          : _toDate(data['createdAt']),
+      createdByUid: data['createdByUid'] as String?,
     );
   }
 
-  Map<String, dynamic> toFirestoreCreate() {
+  Map<String, dynamic> toFirestoreCreate({required String createdByUid}) {
     return {
       'caseId': caseId,
       'scheduledAt': Timestamp.fromDate(scheduledAt),
       if (completedAt != null) 'completedAt': Timestamp.fromDate(completedAt!),
       'status': status,
       'notes': notes,
+      'createdByUid': createdByUid,
+      'createdAt': FieldValue.serverTimestamp(),
     };
   }
 
@@ -49,6 +59,8 @@ class FollowUpModel {
       completedAt: entity.completedAt,
       status: entity.status.firestoreValue,
       notes: entity.notes,
+      createdAt: entity.createdAt,
+      createdByUid: entity.createdByUid,
     );
   }
 
@@ -64,6 +76,8 @@ class FollowUpModel {
       completedAt: completedAt,
       status: parsed,
       notes: notes,
+      createdAt: createdAt,
+      createdByUid: createdByUid,
     );
   }
 

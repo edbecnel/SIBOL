@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/presentation/providers/case_providers.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
+import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/add_follow_up_dialog.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/case_firestore_sync_notice.dart';
@@ -67,6 +68,7 @@ class CaseDetailScreen extends ConsumerWidget {
                   caseId: caseId,
                   isFromCache: snapshot.isFromCache,
                   hasPendingWrites: snapshot.hasPendingWrites,
+                  onAddFollowUp: () => _showAddFollowUp(context, ref),
                 );
               },
             ),
@@ -77,22 +79,33 @@ class CaseDetailScreen extends ConsumerWidget {
   }
 
   Future<void> _showAddFollowUp(BuildContext context, WidgetRef ref) async {
-    final result = await showDialog<AddFollowUpDialogResult>(
+    final uid = ref.read(authStateChangesProvider).value?.uid;
+    if (uid == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Sign in to record a follow-up.')),
+        );
+      }
+      return;
+    }
+    final notes = await showDialog<String>(
       context: context,
       builder: (_) => const AddFollowUpDialog(),
     );
-    if (result == null || !context.mounted) return;
+    if (notes == null || !context.mounted) return;
+    final now = DateTime.now().toUtc();
     try {
       final repo = ref.read(caseRepositoryProvider);
       await repo.createFollowUp(
-        FollowUp(
+        followUp: FollowUp(
           followUpId: '',
           caseId: caseId,
-          scheduledAt: result.scheduledAt,
-          completedAt: result.completedAt,
-          status: result.status,
-          notes: result.notes,
+          scheduledAt: now,
+          completedAt: now,
+          status: FollowUpStatus.completed,
+          notes: notes,
         ),
+        createdByUid: uid,
       );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -121,12 +134,14 @@ class CaseDetailBody extends StatelessWidget {
     required this.caseId,
     required this.isFromCache,
     required this.hasPendingWrites,
+    required this.onAddFollowUp,
   });
 
   final CaseRecord record;
   final String caseId;
   final bool isFromCache;
   final bool hasPendingWrites;
+  final VoidCallback onAddFollowUp;
 
   @override
   Widget build(BuildContext context) {
@@ -175,9 +190,20 @@ class CaseDetailBody extends StatelessWidget {
           value: dateTimeFmt.format(record.updatedAt),
         ),
         const SizedBox(height: 24),
-        Text(
-          'Follow-ups (earliest scheduled first)',
-          style: Theme.of(context).textTheme.titleMedium,
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Follow-ups (earliest first)',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            FilledButton.tonalIcon(
+              onPressed: onAddFollowUp,
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Add follow-up'),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         CaseFollowUpTimeline(caseId: caseId),

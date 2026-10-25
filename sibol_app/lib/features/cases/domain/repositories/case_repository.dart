@@ -2,6 +2,7 @@ import 'package:sibol_app/core/domain/firestore_document_snapshot.dart';
 import 'package:sibol_app/core/domain/firestore_list_snapshot.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
+import 'package:sibol_app/features/cases/domain/entities/follow_up_timeline_entry.dart';
 
 abstract class CaseRepository {
   Stream<FirestoreListSnapshot<CaseRecord>> watchCasesForOrg(String orgId);
@@ -16,8 +17,11 @@ abstract class CaseRepository {
 
   Future<void> updateCase(CaseRecord record);
 
-  Stream<List<FollowUp>> watchFollowUps(String caseId);
+  Stream<List<FollowUpTimelineEntry>> watchFollowUps(String caseId);
 
   /// Records a follow-up under [followUp.caseId]; returns the document id.
-  Future<String> createFollowUp(FollowUp followUp);
+  Future<String> createFollowUp({
+    required FollowUp followUp,
+    required String createdByUid,
+  });
 }

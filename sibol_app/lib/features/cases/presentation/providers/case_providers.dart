@@ -3,7 +3,7 @@ import 'package:sibol_app/core/domain/firestore_document_snapshot.dart';
 import 'package:sibol_app/core/domain/firestore_list_snapshot.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
-import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
+import 'package:sibol_app/features/cases/domain/entities/follow_up_timeline_entry.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 
 final casesStreamProvider =
@@ -26,6 +26,6 @@ final caseDetailStreamProvider =
 });
 
 final followUpsStreamProvider =
-    StreamProvider.family<List<FollowUp>, String>((ref, caseId) {
+    StreamProvider.family<List<FollowUpTimelineEntry>, String>((ref, caseId) {
   return ref.watch(caseRepositoryProvider).watchFollowUps(caseId);
 });

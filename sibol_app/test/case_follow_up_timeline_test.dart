@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
-import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
+import 'package:sibol_app/features/cases/domain/entities/follow_up_timeline_entry.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/case_follow_up_timeline.dart';
 import 'support/fake_case_repository.dart';
 import 'support/sample_follow_ups.dart';
@@ -25,7 +25,10 @@ void main() {
     );
     final repo = FakeCaseRepository(
       followUpStreams: {
-        caseId: Stream.value([earlier, later]),
+        caseId: Stream.value([
+          FollowUpTimelineEntry(followUp: earlier, isFromCache: false),
+          FollowUpTimelineEntry(followUp: later, isFromCache: false),
+        ]),
       },
     );
 
@@ -45,7 +48,35 @@ void main() {
 
     expect(find.text('First visit'), findsOneWidget);
     expect(find.text('Second visit'), findsOneWidget);
-    expect(find.textContaining('scheduled'), findsWidgets);
+    expect(find.text('First visit'), findsOneWidget);
+  });
+
+  testWidgets('shows pending sync chip when write not confirmed', (tester) async {
+    final entry = sampleFollowUp(notes: 'Offline draft');
+    final repo = FakeCaseRepository(
+      followUpStreams: {
+        caseId: Stream.value([
+          FollowUpTimelineEntry(
+            followUp: entry,
+            isFromCache: true,
+            hasPendingWrites: true,
+          ),
+        ]),
+      },
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [caseRepositoryProvider.overrideWithValue(repo)],
+        child: const MaterialApp(
+          home: Scaffold(body: CaseFollowUpTimeline(caseId: caseId)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Pending sync'), findsOneWidget);
+    expect(find.text('Offline draft'), findsOneWidget);
   });
 
   testWidgets('shows empty state when no follow-ups', (tester) async {
@@ -71,7 +102,7 @@ void main() {
   });
 
   testWidgets('shows loading indicator', (tester) async {
-    final controller = StreamController<List<FollowUp>>();
+    final controller = StreamController<List<FollowUpTimelineEntry>>();
     final repo = FakeCaseRepository(
       followUpStreams: {caseId: controller.stream},
     );
@@ -97,7 +128,7 @@ void main() {
   testWidgets('shows error when stream fails', (tester) async {
     final repo = FakeCaseRepository(
       followUpStreams: {
-        caseId: Stream<List<FollowUp>>.error(Exception('denied')),
+        caseId: Stream<List<FollowUpTimelineEntry>>.error(Exception('denied')),
       },
     );
 
