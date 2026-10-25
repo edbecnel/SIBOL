@@ -17,14 +17,19 @@ final accountMembershipsProvider =
   final auth = ref.watch(authStateChangesProvider).value;
   final profile = ref.watch(userProfileProvider).value;
   if (auth == null || profile == null) {
-    return const Stream.empty();
+    return Stream.value(const []);
   }
   if (profile.role == SibolRole.teen) {
     return Stream.value(const []);
   }
-  return ref
-      .watch(organizationRepositoryProvider)
-      .watchMembershipsForAccount(auth.uid);
+  final primaryOrgId = profile.primaryOrgId?.trim();
+  if (primaryOrgId == null || primaryOrgId.isEmpty) {
+    return Stream.value(const []);
+  }
+  return ref.watch(organizationRepositoryProvider).watchMembershipForOrg(
+        orgId: primaryOrgId,
+        accountUid: auth.uid,
+      );
 });
 
 final barangayCaseOrgIdProvider = Provider<String?>((ref) {

@@ -6,7 +6,11 @@ abstract class OrganizationRepository {
 
   Future<Organization?> fetchOrganization(String orgId);
 
-  Stream<List<OrganizationMembership>> watchMembershipsForAccount(String accountUid);
+  /// Rules-compatible listen on `organizationMemberships/mbr_{orgId}__{accountUid}`.
+  Stream<List<OrganizationMembership>> watchMembershipForOrg({
+    required String orgId,
+    required String accountUid,
+  });
 
   Future<OrganizationMembership?> fetchMembership(String membershipId);
 }

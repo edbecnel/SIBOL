@@ -189,6 +189,33 @@ describe("organizationMemberships (REG-A)", () => {
     );
   });
 
+  it("denies collection query by accountUid (Flutter legacy shape)", async () => {
+    const db = testEnv.authenticatedContext(staffUid).firestore();
+    await assertFails(
+      db
+        .collection("organizationMemberships")
+        .where("accountUid", "==", staffUid)
+        .get(),
+    );
+  });
+
+  it("denies reading membership with malformed document id", async () => {
+    const badId = "mbr_not_canonical_doc_id_1234567890";
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().collection("organizationMemberships").doc(badId).set({
+        membershipId: badId,
+        orgId: orgA,
+        accountUid: staffUid,
+        status: "active",
+        capabilities: ["case.read"],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    });
+    const db = testEnv.authenticatedContext(staffUid).firestore();
+    await assertFails(db.collection("organizationMemberships").doc(badId).get());
+  });
+
   it("denies reading another user membership", async () => {
     const db = testEnv.authenticatedContext(staffUid).firestore();
     await assertFails(

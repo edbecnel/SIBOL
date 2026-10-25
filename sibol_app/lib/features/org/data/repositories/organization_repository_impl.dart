@@ -4,6 +4,8 @@ import 'package:sibol_app/features/org/data/models/organization_membership_model
 import 'package:sibol_app/features/org/data/models/organization_model.dart';
 import 'package:sibol_app/features/org/domain/entities/organization.dart';
 import 'package:sibol_app/features/org/domain/entities/organization_membership.dart';
+import 'package:sibol_app/features/org/domain/membership_document_validator.dart';
+import 'package:sibol_app/features/org/domain/membership_id.dart';
 import 'package:sibol_app/features/org/domain/repositories/organization_repository.dart';
 
 class OrganizationRepositoryImpl implements OrganizationRepository {
@@ -32,17 +34,29 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   }
 
   @override
-  Stream<List<OrganizationMembership>> watchMembershipsForAccount(
-    String accountUid,
-  ) {
+  Stream<List<OrganizationMembership>> watchMembershipForOrg({
+    required String orgId,
+    required String accountUid,
+  }) {
+    if (!MembershipId.isValidOrgId(orgId) || !MembershipId.isValidAccountUid(accountUid)) {
+      return Stream.value(const []);
+    }
+    final docId = MembershipId.forOrgAndAccount(orgId, accountUid);
     return _firestore
         .collection(FirestorePaths.organizationMemberships)
-        .where('accountUid', isEqualTo: accountUid)
+        .doc(docId)
         .snapshots()
         .map((snap) {
-      return snap.docs
-          .map((d) => OrganizationMembershipModel.fromFirestore(d.data()).toEntity())
-          .toList();
+      if (!snap.exists || snap.data() == null) {
+        return const <OrganizationMembership>[];
+      }
+      final membership = MembershipDocumentValidator.parseTrustedMembership(
+        documentId: snap.id,
+        data: snap.data()!,
+        expectedAccountUid: accountUid,
+        expectedOrgId: orgId,
+      );
+      return membership == null ? const <OrganizationMembership>[] : [membership];
     });
   }
 

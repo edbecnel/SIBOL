@@ -52,6 +52,8 @@ No seed changes. [`emulator_seed.mjs`](../../shared/provisioning/src/emulator_se
 
 No emulator or membership mutations. **Hot restart** recommended so the org admin session loads the new dashboard layout.
 
+**Follow-up:** FIX-002 addresses membership Firestore query denial that prevented the administration card from loading on device ([SIBOL_ORG_001_FIX_002_EXECUTION_REPORT.md](SIBOL_ORG_001_FIX_002_EXECUTION_REPORT.md)).
+
 ## 8. References
 
 - [SIBOL_ORG_001_INV_001_INVESTIGATION_REPORT.md](SIBOL_ORG_001_INV_001_INVESTIGATION_REPORT.md)
