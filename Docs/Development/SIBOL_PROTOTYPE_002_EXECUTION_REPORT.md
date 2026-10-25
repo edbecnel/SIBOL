@@ -1,7 +1,7 @@
 # SIBOL-PROTOTYPE-002 — Execution report
 
 **Baseline:** `1382431`  
-**Ending HEAD:** _(see git log after push)_  
+**Ending HEAD:** `d75efc9`  
 **Authorization:** Three-workflow demonstration readiness (PO scope decision).
 
 ## 1. Automated baseline verification
