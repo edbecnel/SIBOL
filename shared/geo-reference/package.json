@@ -3,6 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "build:psgc": "node scripts/build-psgc-psa-2025-2q.mjs"
+  },
+  "devDependencies": {
+    "@jobuntux/psgc": "^0.2.1"
   }
 }

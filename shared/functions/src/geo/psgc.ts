@@ -15,7 +15,7 @@ export type PsgcBundle = {
   nodes: PsgcNode[];
 };
 
-const SUPPORTED = new Set(["psgc-synthetic-demo-v1"]);
+const SUPPORTED = new Set(["psgc-synthetic-demo-v1", "psgc-psa-2025-2q"]);
 
 function bundlePath(version: string): string {
   return join(__dirname, "..", "..", "geo-data", `${version}.json`);

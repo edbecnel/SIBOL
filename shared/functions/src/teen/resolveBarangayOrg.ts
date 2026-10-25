@@ -6,6 +6,7 @@ import {
   allowLegacyTeenOrgBinding,
   LEGACY_TEEN_ORG_ALLOWLIST,
 } from "../geo/demoFlags";
+import { DEMO_PSGC_BARANGAY_TO_ORG } from "../geo/demoPsgcShim";
 import { DEMO_BARANGAY_ORG_ID } from "../reg/constants";
 
 const IDENTITY_KEYS = "organizationIdentityKeys";
@@ -31,6 +32,13 @@ export async function resolveBarangayOrgIdFromPsgc(
   });
   if (!validated.ok) {
     throw new AuthzError(validated.error, "invalid-argument");
+  }
+
+  if (allowDemoIdentity()) {
+    const demoOrgId = DEMO_PSGC_BARANGAY_TO_ORG[selection.psgcBarangayCode];
+    if (demoOrgId) {
+      return resolveLegacyTeenOrgId(db, demoOrgId);
+    }
   }
 
   const identityKey = barangayIdentityKey(selection.psgcBarangayCode);

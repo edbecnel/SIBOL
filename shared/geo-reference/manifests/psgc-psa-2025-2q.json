@@ -1,0 +1,17 @@
+{
+  "version": "psgc-psa-2025-2q",
+  "synthetic": false,
+  "generatedAt": "2026-10-24T23:59:24.509Z",
+  "sourceUrl": "https://psa.gov.ph/classification/psgc",
+  "sourcePublicationDate": "2025-06-30",
+  "sourceRetrievedAt": "2026-10-24T23:59:24.499Z",
+  "reuseDetermination": "PSA publishes PSGC for public statistical use; in-app attribution required (see SIBOL-GEO-001).",
+  "artifactFile": "artifacts/psgc-psa-2025-2q.json",
+  "sha256": "52077d6f10c2b091ea23deed9f87cfcc86bac2efa9dde02a0abcb978604ca594",
+  "recordCounts": {
+    "regions": 18,
+    "provinces": 82,
+    "city_mun": 1632,
+    "barangay": 42011
+  }
+}

@@ -18,6 +18,7 @@
 | Field | M0 recommendation |
 |-------|-------------------|
 | Initial pin | `Q2_2024` (listed on PSA API documentation at M0 preparation) |
+| **SIBOL-GEO-001 shipped pin** | `psgc-psa-2025-2q` (PSA publication **2025-06-30**, build manifest in `shared/geo-reference/manifests/`) |
 | Selection authority | PA confirms pin at M0 checkpoint |
 
 ## Availability and format

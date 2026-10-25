@@ -41,4 +41,5 @@ flutter:
   assets:
     - assets/images/sibol_logo.png
     - assets/geo/psgc-synthetic-demo-v1.json
+    - assets/geo/psgc-psa-2025-2q.json
     - assets/geo/nhfr-synthetic-demo-v1.json

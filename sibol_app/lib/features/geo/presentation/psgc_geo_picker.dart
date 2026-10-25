@@ -37,7 +37,8 @@ class PsgcGeoPicker extends StatefulWidget {
 
 class _PsgcGeoPickerState extends State<PsgcGeoPicker> {
   String? _regionCode;
-  String? _lguParentCode;
+  String? _provinceCode;
+  String? _independentCityCode;
   String? _cityMunCode;
   String? _barangayCode;
 
@@ -51,9 +52,7 @@ class _PsgcGeoPickerState extends State<PsgcGeoPicker> {
       widget.onChanged?.call(null);
       return;
     }
-    final lgu = _lguParentCode != null ? widget.bundle.node(_lguParentCode!) : null;
-    final provinceCode = lgu?.level == 'province' ? lgu!.code : null;
-    final cityMunCode = _cityMunCode ?? (lgu?.level == 'city_mun' ? lgu!.code : null);
+    final cityMunCode = _cityMunCode ?? _independentCityCode;
     if (cityMunCode == null) {
       widget.onChanged?.call(null);
       return;
@@ -62,7 +61,7 @@ class _PsgcGeoPickerState extends State<PsgcGeoPicker> {
       PsgcSelection(
         psgcVersion: widget.bundle.version,
         psgcRegionCode: _regionCode!,
-        psgcProvinceCode: provinceCode,
+        psgcProvinceCode: _provinceCode,
         psgcCityMunCode: cityMunCode,
         psgcBarangayCode: _barangayCode!,
         barangayName: barangay.officialName,
@@ -74,21 +73,33 @@ class _PsgcGeoPickerState extends State<PsgcGeoPicker> {
   @override
   Widget build(BuildContext context) {
     final regions = widget.bundle.regions();
-    final lguParents =
-        _regionCode == null ? <PsgcNode>[] : widget.bundle.lguParentsUnderRegion(_regionCode!);
-    final lgu = _lguParentCode != null ? widget.bundle.node(_lguParentCode!) : null;
-    final cities = lgu?.level == 'province'
-        ? widget.bundle.children(lgu!.code, 'city_mun')
-        : <PsgcNode>[];
-    final barangaysParent = _cityMunCode ?? (lgu?.level == 'city_mun' ? lgu!.code : null);
+    final provinces = _regionCode == null
+        ? <PsgcNode>[]
+        : widget.bundle.provincesUnderRegion(_regionCode!);
+    final independentCities = _regionCode == null
+        ? <PsgcNode>[]
+        : widget.bundle.independentCitiesUnderRegion(_regionCode!);
+    final citiesUnderProvince = _provinceCode == null
+        ? <PsgcNode>[]
+        : widget.bundle.children(_provinceCode!, 'city_mun');
+    final barangaysParent = _cityMunCode ?? _independentCityCode;
     final barangays = barangaysParent == null
         ? <PsgcNode>[]
         : widget.bundle.children(barangaysParent, 'barangay');
 
+    final usingIndependentCity = _independentCityCode != null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _searchableDropdown(
+        if (widget.bundle.synthetic) ...[
+          Text(
+            'Demonstration geographic data only — not official PSA PSGC.',
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+          const SizedBox(height: 8),
+        ],
+        _dropdown(
           label: 'Region',
           value: _regionCode,
           items: regions
@@ -96,43 +107,56 @@ class _PsgcGeoPickerState extends State<PsgcGeoPicker> {
               .toList(),
           onChanged: (v) => setState(() {
             _regionCode = v;
-            _lguParentCode = null;
+            _provinceCode = null;
+            _independentCityCode = null;
             _cityMunCode = null;
             _barangayCode = null;
             _emit();
           }),
         ),
-        if (_regionCode != null) ...[
+        if (_regionCode != null && provinces.isNotEmpty) ...[
           const SizedBox(height: 12),
-          _searchableDropdown(
-            label: 'Province or city',
-            value: _lguParentCode,
-            items: lguParents
-                .map(
-                  (p) => DropdownMenuItem(
-                    value: p.code,
-                    child: Text(
-                      p.level == 'province'
-                          ? '${p.officialName} (Province)'
-                          : '${p.officialName} (City)',
-                    ),
-                  ),
-                )
+          _dropdown(
+            label: 'Province',
+            value: usingIndependentCity ? null : _provinceCode,
+            items: provinces
+                .map((p) => DropdownMenuItem(value: p.code, child: Text(p.officialName)))
                 .toList(),
             onChanged: (v) => setState(() {
-              _lguParentCode = v;
+              _provinceCode = v;
+              _independentCityCode = null;
               _cityMunCode = null;
               _barangayCode = null;
               _emit();
             }),
           ),
         ],
-        if (lgu?.level == 'province') ...[
+        if (_regionCode != null && independentCities.isNotEmpty) ...[
           const SizedBox(height: 12),
-          _searchableDropdown(
-            label: 'Municipality / city',
+          _dropdown(
+            label: 'Highly urbanized / independent city',
+            value: usingIndependentCity ? _independentCityCode : null,
+            hint: _provinceCode == null ? null : 'Clear province to select',
+            items: independentCities
+                .map((c) => DropdownMenuItem(value: c.code, child: Text(c.officialName)))
+                .toList(),
+            onChanged: _provinceCode == null
+                ? (v) => setState(() {
+                    _independentCityCode = v;
+                    _provinceCode = null;
+                    _cityMunCode = null;
+                    _barangayCode = null;
+                    _emit();
+                  })
+                : null,
+          ),
+        ],
+        if (_provinceCode != null && citiesUnderProvince.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          _dropdown(
+            label: 'City / municipality',
             value: _cityMunCode,
-            items: cities
+            items: citiesUnderProvince
                 .map((c) => DropdownMenuItem(value: c.code, child: Text(c.officialName)))
                 .toList(),
             onChanged: (v) => setState(() {
@@ -144,7 +168,7 @@ class _PsgcGeoPickerState extends State<PsgcGeoPicker> {
         ],
         if (barangays.isNotEmpty) ...[
           const SizedBox(height: 12),
-          _searchableDropdown(
+          _dropdown(
             label: 'Barangay',
             value: _barangayCode,
             items: barangays
@@ -165,16 +189,20 @@ class _PsgcGeoPickerState extends State<PsgcGeoPicker> {
     );
   }
 
-  Widget _searchableDropdown({
+  Widget _dropdown({
     required String label,
     required String? value,
     required List<DropdownMenuItem<String>> items,
-    required ValueChanged<String?> onChanged,
+    required ValueChanged<String?>? onChanged,
+    String? hint,
   }) {
     return DropdownButtonFormField<String>(
       value: value,
       isExpanded: true,
-      decoration: InputDecoration(labelText: label),
+      decoration: InputDecoration(
+        labelText: label,
+        helperText: hint,
+      ),
       items: items,
       onChanged: onChanged,
     );

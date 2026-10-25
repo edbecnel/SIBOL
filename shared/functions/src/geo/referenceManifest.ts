@@ -4,7 +4,7 @@ import { supportedPsgcVersions } from "./psgc";
 export function runGetReferenceManifest() {
   return {
     supportedPsgcVersions: supportedPsgcVersions(),
-    recommendedPsgcVersion: "psgc-synthetic-demo-v1",
+    recommendedPsgcVersion: "psgc-psa-2025-2q",
     supportedNhfrSnapshotVersions: supportedNhfrVersions(),
     recommendedNhfrSnapshotVersion: "nhfr-synthetic-demo-v1",
     syntheticOnly: true,

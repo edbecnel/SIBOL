@@ -35,7 +35,7 @@ class PsgcBundle {
   final List<PsgcNode> nodes;
   final bool synthetic;
 
-  static const defaultVersion = 'psgc-synthetic-demo-v1';
+  static const defaultVersion = 'psgc-psa-2025-2q';
 
   static Future<PsgcBundle> load({String version = defaultVersion}) async {
     final raw = await rootBundle.loadString('assets/geo/$version.json');
@@ -61,17 +61,28 @@ class PsgcBundle {
       nodes.where((n) => n.level == 'region').toList()
         ..sort((a, b) => a.officialName.compareTo(b.officialName));
 
+  List<PsgcNode> provincesUnderRegion(String regionCode) {
+    return nodes
+        .where((n) => n.parentCode == regionCode && n.level == 'province')
+        .toList()
+      ..sort((a, b) => a.officialName.compareTo(b.officialName));
+  }
+
+  List<PsgcNode> independentCitiesUnderRegion(String regionCode) {
+    return nodes
+        .where(
+          (n) =>
+              n.parentCode == regionCode &&
+              n.level == 'city_mun' &&
+              (n.cityClass == 'HUC' || n.cityClass == 'ICC'),
+        )
+        .toList()
+      ..sort((a, b) => a.officialName.compareTo(b.officialName));
+  }
+
+  /// @deprecated Use [provincesUnderRegion] and [independentCitiesUnderRegion].
   List<PsgcNode> lguParentsUnderRegion(String regionCode) {
-    final out = <PsgcNode>[];
-    for (final n in nodes) {
-      if (n.parentCode == regionCode && n.level == 'province') {
-        out.add(n);
-      }
-      if (n.parentCode == regionCode && n.level == 'city_mun' && n.cityClass == 'HUC') {
-        out.add(n);
-      }
-    }
-    out.sort((a, b) => a.officialName.compareTo(b.officialName));
+    final out = <PsgcNode>[...provincesUnderRegion(regionCode), ...independentCitiesUnderRegion(regionCode)];
     return out;
   }
 

@@ -111,5 +111,5 @@ export function listChildren(byCode, parentCode, level) {
 }
 
 export function supportedVersions() {
-  return ["psgc-synthetic-demo-v1"];
+  return ["psgc-synthetic-demo-v1", "psgc-psa-2025-2q"];
 }
