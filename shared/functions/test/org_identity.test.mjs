@@ -142,6 +142,10 @@ describe("organization identity", () => {
     assert.equal(result.created, true);
     const user = await db.collection("users").doc(teenUid).get();
     assert.ok(user.data()?.selectedBarangayOrgId);
+    assert.equal(
+      user.data()?.assignedBarangay,
+      "San Jose, Synthetic Municipality Alpha",
+    );
   });
 
   it("rejects teen registration without identity key", async () => {

@@ -11,6 +11,7 @@ import {
   resolveLegacyTeenOrgId,
 } from "./resolveBarangayOrg";
 import { allowLegacyTeenOrgBinding } from "../geo/demoFlags";
+import { resolveTeenAssignedBarangayLabel } from "./teenAssignedBarangay";
 
 const STAFF_ROLES = new Set(["barangay", "moph"]);
 
@@ -143,6 +144,7 @@ export async function runRegisterTeenAccount(
     }
 
     const onboardingStatus = resolveTeenOnboardingStatus(authEmailVerified);
+    const assignedBarangay = resolveTeenAssignedBarangayLabel(org, data);
     const now = Timestamp.now();
     tx.create(userRef, {
       role: "teen",
@@ -150,6 +152,7 @@ export async function runRegisterTeenAccount(
       active: true,
       createdAt: now,
       selectedBarangayOrgId: orgId,
+      assignedBarangay,
       onboardingStatus,
       privacyNoticeVersion: TEEN_ONBOARDING_POLICY.privacyNoticeVersion,
       privacyConsentAt: now,

@@ -25,6 +25,7 @@ before(async () => {
     type: "barangay",
     name: "Barangay Demo",
     status: "active",
+    legacyBarangayLabel: "Barangay Tres, Balingasag",
     createdAt: now,
     updatedAt: now,
   });

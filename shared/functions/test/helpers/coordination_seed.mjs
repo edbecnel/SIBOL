@@ -30,6 +30,7 @@ export async function seedBaseOrgs(db) {
       type,
       name,
       status: "active",
+      ...(type === "barangay" && id === orgId ? { legacyBarangayLabel: site } : {}),
       createdAt: now,
       updatedAt: now,
     });

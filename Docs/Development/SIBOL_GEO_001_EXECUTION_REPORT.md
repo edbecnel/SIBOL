@@ -93,3 +93,13 @@ flutter run -d emulator-5554 \
 ```
 
 Register as Teen → select **Region X → Misamis Oriental → Balingasag → Barangay 3** → complete (requires Functions emulator with demo identity flags as today).
+
+## 12. FIX-002 — Teen `assignedBarangay` at registration
+
+| Item | Detail |
+|------|--------|
+| **Issue** | PSGC registration set `selectedBarangayOrgId` only; assistance submit requires `assignedBarangay` |
+| **Fix** | `resolveTeenAssignedBarangayLabel` — PSGC-derived label or org `legacyBarangayLabel` on legacy path |
+| **INV-002** | [SIBOL_GEO_001_INV_002_INVESTIGATION_REPORT.md](SIBOL_GEO_001_INV_002_INVESTIGATION_REPORT.md) |
+| **Existing QA teen** | [SIBOL_GEO_001_QA_TEEN_03_PROFILE_REPAIR.md](SIBOL_GEO_001_QA_TEEN_03_PROFILE_REPAIR.md) (PO approval before emulator write) |
+| **Functions reload** | Restart or reload Functions emulator after deploy to pick up registration change |

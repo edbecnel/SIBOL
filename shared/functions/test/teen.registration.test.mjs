@@ -89,7 +89,35 @@ describe("REG-C teen registration", () => {
     const snap = await db.collection("users").doc(teenUid).get();
     assert.equal(snap.data()?.role, "teen");
     assert.equal(snap.data()?.selectedBarangayOrgId, activeOrgId);
+    assert.equal(snap.data()?.assignedBarangay, "Barangay Alpha, Demo");
     assert.equal(snap.data()?.isCentralAdmin, undefined);
+  });
+
+  it("derives assignedBarangay from PSGC selection on registration", async () => {
+    const psgcTeenUid = "teenPsgcAssignedUid12345678901";
+    const created = await runCreateBarangayOrganization(db, centralUid, {
+      idempotencyKey: `idem-psgc-assign-${Date.now()}`,
+      psgcVersion: "psgc-synthetic-demo-v1",
+      psgcRegionCode: "SYNTH_R10",
+      psgcProvinceCode: "SYNTH_P102",
+      psgcCityMunCode: "SYNTH_M301",
+      psgcBarangayCode: "SYNTH_B403",
+      initialOrgAdminEmail: "psgc.b403@sibol.local",
+    });
+    await runRegisterTeenAccount(db, psgcTeenUid, true, {
+      selectedBarangayPsgcCode: "SYNTH_B403",
+      psgcVersion: "psgc-synthetic-demo-v1",
+      psgcRegionCode: "SYNTH_R10",
+      psgcProvinceCode: "SYNTH_P102",
+      psgcCityMunCode: "SYNTH_M301",
+      privacyConsentAcknowledged: true,
+    });
+    const snap = await db.collection("users").doc(psgcTeenUid).get();
+    assert.equal(snap.data()?.selectedBarangayOrgId, created.orgId);
+    assert.equal(
+      snap.data()?.assignedBarangay,
+      "Poblacion, Synthetic Municipality Alpha",
+    );
   });
 
   it("is idempotent on duplicate submission", async () => {

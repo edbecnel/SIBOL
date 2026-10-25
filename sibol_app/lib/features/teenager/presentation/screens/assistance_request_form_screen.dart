@@ -56,7 +56,7 @@ class _AssistanceRequestFormScreenState
     }
     if (barangay == null || barangay.isEmpty) {
       setState(() => _formError =
-          'Your demo profile is missing barangay assignment. Contact the administrator.');
+          'Your profile is missing barangay assignment. Complete registration or contact support.');
       return;
     }
     final orgId = ref.read(teenBarangayOrgIdProvider);
