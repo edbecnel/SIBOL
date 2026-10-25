@@ -9,26 +9,31 @@ import 'package:sibol_app/features/cases/domain/repositories/case_repository.dar
 class FakeCaseRepository implements CaseRepository {
   FakeCaseRepository({
     List<CaseRecord>? cases,
+    Stream<FirestoreListSnapshot<CaseRecord>>? casesStream,
     Map<String, Stream<FirestoreDocumentSnapshot<CaseRecord>>>? caseStreams,
     Map<String, Stream<List<FollowUpTimelineEntry>>>? followUpStreams,
   })  : _cases = List<CaseRecord>.from(cases ?? const []),
+        _casesStream = casesStream,
         _caseStreams = caseStreams ?? {},
         _followUpStreams = followUpStreams ?? {};
 
   final List<CaseRecord> _cases;
+  final Stream<FirestoreListSnapshot<CaseRecord>>? _casesStream;
   int _idSeq = 0;
   final Map<String, Stream<FirestoreDocumentSnapshot<CaseRecord>>> _caseStreams;
   final List<FollowUp> _followUps = [];
   final Map<String, Stream<List<FollowUpTimelineEntry>>> _followUpStreams;
 
   @override
-  Stream<FirestoreListSnapshot<CaseRecord>> watchCasesForOrg(String orgId) =>
-      Stream.value(
-        FirestoreListSnapshot(
-          items: _cases.where((c) => c.orgId == orgId).toList(),
-          isFromCache: false,
-        ),
-      );
+  Stream<FirestoreListSnapshot<CaseRecord>> watchCasesForOrg(String orgId) {
+    if (_casesStream != null) return _casesStream;
+    return Stream.value(
+      FirestoreListSnapshot(
+        items: _cases.where((c) => c.orgId == orgId).toList(),
+        isFromCache: false,
+      ),
+    );
+  }
 
   @override
   Future<List<CaseRecord>> fetchCasesForOrg(String orgId) async =>

@@ -16,7 +16,8 @@ class CachedDataNotice extends StatelessWidget {
           const SizedBox(width: 6),
           Expanded(
             child: Text(
-              'Showing cached data — may be outdated until you reconnect.',
+              'Showing data from this device — waiting for a server snapshot to '
+              'confirm it is up to date.',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),

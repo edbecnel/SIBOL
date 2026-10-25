@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:sibol_app/core/constants/firestore_paths.dart';
+import 'package:sibol_app/core/firestore/firestore_snapshot_listeners.dart';
 import 'package:sibol_app/core/domain/firestore_list_snapshot.dart';
 import 'package:sibol_app/features/teenager/data/models/assistance_request_model.dart';
 import 'package:sibol_app/features/teenager/domain/entities/assistance_request.dart';
@@ -22,7 +23,7 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
     return _collection
         .where('teenUid', isEqualTo: teenUid)
         .orderBy('createdAt', descending: true)
-        .snapshots()
+        .snapshotsWithCacheMetadata()
         .map(
           (snap) => FirestoreListSnapshot(
             isFromCache: snap.metadata.isFromCache,
@@ -56,7 +57,7 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
     return _collection
         .where('orgId', isEqualTo: orgId)
         .orderBy('createdAt', descending: true)
-        .snapshots()
+        .snapshotsWithCacheMetadata()
         .map(
           (snap) => FirestoreListSnapshot(
             isFromCache: snap.metadata.isFromCache,

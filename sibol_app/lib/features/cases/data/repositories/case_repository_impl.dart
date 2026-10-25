@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sibol_app/core/constants/firestore_paths.dart';
+import 'package:sibol_app/core/firestore/firestore_snapshot_listeners.dart';
 import 'package:sibol_app/core/domain/firestore_document_snapshot.dart';
 import 'package:sibol_app/core/domain/firestore_list_snapshot.dart';
 import 'package:sibol_app/features/cases/data/models/case_record_model.dart';
@@ -23,7 +24,7 @@ class CaseRepositoryImpl implements CaseRepository {
         .collection(FirestorePaths.cases)
         .where('orgId', isEqualTo: orgId)
         .orderBy('registeredAt', descending: true)
-        .snapshots()
+        .snapshotsWithCacheMetadata()
         .map(
           (snap) => FirestoreListSnapshot(
             isFromCache: snap.metadata.isFromCache,
@@ -55,7 +56,7 @@ class CaseRepositoryImpl implements CaseRepository {
     return _firestore
         .collection(FirestorePaths.cases)
         .doc(caseId)
-        .snapshots()
+        .snapshotsWithCacheMetadata()
         .map((snap) {
       CaseRecord? record;
       if (snap.exists) {
@@ -130,7 +131,7 @@ class CaseRepositoryImpl implements CaseRepository {
         .doc(caseId)
         .collection(FirestorePaths.followUps)
         .orderBy('scheduledAt')
-        .snapshots()
+        .snapshotsWithCacheMetadata()
         .map(
           (snap) => snap.docs.map((d) {
             final data = d.data();

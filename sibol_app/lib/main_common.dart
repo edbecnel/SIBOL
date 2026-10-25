@@ -41,7 +41,7 @@ Future<void> mainCommon() async {
     );
   }
 
-  // Firestore mobile SDK enables offline persistence by default.
+  // After emulator wiring; persistence remains enabled for offline QA paths.
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
   );
