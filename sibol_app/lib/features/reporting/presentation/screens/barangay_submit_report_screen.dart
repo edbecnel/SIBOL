@@ -134,8 +134,8 @@ class _BarangaySubmitReportScreenState
                     child: Padding(
                       padding: EdgeInsets.all(24),
                       child: Text(
-                        'Your profile does not have an assigned barangay site. '
-                        'Contact the demonstration administrator before submitting.',
+                        'Report summary is unavailable. Verify Barangay organization '
+                        'membership and registry data before submitting.',
                         textAlign: TextAlign.center,
                       ),
                     ),

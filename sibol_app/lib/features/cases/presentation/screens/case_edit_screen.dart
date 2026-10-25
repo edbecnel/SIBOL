@@ -64,7 +64,7 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
     if (ageError != null) return ageError;
     if (widget.isCreate) {
       if (assignedBarangay == null || assignedBarangay.trim().isEmpty) {
-        return 'Your profile has no assigned barangay site. Contact the administrator.';
+        return 'Organization site label is unavailable. Contact the administrator.';
       }
     } else {
       final barangayError =
@@ -190,47 +190,34 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
         },
       );
     }
-    final profile = ref.watch(userProfileProvider);
-    return profile.when(
+    final presentationAsync = ref.watch(barangayCaseOrgPresentationProvider);
+    return presentationAsync.when(
       loading: () => const Scaffold(
-        body: AppLoadingIndicator(message: 'Loading profile…'),
+        body: AppLoadingIndicator(message: 'Loading organization…'),
       ),
       error: (e, _) => Scaffold(
         appBar: AppBar(title: const Text('New demonstration case')),
         body: AppErrorWidget(message: e.toString()),
       ),
-      data: (user) {
-        final assigned = user?.assignedBarangay;
-        if (assigned == null || assigned.trim().isEmpty) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('New demonstration case')),
-            body: const Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Text(
-                  'Your account has no assigned barangay site. Cases cannot be '
-                  'created until an administrator sets assignedBarangay on your profile.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          );
-        }
-        return _buildFormScaffold(
-          title: 'New demonstration case',
-          barangayLabel: assigned,
-          barangayReadOnly: true,
-        );
-      },
+      data: (presentation) => _buildFormScaffold(
+        title: 'New demonstration case',
+        organizationName: presentation.organizationName,
+        caseSiteLabel: presentation.siteLabel,
+        barangayReadOnly: true,
+      ),
     );
   }
 
   Widget _buildFormScaffold({
     required String title,
     String? headerNote,
-    required String barangayLabel,
+    String? organizationName,
+    String? caseSiteLabel,
+    String? barangayLabel,
     bool barangayReadOnly = false,
   }) {
+    final resolvedSiteLabel = caseSiteLabel ?? barangayLabel ?? '';
+    final resolvedOrgName = organizationName ?? barangayLabel ?? '';
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: Column(
@@ -256,13 +243,24 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
                 ),
                 const SizedBox(height: 12),
                 InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Barangay site (from your organization)',
+                  decoration: InputDecoration(
+                    labelText: widget.isCreate
+                        ? 'Barangay organization'
+                        : 'Barangay site (on case)',
                   ),
                   child: Text(
-                    barangayReadOnly ? barangayLabel : _barangayController.text,
+                    barangayReadOnly
+                        ? resolvedOrgName
+                        : _barangayController.text,
                   ),
                 ),
+                if (widget.isCreate && resolvedSiteLabel.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Case site label: $resolvedSiteLabel',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
                 const SizedBox(height: 12),
                 DropdownButtonFormField<CaseStatus>(
                   value: _caseStatus,
@@ -295,7 +293,9 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
                 AppButton.primary(
                   label: widget.isCreate ? 'Create case' : 'Save changes',
                   isLoading: _saving,
-                  onPressed: _saving ? null : () => _save(barangayLabel: barangayLabel),
+                  onPressed: _saving
+                      ? null
+                      : () => _save(barangayLabel: resolvedSiteLabel),
                 ),
               ],
             ),

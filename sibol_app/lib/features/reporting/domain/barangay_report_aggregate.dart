@@ -22,9 +22,10 @@ class BarangayReportAggregateCounts {
 
 BarangayReportAggregateCounts computeBarangayReportAggregate({
   required List<CaseRecord> cases,
+  required String orgId,
   required String barangay,
 }) {
-  final scoped = cases.where((c) => c.barangay == barangay).toList();
+  final scoped = cases.where((c) => c.orgId == orgId).toList();
   var active = 0;
   var followUpScheduled = 0;
   var followUpCompleted = 0;

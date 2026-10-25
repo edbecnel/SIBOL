@@ -60,6 +60,7 @@ async function ensureOrganizations(db, logger) {
       orgId: DEMO_BARANGAY_ORG_ID,
       type: "barangay",
       name: DEMO_BARANGAY_ORG_NAME,
+      legacyBarangayLabel: DEMO_ASSIGNED_BARANGAY,
       status: "active",
     },
     {
@@ -71,9 +72,22 @@ async function ensureOrganizations(db, logger) {
   ];
   for (const org of orgs) {
     const ref = db.collection("organizations").doc(org.orgId);
-    if (!(await ref.get()).exists) {
+    const snap = await ref.get();
+    if (!snap.exists) {
       await ref.set({ ...org, createdAt: now, updatedAt: now });
       logger.log(`Created organization ${org.orgId}`);
+      continue;
+    }
+    const existing = snap.data();
+    if (
+      org.legacyBarangayLabel &&
+      typeof existing.legacyBarangayLabel !== "string"
+    ) {
+      await ref.set(
+        { legacyBarangayLabel: org.legacyBarangayLabel, updatedAt: now },
+        { merge: true },
+      );
+      logger.log(`Patched legacyBarangayLabel for ${org.orgId}`);
     }
   }
 }

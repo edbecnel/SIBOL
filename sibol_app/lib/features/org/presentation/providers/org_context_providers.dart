@@ -4,6 +4,8 @@ import 'package:sibol_app/core/permissions/sibol_role.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/domain/entities/user_profile.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/org/domain/barangay_organization_presentation.dart';
+import 'package:sibol_app/features/org/domain/entities/organization.dart';
 import 'package:sibol_app/features/org/domain/org_capabilities.dart';
 import 'package:sibol_app/features/org/domain/org_context_resolver.dart';
 import 'package:sibol_app/features/org/domain/entities/organization_membership.dart';
@@ -76,6 +78,106 @@ final barangayCaseOrgIdProvider = Provider<String?>((ref) {
   final profile = ref.watch(userProfileProvider).value;
   final memberships = ref.watch(accountMembershipsProvider).value ?? [];
   return OrgContextResolver.barangayOrgForCases(profile, memberships);
+});
+
+final barangayCaseOrganizationProvider =
+    StreamProvider<Organization?>((ref) {
+  final orgId = ref.watch(barangayCaseOrgIdProvider);
+  if (orgId == null) {
+    return const Stream<Organization?>.empty();
+  }
+  return ref.watch(organizationRepositoryProvider).watchOrganization(orgId);
+});
+
+final barangayCaseOrgPresentationProvider =
+    Provider<AsyncValue<BarangayOrganizationPresentation>>((ref) {
+  final orgId = ref.watch(barangayCaseOrgIdProvider);
+  if (orgId == null) {
+    return AsyncError(
+      StateError(
+        'Your account is not authorized to manage cases for a Barangay organization. '
+        'Check organization membership and case.read capability.',
+      ),
+      StackTrace.current,
+    );
+  }
+  final orgAsync = ref.watch(barangayCaseOrganizationProvider);
+  return orgAsync.when(
+    loading: () => const AsyncLoading(),
+    error: (e, st) => AsyncError(e, st),
+    data: (org) {
+      if (org == null) {
+        return AsyncError(
+          StateError(
+            'Organization record $orgId is missing. '
+            'Reconnect when online or ask an administrator to verify the registry.',
+          ),
+          StackTrace.current,
+        );
+      }
+      final presentation = BarangayOrganizationPresentation.fromOrganization(org);
+      if (presentation == null) {
+        return AsyncError(
+          StateError(
+            'Organization $orgId is missing an active registry name or geographic site label '
+            '(legacyBarangayLabel). Contact the administrator.',
+          ),
+          StackTrace.current,
+        );
+      }
+      return AsyncData(presentation);
+    },
+  );
+});
+
+final barangayReportOrganizationProvider =
+    StreamProvider<Organization?>((ref) {
+  final orgId = ref.watch(barangayReportOrgIdProvider);
+  if (orgId == null) {
+    return const Stream<Organization?>.empty();
+  }
+  return ref.watch(organizationRepositoryProvider).watchOrganization(orgId);
+});
+
+final barangayReportOrgPresentationProvider =
+    Provider<AsyncValue<BarangayOrganizationPresentation>>((ref) {
+  final orgId = ref.watch(barangayReportOrgIdProvider);
+  if (orgId == null) {
+    return AsyncError(
+      StateError(
+        'Your account is not authorized to submit reports for a Barangay organization. '
+        'Check organization membership and report.submit capability.',
+      ),
+      StackTrace.current,
+    );
+  }
+  final orgAsync = ref.watch(barangayReportOrganizationProvider);
+  return orgAsync.when(
+    loading: () => const AsyncLoading(),
+    error: (e, st) => AsyncError(e, st),
+    data: (org) {
+      if (org == null) {
+        return AsyncError(
+          StateError(
+            'Organization record $orgId is missing. '
+            'Reconnect when online or ask an administrator to verify the registry.',
+          ),
+          StackTrace.current,
+        );
+      }
+      final presentation = BarangayOrganizationPresentation.fromOrganization(org);
+      if (presentation == null) {
+        return AsyncError(
+          StateError(
+            'Organization $orgId is missing an active registry name or geographic site label '
+            '(legacyBarangayLabel). Contact the administrator.',
+          ),
+          StackTrace.current,
+        );
+      }
+      return AsyncData(presentation);
+    },
+  );
 });
 
 final barangayCanReadCasesProvider = Provider<bool>((ref) {

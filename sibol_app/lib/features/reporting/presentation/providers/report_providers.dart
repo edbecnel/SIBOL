@@ -68,14 +68,18 @@ final barangayReportReceiptProvider =
 
 final barangayReportAggregateProvider =
     Provider<AsyncValue<BarangayReportAggregateCounts?>>((ref) {
-  final profile = ref.watch(userProfileProvider);
+  final orgPresentation = ref.watch(barangayReportOrgPresentationProvider);
   final casesAsync = ref.watch(casesStreamProvider);
-  return profile.when(
+  return orgPresentation.when(
     loading: () => const AsyncLoading(),
     error: (e, st) => AsyncError(e, st),
-    data: (user) {
-      if (user == null || user.assignedBarangay == null) {
-        return const AsyncData(null);
+    data: (presentation) {
+      final orgId = ref.watch(barangayReportOrgIdProvider);
+      if (orgId == null) {
+        return AsyncError(
+          StateError('Organization context is not available for barangay reports.'),
+          StackTrace.current,
+        );
       }
       return casesAsync.when(
         loading: () => const AsyncLoading(),
@@ -83,7 +87,8 @@ final barangayReportAggregateProvider =
         data: (snapshot) => AsyncData(
           computeBarangayReportAggregate(
             cases: snapshot.items,
-            barangay: user.assignedBarangay!,
+            orgId: orgId,
+            barangay: presentation.siteLabel,
           ),
         ),
       );

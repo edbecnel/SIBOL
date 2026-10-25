@@ -6,12 +6,26 @@ import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/cases/presentation/screens/case_edit_screen.dart';
 import 'package:sibol_app/features/auth/domain/entities/user_profile.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/org/domain/entities/organization.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/core/permissions/sibol_role.dart';
 import 'support/fake_case_repository.dart';
 
 const _testOrgId = 'barangay03';
 const _canonicalBarangay = 'Barangay 3, Balingasag';
+const _orgDisplayName = 'Barangay 3 (Poblacion)';
+
+Organization _demoOrganization() {
+  return Organization(
+    orgId: _testOrgId,
+    type: OrganizationType.barangay,
+    name: _orgDisplayName,
+    status: OrganizationStatus.active,
+    createdAt: DateTime.utc(2026, 1, 1),
+    updatedAt: DateTime.utc(2026, 1, 1),
+    legacyBarangayLabel: _canonicalBarangay,
+  );
+}
 
 UserProfile _barangayProfile() {
   return UserProfile(
@@ -34,6 +48,9 @@ void main() {
         overrides: [
           caseRepositoryProvider.overrideWithValue(repo),
           barangayCaseOrgIdProvider.overrideWithValue(_testOrgId),
+          barangayCaseOrganizationProvider.overrideWith(
+            (ref) => Stream.value(_demoOrganization()),
+          ),
           userProfileProvider.overrideWith(
             (ref) => Stream.value(_barangayProfile()),
           ),
@@ -71,6 +88,9 @@ void main() {
         overrides: [
           caseRepositoryProvider.overrideWithValue(repo),
           barangayCaseOrgIdProvider.overrideWithValue(_testOrgId),
+          barangayCaseOrganizationProvider.overrideWith(
+            (ref) => Stream.value(_demoOrganization()),
+          ),
           userProfileProvider.overrideWith(
             (ref) => Stream.value(_barangayProfile()),
           ),
@@ -82,7 +102,8 @@ void main() {
 
     await tester.enterText(find.widgetWithText(TextField, 'Demo name'), 'New Demo');
     await tester.enterText(find.widgetWithText(TextField, 'Age (13–19)'), '17');
-    expect(find.text(_canonicalBarangay), findsOneWidget);
+    expect(find.text(_orgDisplayName), findsOneWidget);
+    expect(find.textContaining(_canonicalBarangay), findsOneWidget);
     await tester.tap(find.text('Create case'));
     await tester.pumpAndSettle();
 

@@ -1,4 +1,8 @@
-import { DEMO_BARANGAY_ORG_ID, DEMO_CASE_IDS } from "./constants.mjs";
+import {
+  DEMO_ASSIGNED_BARANGAY,
+  DEMO_BARANGAY_ORG_ID,
+  DEMO_CASE_IDS,
+} from "./constants.mjs";
 
 const FICTIONAL_NAMES = [
   "Ana Demo Reyes",
@@ -16,7 +20,7 @@ const STATUSES = [
   "closed",
 ];
 
-const BARANGAY = "Barangay Tres, Balingasag";
+const BARANGAY = DEMO_ASSIGNED_BARANGAY;
 
 /**
  * Build plain (non-Timestamp) case payloads for schema validation and dry-run reporting.

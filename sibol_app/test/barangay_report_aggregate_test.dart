@@ -7,13 +7,18 @@ import 'package:sibol_app/features/reporting/domain/report_status.dart';
 void main() {
   final now = DateTime(2026, 10, 21);
 
-  CaseRecord caseAt(String id, String barangay, CaseStatus status) {
+  CaseRecord caseAt(
+    String id,
+    String barangay,
+    CaseStatus status, {
+    String orgId = 'barangay03',
+  }) {
     return CaseRecord(
       caseId: id,
       demoName: 'Demo $id',
       age: 16,
       barangay: barangay,
-      orgId: 'barangay03',
+      orgId: orgId,
       caseStatus: status,
       registeredAt: now,
       createdAt: now,
@@ -22,19 +27,25 @@ void main() {
     );
   }
 
-  test('computeBarangayReportAggregate scopes by barangay and counts statuses', () {
-    final site = 'Barangay Tres, Balingasag';
+  test('computeBarangayReportAggregate scopes by orgId and counts statuses', () {
+    const orgId = 'barangay03';
+    const reportingLabel = 'Barangay 3, Balingasag';
     final cases = [
-      caseAt('1', site, CaseStatus.active),
-      caseAt('2', site, CaseStatus.followUpScheduled),
-      caseAt('3', 'Other site', CaseStatus.closed),
+      caseAt('1', 'Barangay Tres, Balingasag', CaseStatus.active),
+      caseAt('2', 'Barangay 3, Balingasag', CaseStatus.followUpScheduled),
+      caseAt('3', 'Other site', CaseStatus.closed, orgId: 'other'),
     ];
 
-    final counts = computeBarangayReportAggregate(cases: cases, barangay: site);
+    final counts = computeBarangayReportAggregate(
+      cases: cases,
+      orgId: orgId,
+      barangay: reportingLabel,
+    );
 
     expect(counts.totalCaseCount, 2);
     expect(counts.activeCaseCount, 1);
     expect(counts.followUpScheduledCount, 1);
     expect(counts.closedCaseCount, 0);
+    expect(counts.barangay, reportingLabel);
   });
 }
