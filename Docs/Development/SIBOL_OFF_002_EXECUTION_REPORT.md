@@ -2,7 +2,7 @@
 
 **Handover UUID:** `f3c6a9e2-7b41-4d85-9f20-6a8e1c5b734d`  
 **Starting HEAD:** `ea1e139`  
-**Ending HEAD:** `6282c9c`  
+**Ending HEAD:** `e0000b2`  
 **Authorization:** PA-approved OFF-002 plan with refinements (DEC-OFF-002-01 … 06)
 
 ## Tranche commits
@@ -12,7 +12,7 @@
 | A — W1 visibility | `2a4664a` | Global `OfflineStatusBanner`, teen pending list rows, cached-data notices on assistance streams |
 | B — W2 cases | `d9be05b` | Case cache/pending UX, offline save messaging, follow-up create |
 | C — W3 reports | `a5f9fe5` | `barangayReportSubmit` queue, frozen payload, `reports/{operationId}` create-only replay |
-| D — Hardening/docs | `5215433` | Runbook §10 offline acceptance, this report |
+| D — Hardening/docs | `6282c9c` | Runbook §10 offline acceptance, this report |
 
 ## Implemented behavior by workflow
 
