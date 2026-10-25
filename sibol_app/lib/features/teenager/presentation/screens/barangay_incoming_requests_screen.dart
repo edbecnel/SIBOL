@@ -6,6 +6,7 @@ import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/teenager/presentation/providers/barangay_assistance_providers.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
+import 'package:sibol_app/shared/widgets/cached_data_notice.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
 
 class BarangayIncomingRequestsScreen extends ConsumerWidget {
@@ -27,7 +28,8 @@ class BarangayIncomingRequestsScreen extends ConsumerWidget {
                 message: 'Loading incoming requests…',
               ),
               error: (e, _) => AppErrorWidget(message: e.toString()),
-              data: (requests) {
+              data: (snapshot) {
+                final requests = snapshot.items;
                 if (requests.isEmpty) {
                   return const Center(
                     child: Padding(
@@ -41,10 +43,13 @@ class BarangayIncomingRequestsScreen extends ConsumerWidget {
                 }
                 return ListView.separated(
                   padding: const EdgeInsets.all(16),
-                  itemCount: requests.length,
+                  itemCount: requests.length + 1,
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
-                    final request = requests[index];
+                    if (index == 0) {
+                      return CachedDataNotice(isFromCache: snapshot.isFromCache);
+                    }
+                    final request = requests[index - 1];
                     return Card(
                       child: ListTile(
                         title: Text(request.category.label),

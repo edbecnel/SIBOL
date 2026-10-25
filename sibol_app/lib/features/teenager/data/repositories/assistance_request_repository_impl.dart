@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:sibol_app/core/constants/firestore_paths.dart';
+import 'package:sibol_app/core/domain/firestore_list_snapshot.dart';
 import 'package:sibol_app/features/teenager/data/models/assistance_request_model.dart';
 import 'package:sibol_app/features/teenager/domain/entities/assistance_request.dart';
 import 'package:sibol_app/features/teenager/domain/repositories/assistance_request_repository.dart';
@@ -15,18 +16,24 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
       _firestore.collection(FirestorePaths.teenAssistanceRequests);
 
   @override
-  Stream<List<AssistanceRequest>> watchMyRequests(String teenUid) {
+  Stream<FirestoreListSnapshot<AssistanceRequest>> watchMyRequests(
+    String teenUid,
+  ) {
     return _collection
         .where('teenUid', isEqualTo: teenUid)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
-          (snap) => snap.docs
-              .map(
-                (d) =>
-                    AssistanceRequestModel.fromFirestore(d.id, d.data()).toEntity(),
-              )
-              .toList(),
+          (snap) => FirestoreListSnapshot(
+            isFromCache: snap.metadata.isFromCache,
+            hasPendingWrites: snap.metadata.hasPendingWrites,
+            items: snap.docs
+                .map(
+                  (d) => AssistanceRequestModel.fromFirestore(d.id, d.data())
+                      .toEntity(),
+                )
+                .toList(),
+          ),
         );
   }
 
@@ -43,18 +50,24 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
   }
 
   @override
-  Stream<List<AssistanceRequest>> watchIncomingForOrg(String orgId) {
+  Stream<FirestoreListSnapshot<AssistanceRequest>> watchIncomingForOrg(
+    String orgId,
+  ) {
     return _collection
         .where('orgId', isEqualTo: orgId)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
-          (snap) => snap.docs
-              .map(
-                (d) =>
-                    AssistanceRequestModel.fromFirestore(d.id, d.data()).toEntity(),
-              )
-              .toList(),
+          (snap) => FirestoreListSnapshot(
+            isFromCache: snap.metadata.isFromCache,
+            hasPendingWrites: snap.metadata.hasPendingWrites,
+            items: snap.docs
+                .map(
+                  (d) => AssistanceRequestModel.fromFirestore(d.id, d.data())
+                      .toEntity(),
+                )
+                .toList(),
+          ),
         );
   }
 

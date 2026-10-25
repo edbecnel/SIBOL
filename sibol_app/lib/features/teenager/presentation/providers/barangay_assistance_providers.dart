@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
+import 'package:sibol_app/core/domain/firestore_list_snapshot.dart';
 import 'package:sibol_app/features/teenager/domain/entities/assistance_request.dart';
 
 final barangayIncomingRequestsProvider =
-    StreamProvider<List<AssistanceRequest>>((ref) {
+    StreamProvider<FirestoreListSnapshot<AssistanceRequest>>((ref) {
   final orgId = ref.watch(barangayAssistanceOrgIdProvider);
   if (orgId == null) {
     return Stream.error(

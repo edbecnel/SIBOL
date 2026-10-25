@@ -4,6 +4,7 @@ import 'package:sibol_app/config/app_config.dart';
 import 'package:sibol_app/core/router/app_router.dart';
 import 'package:sibol_app/core/theme/app_theme.dart';
 import 'package:sibol_app/features/offline/presentation/offline_sync_host.dart';
+import 'package:sibol_app/features/offline/presentation/offline_status_banner.dart';
 
 class SibolApp extends ConsumerWidget {
   const SibolApp({super.key});
@@ -18,6 +19,14 @@ class SibolApp extends ConsumerWidget {
         theme: AppTheme.light(),
         routerConfig: router,
         debugShowCheckedModeBanner: false,
+        builder: (context, child) {
+          return Column(
+            children: [
+              const OfflineStatusBanner(),
+              Expanded(child: child ?? const SizedBox.shrink()),
+            ],
+          );
+        },
       ),
     );
   }
