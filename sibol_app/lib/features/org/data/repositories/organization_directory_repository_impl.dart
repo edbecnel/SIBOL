@@ -32,6 +32,26 @@ class OrganizationDirectoryRepositoryImpl implements OrganizationDirectoryReposi
         .collection(FirestorePaths.organizationDirectory)
         .doc(orgId)
         .get();
+    return _entryFromSnapshot(snap);
+  }
+
+  @override
+  Future<OrganizationDirectoryEntry?> fetchEntryPreferCache(String orgId) async {
+    if (!MembershipId.isValidOrgId(orgId)) return null;
+    try {
+      final snap = await _firestore
+          .collection(FirestorePaths.organizationDirectory)
+          .doc(orgId)
+          .get(const GetOptions(source: Source.cache));
+      return _entryFromSnapshot(snap);
+    } on FirebaseException {
+      return null;
+    }
+  }
+
+  OrganizationDirectoryEntry? _entryFromSnapshot(
+    DocumentSnapshot<Map<String, dynamic>> snap,
+  ) {
     if (!snap.exists || snap.data() == null) return null;
     return OrganizationDirectoryEntryModel.fromFirestore(snap.data()!).toEntity();
   }

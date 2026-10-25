@@ -5,11 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/cases/presentation/screens/case_edit_screen.dart';
 import 'package:sibol_app/features/auth/domain/entities/user_profile.dart';
+import 'package:sibol_app/features/auth/domain/entities/auth_user.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
-import 'package:sibol_app/features/org/domain/entities/organization.dart';
-import 'package:sibol_app/features/org/domain/entities/organization_directory_entry.dart';
+import 'package:sibol_app/features/org/domain/barangay_organization_presentation.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
-import 'package:sibol_app/features/org/presentation/providers/organization_directory_providers.dart';
+import 'package:sibol_app/features/org/presentation/providers/organization_presentation_providers.dart';
 import 'package:sibol_app/core/permissions/sibol_role.dart';
 import 'support/fake_case_repository.dart';
 
@@ -17,14 +17,10 @@ const _testOrgId = 'barangay03';
 const _canonicalBarangay = 'Barangay 3, Balingasag';
 const _orgDisplayName = 'Barangay 3 (Poblacion)';
 
-OrganizationDirectoryEntry _demoDirectoryEntry() {
-  return OrganizationDirectoryEntry(
-    orgId: _testOrgId,
-    type: OrganizationType.barangay,
-    name: _orgDisplayName,
-    status: OrganizationStatus.active,
-    updatedAt: DateTime.utc(2026, 1, 1),
-    geographicSiteLabel: _canonicalBarangay,
+BarangayOrganizationPresentation _demoPresentation() {
+  return const BarangayOrganizationPresentation(
+    organizationName: _orgDisplayName,
+    siteLabel: _canonicalBarangay,
   );
 }
 
@@ -49,9 +45,13 @@ void main() {
         overrides: [
           caseRepositoryProvider.overrideWithValue(repo),
           barangayCaseOrgIdProvider.overrideWithValue(_testOrgId),
-          organizationDirectoryEntryProvider(_testOrgId).overrideWith(
-            (ref) => Stream.value(_demoDirectoryEntry()),
+          authStateChangesProvider.overrideWith(
+            (ref) => Stream.value(
+              AuthUser(uid: 'barangay-1', email: 'b@example.com'),
+            ),
           ),
+          cacheFirstOrganizationDirectoryPresentationProvider(_testOrgId)
+              .overrideWith((ref) => Stream.value(_demoPresentation())),
           userProfileProvider.overrideWith(
             (ref) => Stream.value(_barangayProfile()),
           ),
@@ -89,9 +89,13 @@ void main() {
         overrides: [
           caseRepositoryProvider.overrideWithValue(repo),
           barangayCaseOrgIdProvider.overrideWithValue(_testOrgId),
-          organizationDirectoryEntryProvider(_testOrgId).overrideWith(
-            (ref) => Stream.value(_demoDirectoryEntry()),
+          authStateChangesProvider.overrideWith(
+            (ref) => Stream.value(
+              AuthUser(uid: 'barangay-1', email: 'b@example.com'),
+            ),
           ),
+          cacheFirstOrganizationDirectoryPresentationProvider(_testOrgId)
+              .overrideWith((ref) => Stream.value(_demoPresentation())),
           userProfileProvider.overrideWith(
             (ref) => Stream.value(_barangayProfile()),
           ),

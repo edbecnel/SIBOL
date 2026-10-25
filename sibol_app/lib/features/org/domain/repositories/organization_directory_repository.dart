@@ -4,4 +4,7 @@ abstract class OrganizationDirectoryRepository {
   Stream<OrganizationDirectoryEntry?> watchEntry(String orgId);
 
   Future<OrganizationDirectoryEntry?> fetchEntry(String orgId);
+
+  /// Reads organizationDirectory from the local Firestore cache when available.
+  Future<OrganizationDirectoryEntry?> fetchEntryPreferCache(String orgId);
 }

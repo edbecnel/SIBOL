@@ -6,7 +6,7 @@ import 'package:sibol_app/features/auth/domain/entities/user_profile.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/org/domain/barangay_organization_presentation.dart';
 import 'package:sibol_app/features/org/domain/org_capabilities.dart';
-import 'package:sibol_app/features/org/presentation/providers/organization_directory_providers.dart';
+import 'package:sibol_app/features/org/presentation/providers/organization_presentation_providers.dart';
 import 'package:sibol_app/features/org/domain/org_context_resolver.dart';
 import 'package:sibol_app/features/org/domain/entities/organization_membership.dart';
 import 'package:sibol_app/features/org/data/repositories/organization_repository_impl.dart';
@@ -92,7 +92,7 @@ final barangayCaseOrgPresentationProvider =
       StackTrace.current,
     );
   }
-  return ref.watch(organizationDirectoryPresentationProvider(orgId));
+  return ref.watch(cacheFirstOrganizationDirectoryPresentationProvider(orgId));
 });
 
 final barangayReportOrgPresentationProvider =
@@ -107,7 +107,7 @@ final barangayReportOrgPresentationProvider =
       StackTrace.current,
     );
   }
-  return ref.watch(organizationDirectoryPresentationProvider(orgId));
+  return ref.watch(cacheFirstOrganizationDirectoryPresentationProvider(orgId));
 });
 
 final barangayCanReadCasesProvider = Provider<bool>((ref) {

@@ -3,6 +3,8 @@ import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/org/data/repositories/organization_directory_repository_impl.dart';
 import 'package:sibol_app/features/org/domain/barangay_organization_presentation.dart';
 import 'package:sibol_app/features/org/domain/entities/organization_directory_entry.dart';
+import 'package:sibol_app/features/org/domain/organization_directory_presentation_resolver.dart';
+import 'package:sibol_app/features/org/domain/organization_presentation_unavailable.dart';
 import 'package:sibol_app/features/org/domain/repositories/organization_directory_repository.dart';
 
 final organizationDirectoryRepositoryProvider =
@@ -48,30 +50,22 @@ final organizationDirectoryPresentationProvider =
     loading: () => const AsyncLoading(),
     error: (e, st) => AsyncError(e, st),
     data: (entry) {
-      if (entry == null) {
-        return AsyncError(
-          StateError(
-            'Organization directory entry for $orgId is unavailable. '
-            'Reconnect when online or ask an administrator to verify the directory.',
-          ),
-          StackTrace.current,
-        );
-      }
-      final site = entry.geographicSiteLabel?.trim() ?? '';
-      if (site.length < 2) {
-        return AsyncError(
-          StateError(
-            'Organization $orgId is missing a geographic site label in the directory.',
-          ),
-          StackTrace.current,
-        );
-      }
-      return AsyncData(
-        BarangayOrganizationPresentation(
-          organizationName: entry.name,
-          siteLabel: site,
-        ),
+      final presentation =
+          OrganizationDirectoryPresentationResolver.presentationFromDirectoryEntry(
+        entry,
       );
+      if (presentation == null) {
+        return AsyncError(
+          OrganizationPresentationUnavailable(
+            entry == null
+                ? 'Organization directory entry for $orgId is unavailable. '
+                    'Reconnect when online or ask an administrator to verify the directory.'
+                : 'Organization $orgId is missing a valid name or geographic site label in the directory.',
+          ),
+          StackTrace.current,
+        );
+      }
+      return AsyncData(presentation);
     },
   );
 });

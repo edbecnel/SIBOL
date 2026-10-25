@@ -131,4 +131,12 @@ describe("organizationDirectory (ORG-NAME-003 A01)", () => {
     const db = testEnv.authenticatedContext(mophUid).firestore();
     await assertFails(db.collection("organizations").doc(ORG_BARANGAY_DEMO).get());
   });
+
+  it("denies get when organizationDirectory document does not exist", async () => {
+    const missingOrgId = "missing01";
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertFails(
+      db.collection("organizationDirectory").doc(missingOrgId).get(),
+    );
+  });
 });
