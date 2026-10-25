@@ -72,4 +72,4 @@ Directory reads use Firestore document `snapshots()` / `get()` (same persistence
 
 ## Prototype acceptance
 
-**Not declared — await PA acceptance.**
+**P0 online emulator acceptance recorded** — see [SIBOL_P0_ONLINE_ACCEPTANCE_REPORT.md](SIBOL_P0_ONLINE_ACCEPTANCE_REPORT.md) (canonical org name **Barangay 3 (Poblacion)** on referral review; handover `7c92d4e1-6b35-4f80-a219-8d63c0e572ba`).

@@ -128,6 +128,8 @@ Expect `regAcknowledgeTeenAssistanceRequest` among registered callables (HTTP **
 
 **Note:** At PROTOTYPE-003 export time, `cases` and `reports` counts were **0** on the emulator; W2/W3 acceptance may require creating a fictional case (and thus counts) during the session without touching QA-001 assistance/referral records.
 
+**P0 online acceptance (2026-10-25):** Individual coordination and aggregate reporting **PASS** on Android emulator — [SIBOL_P0_ONLINE_ACCEPTANCE_REPORT.md](../Development/SIBOL_P0_ONLINE_ACCEPTANCE_REPORT.md) (referral `SIBOL-REF-5985CB0B6FCD3C97`, report `rpt-1792921070922438-1807377220`).
+
 ## 10. Minimal offline acceptance (OFF-002; device/emulator)
 
 Use **airplane mode** or emulator network disable between steps. Do **not** restart canonical emulators or mutate QA-001 assistance/referral anchors.

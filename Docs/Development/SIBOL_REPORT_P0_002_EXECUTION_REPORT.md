@@ -46,4 +46,4 @@ A **new** tap on **Submit report to MOPH** generates a **new** `rpt-…` id and 
 
 ## Acceptance
 
-**Not declared — await PA manual submit after fix.**
+**P0 online emulator acceptance recorded** — successful report `rpt-1792921070922438-1807377220`; see [SIBOL_P0_ONLINE_ACCEPTANCE_REPORT.md](SIBOL_P0_ONLINE_ACCEPTANCE_REPORT.md) (handover `7c92d4e1-6b35-4f80-a219-8d63c0e572ba`).

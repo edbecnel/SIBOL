@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-25 (SIBOL-ORG-IDENTITY-001 M0)  
+> **Last updated:** 2026-10-25 (SIBOL-GIT-CHK-002 P0 online acceptance)  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -31,6 +31,10 @@
 | SIBOL-OFFLINE-001 | Essential offline queue + idempotent assistance (prototype) | **T1 complete** @ `1382431`; device E2E NR | [OFFLINE spec](SIBOL_OFFLINE_001_IMPLEMENTATION_SPEC.md), [OFF-001 T1 report](SIBOL_OFF_001_TRANCHE_1_EXECUTION_REPORT.md) |
 | SIBOL-PROTOTYPE-002 | Three-workflow demonstration readiness | **Complete** (automated baseline + runbook) | [Execution report](SIBOL_PROTOTYPE_002_EXECUTION_REPORT.md), [Runbook](../Operations/SIBOL_PROTOTYPE_002_THREE_WORKFLOW_DEMO_RUNBOOK.md) |
 | SIBOL-PROTOTYPE-003 | Controlled emulator integration + acceptance prep | **Complete** (backup + health verify; no emulator restart) | [Execution report](SIBOL_PROTOTYPE_003_EXECUTION_REPORT.md), [Recovery](../Operations/SIBOL_PROTOTYPE_003_EMULATOR_RECOVERY.md) |
+| SIBOL-ORG-NAME-003 A01 | Organization directory (shared read model) | **Accepted** (P0 online emulator) | [A01 execution](SIBOL_ORG_NAME_003_A01_EXECUTION_REPORT.md), [Foundation](SIBOL_ORG_NAME_003_A01_DIRECTORY_FOUNDATION.md) |
+| SIBOL-ORG-NAME-003 A02 | Remove redundant geographic site UI | **Accepted** (P0 online emulator) | [A02 UI cleanup](SIBOL_ORG_NAME_003_A02_UI_CLEANUP.md) |
+| SIBOL-REPORT-P0-002 | Aggregate report submit (pre-read fix) | **Accepted** (P0 online emulator) | [Execution report](SIBOL_REPORT_P0_002_EXECUTION_REPORT.md) |
+| SIBOL-GIT-CHK-002 | P0 online acceptance + repository sync | **Closed** @ `6df57ba`+ | [P0 online acceptance](SIBOL_P0_ONLINE_ACCEPTANCE_REPORT.md) |
 
 ## Tranche 2 implementation gate
 
