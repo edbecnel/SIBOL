@@ -27,6 +27,7 @@ import {
 } from "./admin/exportHandlers";
 import { runCreateCoordinationReferral } from "./coordination/createCoordinationReferral";
 import {
+  runAcknowledgeTeenAssistanceRequest,
   runListBarangayDirectory,
   runRegisterTeenAccount,
   runSubmitTeenAssistanceRequest,
@@ -176,6 +177,19 @@ export const regSubmitTeenAssistanceRequest = onCall(async (request) => {
   const db = admin.firestore();
   try {
     return await runSubmitTeenAssistanceRequest(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regAcknowledgeTeenAssistanceRequest = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runAcknowledgeTeenAssistanceRequest(
       db,
       request.auth?.uid,
       (request.data ?? {}) as Record<string, unknown>,

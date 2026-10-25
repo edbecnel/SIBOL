@@ -21,7 +21,7 @@ Local states never imply Barangay/MOPH receipt until `submittedConfirmed`.
 ## Server authority
 
 - `regSubmitTeenAssistanceRequest` — idempotent teen assistance create (`assistanceSubmissionIdempotency`).
-- Barangay ack — existing Firestore rules path (revalidated on sync).
+- Barangay ack — `regAcknowledgeTeenAssistanceRequest` callable with `assistanceAcknowledgmentIdempotency` (OFF-001 Tranche 1).
 - Referral — `createCoordinationReferral` callable (duplicate → `conflict`).
 
 ## Flutter modules

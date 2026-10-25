@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:sibol_app/core/constants/firestore_paths.dart';
 import 'package:sibol_app/features/teenager/data/models/assistance_request_model.dart';
-import 'package:sibol_app/features/teenager/domain/assistance_request_status.dart';
 import 'package:sibol_app/features/teenager/domain/entities/assistance_request.dart';
 import 'package:sibol_app/features/teenager/domain/repositories/assistance_request_repository.dart';
 
 class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
-  AssistanceRequestRepositoryImpl(this._firestore);
+  AssistanceRequestRepositoryImpl(this._firestore, this._functions);
 
   final FirebaseFirestore _firestore;
+  final FirebaseFunctions _functions;
 
   CollectionReference<Map<String, dynamic>> get _collection =>
       _firestore.collection(FirestorePaths.teenAssistanceRequests);
@@ -76,26 +77,12 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
   Future<void> acknowledgeRequest({
     required String requestId,
     required String orgId,
-    required String barangayStaffUid,
+    required String idempotencyKey,
   }) async {
-    final ref = _collection.doc(requestId);
-    await _firestore.runTransaction((tx) async {
-      final snap = await tx.get(ref);
-      if (!snap.exists) {
-        throw StateError('Request not found.');
-      }
-      final data = snap.data()!;
-      if (data['orgId'] != orgId) {
-        throw StateError('Request is not assigned to your organization.');
-      }
-      if (data['status'] != AssistanceRequestStatus.submitted.firestoreValue) {
-        throw StateError('Request has already been acknowledged.');
-      }
-      tx.update(ref, {
-        'status': AssistanceRequestStatus.acknowledged.firestoreValue,
-        'acknowledgedAt': FieldValue.serverTimestamp(),
-        'acknowledgedByUid': barangayStaffUid,
-      });
+    await _functions.httpsCallable('regAcknowledgeTeenAssistanceRequest').call({
+      'idempotencyKey': idempotencyKey,
+      'requestId': requestId,
+      'orgId': orgId,
     });
   }
 }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/core/errors/user_error_message.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/auth/presentation/sign_out_pending_guard.dart';
 import 'package:sibol_app/features/geo/presentation/geo_providers.dart';
 import 'package:sibol_app/features/geo/presentation/psgc_geo_picker.dart';
 import 'package:sibol_app/features/teen_registration/domain/teen_onboarding_policy.dart';
@@ -139,7 +140,12 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
         actions: [
           if (authUser != null)
             TextButton(
-              onPressed: () => ref.read(authControllerProvider.notifier).signOut(),
+              onPressed: () async {
+                if (!await confirmSignOutIfPendingOperations(context, ref)) {
+                  return;
+                }
+                await ref.read(authControllerProvider.notifier).signOut();
+              },
               child: const Text('Sign out'),
             ),
         ],

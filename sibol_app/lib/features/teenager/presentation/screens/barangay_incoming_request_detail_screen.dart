@@ -83,6 +83,12 @@ class _BarangayIncomingRequestDetailScreenState
       await sync.enqueue(pending);
       final outcome = await sync.processOperation(pending);
       ref.invalidate(pendingOperationsProvider(uid));
+      if (outcome.state == PendingOperationState.conflict) {
+        throw StateError(
+          outcome.lastError ??
+              'This request was already acknowledged or conflicts with another action.',
+        );
+      }
       if (outcome.state != PendingOperationState.submittedConfirmed) {
         throw StateError(
           outcome.lastError ??

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/auth/presentation/sign_out_pending_guard.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 
 /// Signed-in Firebase user without a server `users/{uid}` profile (staff must be provisioned).
@@ -30,6 +31,9 @@ class AccountNotProvisionedScreen extends ConsumerWidget {
               onPressed: authOp.isLoading
                   ? null
                   : () async {
+                      if (!await confirmSignOutIfPendingOperations(context, ref)) {
+                        return;
+                      }
                       await ref.read(authControllerProvider.notifier).signOut();
                       if (context.mounted) context.go(Routes.welcome);
                     },

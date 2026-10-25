@@ -5,6 +5,7 @@ import 'package:sibol_app/config/app_config.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/admin/presentation/providers/admin_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/auth/presentation/sign_out_pending_guard.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -52,6 +53,9 @@ class SettingsScreen extends ConsumerWidget {
             AppButton.primary(
               label: 'Sign out',
               onPressed: () async {
+                if (!await confirmSignOutIfPendingOperations(context, ref)) {
+                  return;
+                }
                 await ref.read(authControllerProvider.notifier).signOut();
                 if (context.mounted) context.pop();
               },

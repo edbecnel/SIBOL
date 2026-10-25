@@ -10,6 +10,14 @@
 | `state` | enum | See implementation spec |
 | `payload` | map | Kind-specific; no secrets |
 
+## Barangay acknowledgment sync
+
+**Callable:** `regAcknowledgeTeenAssistanceRequest`
+
+**Input:** `idempotencyKey` (= `operationId`), `requestId`, `orgId`
+
+**Output:** `requestId`, `status`, `orgId`, `idempotent`
+
 ## Teen assistance sync
 
 **Callable:** `regSubmitTeenAssistanceRequest`

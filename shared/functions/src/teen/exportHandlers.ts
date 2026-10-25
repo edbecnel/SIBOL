@@ -1,3 +1,4 @@
+export { runAcknowledgeTeenAssistanceRequest } from "./acknowledgeTeenAssistanceRequest";
 export { runListBarangayDirectory } from "./listBarangayDirectory";
 export { runRegisterTeenAccount } from "./registerTeenAccount";
 export { runSubmitTeenAssistanceRequest } from "./submitTeenAssistanceRequest";

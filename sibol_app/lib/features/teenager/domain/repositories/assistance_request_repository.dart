@@ -17,6 +17,6 @@ abstract class AssistanceRequestRepository {
   Future<void> acknowledgeRequest({
     required String requestId,
     required String orgId,
-    required String barangayStaffUid,
+    required String idempotencyKey,
   });
 }

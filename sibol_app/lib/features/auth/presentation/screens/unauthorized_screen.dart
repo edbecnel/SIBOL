@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/auth/presentation/sign_out_pending_guard.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 
 class UnauthorizedScreen extends ConsumerWidget {
@@ -22,8 +23,12 @@ class UnauthorizedScreen extends ConsumerWidget {
             const Spacer(),
             AppButton.primary(
               label: 'Sign out',
-              onPressed: () =>
-                  ref.read(authControllerProvider.notifier).signOut(),
+              onPressed: () async {
+                if (!await confirmSignOutIfPendingOperations(context, ref)) {
+                  return;
+                }
+                await ref.read(authControllerProvider.notifier).signOut();
+              },
             ),
           ],
         ),

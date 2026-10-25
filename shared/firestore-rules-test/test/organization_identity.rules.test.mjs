@@ -48,4 +48,12 @@ describe("organization identity collections", () => {
     await assertFails(ref.set({ status: "completed" }));
     await assertFails(ref.get());
   });
+
+  it("denies client read/write on assistanceAcknowledgmentIdempotency", async () => {
+    const ctx = testEnv.authenticatedContext("barangay-user");
+    const db = ctx.firestore();
+    const ref = db.collection("assistanceAcknowledgmentIdempotency").doc("bns__key");
+    await assertFails(ref.set({ status: "completed" }));
+    await assertFails(ref.get());
+  });
 });
