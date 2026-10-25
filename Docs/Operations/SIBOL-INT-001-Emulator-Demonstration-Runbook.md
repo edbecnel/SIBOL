@@ -12,7 +12,7 @@
 | Firebase CLI | `firebase` logged in (emulator binaries installed) |
 | Flutter SDK | `sibol_app` |
 | Android emulator or device | Optional for operator walkthrough |
-| `.env.emulator.local` | Copy from [`.env.emulator.example`](../../.env.emulator.example); **gitignored** |
+| `.env.emulator.local` | Copy from [`.env.emulator.example`](../../.env.emulator.example); **gitignored** (includes `SIBOL_ALLOW_DEMO_IDENTITY` and `SIBOL_ALLOW_LEGACY_TEEN_ORG_BINDING` for Teen PSGC demo — see [`EMULATOR_DEMO_FLAGS.md`](../../shared/scripts/EMULATOR_DEMO_FLAGS.md)) |
 
 Install package dependencies once:
 

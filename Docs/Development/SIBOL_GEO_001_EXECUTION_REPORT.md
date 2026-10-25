@@ -62,7 +62,7 @@ Bundled JSON in `sibol_app/assets/geo/`; no network for dropdown population.
 
 - PSGC selection does **not** create organizations or roles.  
 - Unmapped barangays: server `not-found` with user-facing message in Flutter.  
-- **Emulator prototype only:** when `SIBOL_ALLOW_DEMO_IDENTITY=true`, pinned map `1004302022 → barangay03` (`demoPsgcShim.ts`) — documented explicit demo bridge, not silent production mapping.
+- **Emulator prototype only:** when **`SIBOL_ALLOW_DEMO_IDENTITY=true` and `SIBOL_ALLOW_LEGACY_TEEN_ORG_BINDING=true`**, pinned map `1004302022 → barangay03` (`demoPsgcShim.ts`) — documented explicit demo bridge, not silent production mapping. See [SIBOL_GEO_001_INV_001_INVESTIGATION_REPORT.md](SIBOL_GEO_001_INV_001_INVESTIGATION_REPORT.md).
 
 ## 8. Tests
 

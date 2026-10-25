@@ -6,6 +6,7 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- SIBOL-GEO-001-FIX-001: investigation report for Barangay 3 registration routing; emulator-only demo flag documentation and `start-demo-emulators.sh` sourcing `.env.emulator.local`.
 - SIBOL-GEO-001: PSA PSGC bundle `psgc-psa-2025-2q` (43k nodes), hierarchy-aware Teen geo picker, demo PSGC shim for Barangay 3 → `barangay03` when demo identity enabled (`SIBOL-GEO-001-AGENT-001`).
 - SIBOL-QA-007: Teen registration redirect during profile load; local self-registration intent for interrupted onboarding; prototype email-verification backlog spec (`SIBOL-QA-007-AGENT-001`).
 - SIBOL-QA-006: Android debug/profile network security config for Firebase emulator cleartext to `10.0.2.2`, auth error message mapping and `userErrorMessage` for registration/sign-in (`SIBOL-QA-006-AGENT-001`).

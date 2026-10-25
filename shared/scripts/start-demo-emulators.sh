@@ -7,6 +7,12 @@ npm run build
 cd "$ROOT"
 # shellcheck disable=SC1091
 source "$ROOT/shared/scripts/emulator-canonical.env.sh"
+if [[ -f "$ROOT/.env.emulator.local" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$ROOT/.env.emulator.local"
+  set +a
+fi
 firebase emulators:start \
   --project "${FIREBASE_PROJECT_ID}" \
   --only auth,firestore,functions \
