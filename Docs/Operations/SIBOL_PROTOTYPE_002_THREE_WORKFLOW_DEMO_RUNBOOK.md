@@ -103,3 +103,27 @@ Do **not** delete or reseed PO QA documents referenced in QA-001 unless authoriz
 | Integration smoke | `cd shared/integration && npm test` | 8 pass (isolated **9315/8325**) |
 
 Do not run integration tests against inactive canonical ports.
+
+## 8. Canonical emulator health (PROTOTYPE-003)
+
+Before acceptance demos on a **running** canonical stack:
+
+```bash
+node shared/scripts/verify-canonical-emulator-health.mjs
+```
+
+Expect `regAcknowledgeTeenAssistanceRequest` among registered callables (HTTP **401** unauthenticated is OK).
+
+**Latest full export (preserve QA-001 data):** `.firebase-qa-backups/pre-prototype-003-20261025/` — see [SIBOL_PROTOTYPE_003_EMULATOR_RECOVERY.md](SIBOL_PROTOTYPE_003_EMULATOR_RECOVERY.md).
+
+## 9. Minimal final Product Owner acceptance (do not repeat full QA-001)
+
+| Step | Role | Action | Expected observation |
+|------|------|--------|----------------------|
+| W1a | EA/operator | Run `verify-canonical-emulator-health.mjs` | All ports up; three callables registered; QA assistance doc `32sQiFj9v8T6R6T3Asih` present |
+| W1b | Barangay | Open QA assistance request (or new submit + ack on **non-QA** test request) | **Acknowledge** succeeds via callable (no client Firestore-only ack) |
+| W1c | MOPH | `moph.demo@sibol.local` → coordination inbox | Referral from QA registry visible; no teen narrative |
+| W2 | Barangay | Create or open a **case** → edit status/notes | List is org-scoped; save persists (demo may start with **zero** cases — create one) |
+| W3 | Barangay | **Submit report to MOPH** (requires ≥1 case) → receipt | MOPH sees aggregate counts only on submitted reports list |
+
+**Note:** At PROTOTYPE-003 export time, `cases` and `reports` counts were **0** on the emulator; W2/W3 acceptance may require creating a fictional case (and thus counts) during the session without touching QA-001 assistance/referral records.

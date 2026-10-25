@@ -30,6 +30,7 @@
 | SIBOL-ORG-IDENTITY-001 | Organization registration identity (PSGC/NHFR) | **M0 COMPLETE** — EDF drafts and gates; **M1 not authorized** | [Investigation](SIBOL_ORG_IDENTITY_001_INVESTIGATION_REPORT.md), [Implementation plan](SIBOL_ORG_IDENTITY_001_IMPLEMENTATION_PLAN.md), [M0 report](SIBOL_ORG_IDENTITY_001_M0_EXECUTION_REPORT.md), [MVR-ORG-IDENTITY-001](../Verification/Records/MVR-ORG-IDENTITY-001.md), [Roadmap](SIBOL_ORG_IDENTITY_ROADMAP.md) |
 | SIBOL-OFFLINE-001 | Essential offline queue + idempotent assistance (prototype) | **T1 complete** @ `1382431`; device E2E NR | [OFFLINE spec](SIBOL_OFFLINE_001_IMPLEMENTATION_SPEC.md), [OFF-001 T1 report](SIBOL_OFF_001_TRANCHE_1_EXECUTION_REPORT.md) |
 | SIBOL-PROTOTYPE-002 | Three-workflow demonstration readiness | **Complete** (automated baseline + runbook) | [Execution report](SIBOL_PROTOTYPE_002_EXECUTION_REPORT.md), [Runbook](../Operations/SIBOL_PROTOTYPE_002_THREE_WORKFLOW_DEMO_RUNBOOK.md) |
+| SIBOL-PROTOTYPE-003 | Controlled emulator integration + acceptance prep | **Complete** (backup + health verify; no emulator restart) | [Execution report](SIBOL_PROTOTYPE_003_EXECUTION_REPORT.md), [Recovery](../Operations/SIBOL_PROTOTYPE_003_EMULATOR_RECOVERY.md) |
 
 ## Tranche 2 implementation gate
 
