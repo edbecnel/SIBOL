@@ -2,6 +2,7 @@ enum PendingOperationKind {
   teenAssistanceSubmit,
   barangayAcknowledge,
   barangayReferral,
+  barangayReportSubmit,
 }
 
 enum PendingOperationState {

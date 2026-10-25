@@ -18,4 +18,20 @@ abstract class ReportRepository {
     required String orgId,
     required BarangayReportAggregateCounts counts,
   });
+
+  /// Create-only write at [reportId] for offline replay idempotency.
+  Future<void> createBarangayAggregateReport({
+    required String reportId,
+    required String submittedByUid,
+    required String orgId,
+    required BarangayReportAggregateCounts counts,
+  });
+
+  /// Returns whether an existing report document matches queued payload fields.
+  Future<bool> barangayReportMatchesQueuedPayload({
+    required String reportId,
+    required String orgId,
+    required String submittedByUid,
+    required BarangayReportAggregateCounts counts,
+  });
 }

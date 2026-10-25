@@ -6,6 +6,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sibol_app/features/coordination/data/repositories/coordination_repository_impl.dart';
+import 'package:sibol_app/features/reporting/data/repositories/report_repository_impl.dart';
+import 'package:sibol_app/features/reporting/domain/barangay_report_queue_payload.dart';
 import 'package:sibol_app/features/offline/data/offline_sync_error.dart';
 import 'package:sibol_app/features/offline/data/pending_operation_store.dart';
 import 'package:sibol_app/features/offline/domain/pending_operation.dart';
@@ -123,6 +125,8 @@ class OfflineSyncService {
           await _syncBarangayAck(inFlight);
         case PendingOperationKind.barangayReferral:
           await _syncBarangayReferral(inFlight);
+        case PendingOperationKind.barangayReportSubmit:
+          await _syncBarangayReport(inFlight);
       }
     } catch (e, st) {
       debugPrint('Offline sync failed: $e');
@@ -179,6 +183,57 @@ class OfflineSyncService {
       op.copyWith(
         state: PendingOperationState.submittedConfirmed,
         serverRequestId: data['requestId'] as String?,
+        lastError: null,
+      ),
+    );
+  }
+
+  Future<void> _syncBarangayReport(PendingOperation op) async {
+    final reportId = BarangayReportQueuePayload.reportIdFrom(op.payload);
+    final orgId = op.payload['orgId'];
+    final submittedByUid = op.payload['submittedByUid'];
+    if (reportId.isEmpty ||
+        orgId == null ||
+        orgId.isEmpty ||
+        submittedByUid == null ||
+        submittedByUid.isEmpty) {
+      throw StateError('Queued report is missing routing or counts.');
+    }
+    final counts = BarangayReportQueuePayload.countsFrom(op.payload);
+    final repo = ReportRepositoryImpl(_firestore);
+    try {
+      await repo.createBarangayAggregateReport(
+        reportId: reportId,
+        submittedByUid: submittedByUid,
+        orgId: orgId,
+        counts: counts,
+      );
+    } on FirebaseException catch (e) {
+      if (e.code == 'already-exists') {
+        final matches = await repo.barangayReportMatchesQueuedPayload(
+          reportId: reportId,
+          orgId: orgId,
+          submittedByUid: submittedByUid,
+          counts: counts,
+        );
+        if (!matches) {
+          await _store.upsert(
+            op.copyWith(
+              state: PendingOperationState.conflict,
+              lastError:
+                  'A report with this id already exists with different data.',
+            ),
+          );
+          return;
+        }
+      } else {
+        rethrow;
+      }
+    }
+    await _store.upsert(
+      op.copyWith(
+        state: PendingOperationState.submittedConfirmed,
+        serverRequestId: reportId,
         lastError: null,
       ),
     );

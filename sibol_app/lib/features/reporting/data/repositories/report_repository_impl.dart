@@ -104,4 +104,59 @@ class ReportRepositoryImpl implements ReportRepository {
     final doc = await _collection.add(model.toFirestoreCreate());
     return doc.id;
   }
+
+  @override
+  Future<void> createBarangayAggregateReport({
+    required String reportId,
+    required String submittedByUid,
+    required String orgId,
+    required BarangayReportAggregateCounts counts,
+  }) async {
+    final now = DateTime.now();
+    final model = MophAggregateReportModel(
+      reportId: reportId,
+      barangay: counts.barangay,
+      orgId: orgId,
+      submittedAt: now,
+      submittedByUid: submittedByUid,
+      totalCaseCount: counts.totalCaseCount,
+      activeCaseCount: counts.activeCaseCount,
+      followUpScheduledCount: counts.followUpScheduledCount,
+      followUpCompletedCount: counts.followUpCompletedCount,
+      closedCaseCount: counts.closedCaseCount,
+      reportStatus: 'submitted',
+      acceptedAt: now,
+    );
+    final ref = _collection.doc(reportId);
+    final existing = await ref.get();
+    if (existing.exists) {
+      throw FirebaseException(
+        plugin: 'cloud_firestore',
+        code: 'already-exists',
+        message: 'Report document already exists.',
+      );
+    }
+    await ref.set(model.toFirestoreCreate());
+  }
+
+  @override
+  Future<bool> barangayReportMatchesQueuedPayload({
+    required String reportId,
+    required String orgId,
+    required String submittedByUid,
+    required BarangayReportAggregateCounts counts,
+  }) async {
+    final snap = await _collection.doc(reportId).get();
+    if (!snap.exists || snap.data() == null) return false;
+    final data = snap.data()!;
+    return data['orgId'] == orgId &&
+        data['submittedByUid'] == submittedByUid &&
+        data['barangay'] == counts.barangay &&
+        data['totalCaseCount'] == counts.totalCaseCount &&
+        data['activeCaseCount'] == counts.activeCaseCount &&
+        data['followUpScheduledCount'] == counts.followUpScheduledCount &&
+        data['followUpCompletedCount'] == counts.followUpCompletedCount &&
+        data['closedCaseCount'] == counts.closedCaseCount &&
+        data['reportStatus'] == 'submitted';
+  }
 }

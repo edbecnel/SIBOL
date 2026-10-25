@@ -1,10 +1,16 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/cases/presentation/providers/case_providers.dart';
+import 'package:sibol_app/features/offline/domain/pending_operation.dart';
+import 'package:sibol_app/features/offline/presentation/offline_providers.dart';
 import 'package:sibol_app/features/reporting/domain/barangay_report_aggregate.dart';
+import 'package:sibol_app/features/reporting/domain/barangay_report_queue_payload.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/reporting/presentation/providers/report_providers.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
@@ -39,15 +45,62 @@ class _BarangaySubmitReportScreenState
 
     setState(() => _submitting = true);
     try {
-      final reportId = await ref
-          .read(reportRepositoryProvider)
-          .submitBarangayAggregateReport(
-            submittedByUid: auth.uid,
-            orgId: orgId,
-            counts: counts,
-          );
+      final sync = ref.read(offlineSyncServiceProvider);
+      final operationId =
+          'rpt-${DateTime.now().microsecondsSinceEpoch}-${Random().nextInt(1 << 31)}';
+      final pending = PendingOperation(
+        operationId: operationId,
+        ownerUid: auth.uid,
+        kind: PendingOperationKind.barangayReportSubmit,
+        state: PendingOperationState.waitingToSubmit,
+        createdAt: DateTime.now(),
+        payload: BarangayReportQueuePayload.encode(
+          reportId: operationId,
+          orgId: orgId,
+          submittedByUid: auth.uid,
+          counts: counts,
+        ),
+      );
+      final online = await sync.hasConnectivity();
+      if (!online) {
+        await sync.enqueue(
+          pending.copyWith(state: PendingOperationState.savedLocally),
+        );
+        ref.invalidate(pendingOperationsProvider(auth.uid));
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Report saved on this device only. MOPH will see it after sync.',
+            ),
+          ),
+        );
+        context.pushReplacement(Routes.barangaySubmittedReports);
+        return;
+      }
+      await sync.enqueue(pending);
+      await sync.syncForUser(auth.uid);
+      ref.invalidate(pendingOperationsProvider(auth.uid));
+      final stored =
+          await ref.read(pendingOperationStoreProvider).loadForUser(auth.uid);
+      final done = stored.firstWhere((o) => o.operationId == operationId);
+      if (done.state == PendingOperationState.submittedConfirmed &&
+          done.serverRequestId != null) {
+        if (!mounted) return;
+        context.pushReplacement(Routes.barangayReportReceipt(done.serverRequestId!));
+        return;
+      }
+      if (done.state == PendingOperationState.failedPermanent ||
+          done.state == PendingOperationState.conflict) {
+        throw StateError(done.lastError ?? 'Report submission failed.');
+      }
       if (!mounted) return;
-      context.pushReplacement(Routes.barangayReportReceipt(reportId));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Report queued — waiting for server confirmation.'),
+        ),
+      );
+      context.pushReplacement(Routes.barangaySubmittedReports);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -61,6 +114,7 @@ class _BarangaySubmitReportScreenState
   @override
   Widget build(BuildContext context) {
     final aggregateAsync = ref.watch(barangayReportAggregateProvider);
+    final casesMeta = ref.watch(casesStreamProvider).value;
     final dateFmt = DateFormat.yMMMd().add_jm();
 
     return Scaffold(
@@ -100,6 +154,18 @@ class _BarangaySubmitReportScreenState
                       'case names or clinical findings.',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
+                    if (casesMeta != null &&
+                        (casesMeta.isFromCache || casesMeta.hasPendingWrites)) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        'Counts below are a local snapshot from cases on this device. '
+                        'They may be incomplete or include unsynced case changes — not '
+                        'authoritative server totals.',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     _SummaryRow(label: 'Reporting barangay', value: counts.barangay),
                     _SummaryRow(
