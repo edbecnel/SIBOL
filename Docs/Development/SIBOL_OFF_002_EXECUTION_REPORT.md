@@ -2,7 +2,7 @@
 
 **Handover UUID:** `f3c6a9e2-7b41-4d85-9f20-6a8e1c5b734d`  
 **Starting HEAD:** `ea1e139`  
-**Ending HEAD:** `a5f9fe5` (pre-D); update after commit  
+**Ending HEAD:** `6282c9c`  
 **Authorization:** PA-approved OFF-002 plan with refinements (DEC-OFF-002-01 … 06)
 
 ## Tranche commits
