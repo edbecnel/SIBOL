@@ -11,6 +11,7 @@ import {
   EMULATOR_DEMO_ASSISTANCE_INBOX_ID,
   EMULATOR_DEMO_USER_BLUEPRINTS,
 } from "./emulator_demo_constants.mjs";
+import { upsertDemoOrganizationDirectoryEntries } from "./sync_organization_directory.mjs";
 
 const BARANGAY_STAFF_CAPS = [
   CAPABILITIES.CASE_READ,
@@ -132,6 +133,7 @@ function membershipPlan(blueprint) {
  */
 export async function executeEmulatorDemoSeed({ auth, db, users, logger = console }) {
   await ensureOrganizations(db, logger);
+  await upsertDemoOrganizationDirectoryEntries(db, logger);
   const uidByKey = {};
 
   for (const user of users) {

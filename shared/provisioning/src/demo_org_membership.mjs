@@ -8,6 +8,7 @@ import {
   DEMO_HOSPITAL_NAME,
   DEMO_HOSPITAL_ORG_ID,
 } from "./constants.mjs";
+import { upsertDemoOrganizationDirectoryEntries } from "./sync_organization_directory.mjs";
 
 const BARANGAY_CAPS = [
   CAPABILITIES.CASE_READ,
@@ -119,4 +120,6 @@ export async function ensureDemoOrganizationsAndMemberships(db, users, logger = 
       }
     }
   }
+
+  await upsertDemoOrganizationDirectoryEntries(db, logger);
 }

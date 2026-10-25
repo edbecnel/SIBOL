@@ -255,6 +255,29 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    function organizationDirectoryDocValid(data) {
+      return data.keys().hasAll(['orgId', 'name', 'type', 'status', 'updatedAt'])
+          && data.orgId is string
+          && data.name is string
+          && data.name.size() >= 1
+          && data.type in ['barangay', 'hospital']
+          && data.status in ['pending', 'active', 'suspended']
+          && data.updatedAt is timestamp
+          && (!('geographicSiteLabel' in data)
+              || (data.geographicSiteLabel is string && data.geographicSiteLabel.size() >= 1));
+    }
+
+    match /organizationDirectory/{orgId} {
+      allow get: if isActiveUser()
+          && isValidOrgId(orgId)
+          && organizationDirectoryDocValid(resource.data)
+          && resource.data.orgId == orgId;
+
+      allow list: if false;
+
+      allow create, update, delete: if false;
+    }
+
     match /organizationMemberships/{membershipId} {
       allow read: if isSignedIn()
           && resource.data.keys().hasAll(['accountUid', 'orgId'])

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SibolOrganizationDirectoryEntry",
+  "type": "object",
+  "required": ["orgId", "name", "type", "status", "updatedAt"],
+  "properties": {
+    "orgId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "type": {
+      "enum": ["barangay", "hospital"]
+    },
+    "status": {
+      "enum": ["pending", "active", "suspended"]
+    },
+    "geographicSiteLabel": {
+      "type": "string",
+      "description": "Optional legacy routing / site label derived from organizations.legacyBarangayLabel when present"
+    },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

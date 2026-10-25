@@ -17,6 +17,7 @@ import {
   initIdempotencyInTransaction,
   requestFingerprint,
 } from "./idempotency";
+import { setOrganizationDirectoryInTransaction } from "./organizationDirectoryProjection";
 
 const INVITATIONS = "organizationStaffInvitations";
 const IDENTITY_KEYS = "organizationIdentityKeys";
@@ -138,7 +139,7 @@ export async function runCreateBarangayOrganization(
     });
 
     const orgRef = db.collection("organizations").doc(orgId);
-    tx.create(orgRef, {
+    const orgData = {
       orgId,
       type: "barangay",
       name: displayName,
@@ -158,7 +159,9 @@ export async function runCreateBarangayOrganization(
       ...(legacyBarangayLabel ? { legacyBarangayLabel } : {}),
       createdAt: now,
       updatedAt: now,
-    });
+    };
+    tx.create(orgRef, orgData);
+    setOrganizationDirectoryInTransaction(tx, db, orgId, orgData, now);
 
     const invRef = db.collection(INVITATIONS).doc(invitationId);
     tx.create(invRef, {

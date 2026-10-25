@@ -21,6 +21,7 @@ import {
 } from "./context";
 import { hashEmail, normalizeEmail } from "./email";
 import { generateInvitationId, generateOrgId } from "./ids";
+import { setOrganizationDirectoryInTransaction } from "./organizationDirectoryProjection";
 import {
   assertAssignableCapabilities,
   countActiveOrgAdministrators,
@@ -110,7 +111,7 @@ export async function runCreateOrganization(
 
   await db.runTransaction(async (tx) => {
     const orgRef = db.collection("organizations").doc(orgId);
-    tx.create(orgRef, {
+    const orgData = {
       orgId,
       type,
       name,
@@ -118,7 +119,9 @@ export async function runCreateOrganization(
       ...(legacyBarangayLabel ? { legacyBarangayLabel } : {}),
       createdAt: now,
       updatedAt: now,
-    });
+    };
+    tx.create(orgRef, orgData);
+    setOrganizationDirectoryInTransaction(tx, db, orgId, orgData, now);
     const invRef = db.collection(INVITATIONS).doc(invitationId);
     tx.create(invRef, {
       invitationId,
@@ -182,9 +185,20 @@ export async function runSetOrganizationStatus(
   }
   const org = await loadOrganization(db, orgId);
   const before = { status: org.status };
-  await db.collection("organizations").doc(orgId).update({
-    status,
-    updatedAt: FieldValue.serverTimestamp(),
+  const now = Timestamp.now();
+  await db.runTransaction(async (tx) => {
+    const orgRef = db.collection("organizations").doc(orgId);
+    tx.update(orgRef, {
+      status,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    setOrganizationDirectoryInTransaction(
+      tx,
+      db,
+      orgId,
+      { ...org, status },
+      now,
+    );
   });
   await writeAuditEvent(db, {
     actorUid: uid,

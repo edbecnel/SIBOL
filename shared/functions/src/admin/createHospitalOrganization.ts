@@ -18,6 +18,7 @@ import {
   initIdempotencyInTransaction,
   requestFingerprint,
 } from "./idempotency";
+import { setOrganizationDirectoryInTransaction } from "./organizationDirectoryProjection";
 
 const INVITATIONS = "organizationStaffInvitations";
 const IDENTITY_KEYS = "organizationIdentityKeys";
@@ -145,7 +146,7 @@ export async function runCreateHospitalOrganization(
       createdByUid: uid,
     });
     const orgRef = db.collection("organizations").doc(orgId);
-    tx.create(orgRef, {
+    const orgData = {
       orgId,
       type: "hospital",
       name: displayName,
@@ -161,7 +162,9 @@ export async function runCreateHospitalOrganization(
       ...(displayNameAlias ? { displayNameAlias } : {}),
       createdAt: now,
       updatedAt: now,
-    });
+    };
+    tx.create(orgRef, orgData);
+    setOrganizationDirectoryInTransaction(tx, db, orgId, orgData, now);
     tx.create(db.collection(INVITATIONS).doc(invitationId), {
       invitationId,
       orgId,
