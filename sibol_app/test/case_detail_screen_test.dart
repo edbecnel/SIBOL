@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
+import 'package:sibol_app/core/domain/firestore_document_snapshot.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/presentation/screens/case_detail_screen.dart';
 import 'support/fake_case_repository.dart';
@@ -12,7 +13,9 @@ void main() {
     final record = sampleCaseRecord();
     final repo = FakeCaseRepository(
       caseStreams: {
-        record.caseId: Stream.value(record),
+        record.caseId: Stream.value(
+          FirestoreDocumentSnapshot(data: record, isFromCache: false),
+        ),
       },
     );
 
@@ -47,7 +50,11 @@ void main() {
 
   testWidgets('shows not-found message when case is missing', (tester) async {
     final repo = FakeCaseRepository(
-      caseStreams: {'missing-id': Stream<CaseRecord?>.value(null)},
+      caseStreams: {
+        'missing-id': Stream.value(
+          const FirestoreDocumentSnapshot(data: null, isFromCache: false),
+        ),
+      },
     );
 
     await tester.pumpWidget(
@@ -71,7 +78,9 @@ void main() {
   testWidgets('shows error widget when stream fails', (tester) async {
     final repo = FakeCaseRepository(
       caseStreams: {
-        'err': Stream<CaseRecord?>.error(Exception('permission denied')),
+        'err': Stream<FirestoreDocumentSnapshot<CaseRecord>>.error(
+          Exception('permission denied'),
+        ),
       },
     );
 
@@ -107,7 +116,11 @@ void main() {
       reportStatus: base.reportStatus,
     );
     final repo = FakeCaseRepository(
-      caseStreams: {record.caseId: Stream.value(record)},
+      caseStreams: {
+        record.caseId: Stream.value(
+          FirestoreDocumentSnapshot(data: record, isFromCache: false),
+        ),
+      },
     );
 
     await tester.pumpWidget(

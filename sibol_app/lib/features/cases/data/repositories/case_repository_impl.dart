@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sibol_app/core/constants/firestore_paths.dart';
+import 'package:sibol_app/core/domain/firestore_document_snapshot.dart';
+import 'package:sibol_app/core/domain/firestore_list_snapshot.dart';
 import 'package:sibol_app/features/cases/data/models/case_record_model.dart';
 import 'package:sibol_app/features/cases/data/models/follow_up_model.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
@@ -13,15 +15,24 @@ class CaseRepositoryImpl implements CaseRepository {
   final FirebaseFirestore _firestore;
 
   @override
-  Stream<List<CaseRecord>> watchCasesForOrg(String orgId) {
+  Stream<FirestoreListSnapshot<CaseRecord>> watchCasesForOrg(String orgId) {
     return _firestore
         .collection(FirestorePaths.cases)
         .where('orgId', isEqualTo: orgId)
         .orderBy('registeredAt', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((d) => CaseRecordModel.fromFirestore(d.id, d.data()).toEntity())
-            .toList());
+        .map(
+          (snap) => FirestoreListSnapshot(
+            isFromCache: snap.metadata.isFromCache,
+            hasPendingWrites: snap.metadata.hasPendingWrites,
+            items: snap.docs
+                .map(
+                  (d) =>
+                      CaseRecordModel.fromFirestore(d.id, d.data()).toEntity(),
+                )
+                .toList(),
+          ),
+        );
   }
 
   @override
@@ -37,16 +48,24 @@ class CaseRepositoryImpl implements CaseRepository {
   }
 
   @override
-  Stream<CaseRecord?> watchCase(String caseId) {
+  Stream<FirestoreDocumentSnapshot<CaseRecord>> watchCase(String caseId) {
     return _firestore
         .collection(FirestorePaths.cases)
         .doc(caseId)
         .snapshots()
         .map((snap) {
-      if (!snap.exists) return null;
-      final data = snap.data();
-      if (data == null) return null;
-      return CaseRecordModel.fromFirestore(snap.id, data).toEntity();
+      CaseRecord? record;
+      if (snap.exists) {
+        final data = snap.data();
+        if (data != null) {
+          record = CaseRecordModel.fromFirestore(snap.id, data).toEntity();
+        }
+      }
+      return FirestoreDocumentSnapshot(
+        data: record,
+        isFromCache: snap.metadata.isFromCache,
+        hasPendingWrites: snap.metadata.hasPendingWrites,
+      );
     });
   }
 
@@ -81,7 +100,7 @@ class CaseRepositoryImpl implements CaseRepository {
   @override
   Future<void> updateCase(CaseRecord record) async {
     final ref = _firestore.collection(FirestorePaths.cases).doc(record.caseId);
-    final existingSnap = await ref.get();
+    final existingSnap = await ref.get(const GetOptions(source: Source.serverAndCache));
     if (!existingSnap.exists || existingSnap.data() == null) {
       throw StateError('Case not found.');
     }
@@ -112,5 +131,30 @@ class CaseRepositoryImpl implements CaseRepository {
         .map((snap) => snap.docs
             .map((d) => FollowUpModel.fromFirestore(d.id, d.data()).toEntity())
             .toList());
+  }
+
+  @override
+  Future<String> createFollowUp(FollowUp followUp) async {
+    if (followUp.caseId.isEmpty) {
+      throw FormatException('Follow-up is missing caseId.');
+    }
+    final caseRef = _firestore.collection(FirestorePaths.cases).doc(followUp.caseId);
+    final caseSnap = await caseRef.get(const GetOptions(source: Source.serverAndCache));
+    if (!caseSnap.exists) {
+      throw StateError('Case not found.');
+    }
+    final ref = caseRef.collection(FirestorePaths.followUps).doc();
+    final model = FollowUpModel.fromEntity(
+      FollowUp(
+        followUpId: ref.id,
+        caseId: followUp.caseId,
+        scheduledAt: followUp.scheduledAt,
+        completedAt: followUp.completedAt,
+        status: followUp.status,
+        notes: followUp.notes,
+      ),
+    );
+    await ref.set(model.toFirestoreCreate());
+    return ref.id;
   }
 }

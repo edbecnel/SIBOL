@@ -80,9 +80,9 @@ final barangayReportAggregateProvider =
       return casesAsync.when(
         loading: () => const AsyncLoading(),
         error: (e, st) => AsyncError(e, st),
-        data: (cases) => AsyncData(
+        data: (snapshot) => AsyncData(
           computeBarangayReportAggregate(
-            cases: cases,
+            cases: snapshot.items,
             barangay: user.assignedBarangay!,
           ),
         ),

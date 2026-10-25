@@ -5,6 +5,10 @@ import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/presentation/providers/case_providers.dart';
+import 'package:sibol_app/core/providers/firebase_providers.dart';
+import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
+import 'package:sibol_app/features/cases/presentation/widgets/add_follow_up_dialog.dart';
+import 'package:sibol_app/features/cases/presentation/widgets/case_firestore_sync_notice.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/case_follow_up_timeline.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
@@ -24,6 +28,11 @@ class CaseDetailScreen extends ConsumerWidget {
         title: const Text('Case details'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.event_note),
+            tooltip: 'Add follow-up',
+            onPressed: () => _showAddFollowUp(context, ref),
+          ),
+          IconButton(
             icon: const Icon(Icons.edit),
             tooltip: 'Edit case',
             onPressed: () =>
@@ -40,7 +49,8 @@ class CaseDetailScreen extends ConsumerWidget {
               error: (e, _) => AppErrorWidget(
                 message: 'Could not load this case. ${e.toString()}',
               ),
-              data: (record) {
+              data: (snapshot) {
+                final record = snapshot.data;
                 if (record == null) {
                   return const Center(
                     child: Padding(
@@ -52,13 +62,54 @@ class CaseDetailScreen extends ConsumerWidget {
                     ),
                   );
                 }
-                return CaseDetailBody(record: record, caseId: caseId);
+                return CaseDetailBody(
+                  record: record,
+                  caseId: caseId,
+                  isFromCache: snapshot.isFromCache,
+                  hasPendingWrites: snapshot.hasPendingWrites,
+                );
               },
             ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _showAddFollowUp(BuildContext context, WidgetRef ref) async {
+    final result = await showDialog<AddFollowUpDialogResult>(
+      context: context,
+      builder: (_) => const AddFollowUpDialog(),
+    );
+    if (result == null || !context.mounted) return;
+    try {
+      final repo = ref.read(caseRepositoryProvider);
+      await repo.createFollowUp(
+        FollowUp(
+          followUpId: '',
+          caseId: caseId,
+          scheduledAt: result.scheduledAt,
+          completedAt: result.completedAt,
+          status: result.status,
+          notes: result.notes,
+        ),
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Follow-up saved on this device. It will sync when online.',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not save follow-up: $e')),
+        );
+      }
+    }
   }
 }
 
@@ -68,10 +119,14 @@ class CaseDetailBody extends StatelessWidget {
     super.key,
     required this.record,
     required this.caseId,
+    required this.isFromCache,
+    required this.hasPendingWrites,
   });
 
   final CaseRecord record;
   final String caseId;
+  final bool isFromCache;
+  final bool hasPendingWrites;
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +136,10 @@ class CaseDetailBody extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        CaseFirestoreSyncNotice(
+          isFromCache: isFromCache,
+          hasPendingWrites: hasPendingWrites,
+        ),
         Text(
           record.demoName,
           style: Theme.of(context).textTheme.headlineSmall,

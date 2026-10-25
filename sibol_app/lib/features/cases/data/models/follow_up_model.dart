@@ -31,6 +31,27 @@ class FollowUpModel {
     );
   }
 
+  Map<String, dynamic> toFirestoreCreate() {
+    return {
+      'caseId': caseId,
+      'scheduledAt': Timestamp.fromDate(scheduledAt),
+      if (completedAt != null) 'completedAt': Timestamp.fromDate(completedAt!),
+      'status': status,
+      'notes': notes,
+    };
+  }
+
+  static FollowUpModel fromEntity(FollowUp entity) {
+    return FollowUpModel(
+      followUpId: entity.followUpId,
+      caseId: entity.caseId,
+      scheduledAt: entity.scheduledAt,
+      completedAt: entity.completedAt,
+      status: entity.status.firestoreValue,
+      notes: entity.notes,
+    );
+  }
+
   FollowUp toEntity() {
     final parsed = FollowUpStatus.fromFirestore(status);
     if (parsed == null) {

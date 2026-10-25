@@ -7,6 +7,7 @@ import 'package:sibol_app/features/admin/presentation/providers/admin_providers.
 import 'package:sibol_app/features/cases/presentation/providers/case_providers.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
+import 'package:sibol_app/shared/widgets/cached_data_notice.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
 
 class BarangayHomeScreen extends ConsumerWidget {
@@ -212,7 +213,8 @@ class _BarangayCaseListSection extends ConsumerWidget {
           ),
         ),
       ),
-      data: (cases) {
+      data: (snapshot) {
+        final cases = snapshot.items;
         if (cases.isEmpty) {
           return const Center(
             child: Text(
@@ -223,10 +225,13 @@ class _BarangayCaseListSection extends ConsumerWidget {
         }
         return ListView.separated(
           padding: const EdgeInsets.all(16),
-          itemCount: cases.length,
+          itemCount: cases.length + 1,
           separatorBuilder: (_, __) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
-            final caseRecord = cases[index];
+            if (index == 0) {
+              return CachedDataNotice(isFromCache: snapshot.isFromCache);
+            }
+            final caseRecord = cases[index - 1];
             return Card(
               child: ListTile(
                 title: Text(caseRecord.demoName),

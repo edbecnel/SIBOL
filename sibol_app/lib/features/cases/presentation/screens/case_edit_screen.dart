@@ -121,10 +121,28 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
       final record = _buildRecord();
       if (widget.isCreate) {
         final id = await repo.createCase(record);
-        if (mounted) context.go(Routes.barangayCaseDetail(id));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Case saved on this device. Server confirmation happens when online.',
+              ),
+            ),
+          );
+          context.go(Routes.barangayCaseDetail(id));
+        }
       } else {
         await repo.updateCase(record);
-        if (mounted) context.go(Routes.barangayCaseDetail(record.caseId));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Changes saved on this device. They will sync when online.',
+              ),
+            ),
+          );
+          context.go(Routes.barangayCaseDetail(record.caseId));
+        }
       }
     } catch (e) {
       setState(() => _formError = e.toString());
@@ -145,7 +163,8 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
           appBar: AppBar(title: const Text('Edit case')),
           body: AppErrorWidget(message: e.toString()),
         ),
-        data: (record) {
+        data: (snapshot) {
+          final record = snapshot.data;
           if (record == null) {
             return Scaffold(
               appBar: AppBar(title: const Text('Edit case')),

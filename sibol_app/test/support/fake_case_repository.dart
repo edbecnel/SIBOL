@@ -1,3 +1,5 @@
+import 'package:sibol_app/core/domain/firestore_document_snapshot.dart';
+import 'package:sibol_app/core/domain/firestore_list_snapshot.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
 import 'package:sibol_app/features/cases/domain/repositories/case_repository.dart';
@@ -5,7 +7,7 @@ import 'package:sibol_app/features/cases/domain/repositories/case_repository.dar
 class FakeCaseRepository implements CaseRepository {
   FakeCaseRepository({
     List<CaseRecord>? cases,
-    Map<String, Stream<CaseRecord?>>? caseStreams,
+    Map<String, Stream<FirestoreDocumentSnapshot<CaseRecord>>>? caseStreams,
     Map<String, Stream<List<FollowUp>>>? followUpStreams,
   })  : _cases = List<CaseRecord>.from(cases ?? const []),
         _caseStreams = caseStreams ?? {},
@@ -13,12 +15,17 @@ class FakeCaseRepository implements CaseRepository {
 
   final List<CaseRecord> _cases;
   int _idSeq = 0;
-  final Map<String, Stream<CaseRecord?>> _caseStreams;
+  final Map<String, Stream<FirestoreDocumentSnapshot<CaseRecord>>> _caseStreams;
+  final List<FollowUp> _followUps = [];
   final Map<String, Stream<List<FollowUp>>> _followUpStreams;
 
   @override
-  Stream<List<CaseRecord>> watchCasesForOrg(String orgId) => Stream.value(
-        _cases.where((c) => c.orgId == orgId).toList(),
+  Stream<FirestoreListSnapshot<CaseRecord>> watchCasesForOrg(String orgId) =>
+      Stream.value(
+        FirestoreListSnapshot(
+          items: _cases.where((c) => c.orgId == orgId).toList(),
+          isFromCache: false,
+        ),
       );
 
   @override
@@ -26,8 +33,9 @@ class FakeCaseRepository implements CaseRepository {
       _cases.where((c) => c.orgId == orgId).toList();
 
   @override
-  Stream<CaseRecord?> watchCase(String caseId) {
-    return _caseStreams[caseId] ?? Stream<CaseRecord?>.value(null);
+  Stream<FirestoreDocumentSnapshot<CaseRecord>> watchCase(String caseId) {
+    return _caseStreams[caseId] ??
+        Stream.value(const FirestoreDocumentSnapshot(data: null, isFromCache: false));
   }
 
   @override
@@ -63,5 +71,23 @@ class FakeCaseRepository implements CaseRepository {
   @override
   Stream<List<FollowUp>> watchFollowUps(String caseId) {
     return _followUpStreams[caseId] ?? Stream<List<FollowUp>>.value(const []);
+  }
+
+  @override
+  Future<String> createFollowUp(FollowUp followUp) async {
+    final id = followUp.followUpId.isEmpty
+        ? 'fu-${++_idSeq}'
+        : followUp.followUpId;
+    _followUps.add(
+      FollowUp(
+        followUpId: id,
+        caseId: followUp.caseId,
+        scheduledAt: followUp.scheduledAt,
+        completedAt: followUp.completedAt,
+        status: followUp.status,
+        notes: followUp.notes,
+      ),
+    );
+    return id;
   }
 }

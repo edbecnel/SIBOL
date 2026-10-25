@@ -19,7 +19,9 @@ void main() {
     final repo = FakeCaseRepository(
       cases: [record],
       caseStreams: {
-        record.caseId: Stream.value(record),
+        record.caseId: Stream.value(
+          FirestoreDocumentSnapshot(data: record, isFromCache: false),
+        ),
       },
     );
 

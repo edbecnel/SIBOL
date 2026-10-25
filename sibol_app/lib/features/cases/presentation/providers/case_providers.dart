@@ -1,10 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sibol_app/core/domain/firestore_document_snapshot.dart';
+import 'package:sibol_app/core/domain/firestore_list_snapshot.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 
-final casesStreamProvider = StreamProvider<List<CaseRecord>>((ref) {
+final casesStreamProvider =
+    StreamProvider<FirestoreListSnapshot<CaseRecord>>((ref) {
   final orgId = ref.watch(barangayCaseOrgIdProvider);
   if (orgId == null) {
     return Stream.error(
@@ -17,7 +20,8 @@ final casesStreamProvider = StreamProvider<List<CaseRecord>>((ref) {
 });
 
 final caseDetailStreamProvider =
-    StreamProvider.family<CaseRecord?, String>((ref, caseId) {
+    StreamProvider.family<FirestoreDocumentSnapshot<CaseRecord>, String>(
+        (ref, caseId) {
   return ref.watch(caseRepositoryProvider).watchCase(caseId);
 });
 
