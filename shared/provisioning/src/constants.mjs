@@ -9,11 +9,11 @@ export const EXPECTED_DEMO_PROJECT_ID = "sibol-286d0";
 export { DEMO_BARANGAY_ORG_ID, DEMO_HOSPITAL_ORG_ID };
 
 /** Organization display name (distinct from orgId). */
-export const DEMO_BARANGAY_ORG_NAME = "Barangay Tres";
+export const DEMO_BARANGAY_ORG_NAME = "Barangay 3 (Poblacion)";
 export const DEMO_HOSPITAL_NAME = "Misamis Oriental Provincial Hospital";
 
 /** Demo site for teen assistance routing (matches seeded cases). */
-export const DEMO_ASSIGNED_BARANGAY = "Barangay Tres, Balingasag";
+export const DEMO_ASSIGNED_BARANGAY = "Barangay 3, Balingasag";
 
 export const DEMO_USER_SPECS = [
   {

@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase-admin/firestore";
 
-export const site = "Barangay Tres, Balingasag";
+export const site = "Barangay 3, Balingasag";
 export const orgId = "barangay03";
 export const otherOrgId = "barangay99";
 export const hospitalOrgId = "hospital01";

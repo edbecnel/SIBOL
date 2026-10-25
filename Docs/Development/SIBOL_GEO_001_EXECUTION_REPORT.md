@@ -103,3 +103,11 @@ Register as Teen → select **Region X → Misamis Oriental → Balingasag → B
 | **INV-002** | [SIBOL_GEO_001_INV_002_INVESTIGATION_REPORT.md](SIBOL_GEO_001_INV_002_INVESTIGATION_REPORT.md) |
 | **Existing QA teen** | [SIBOL_GEO_001_QA_TEEN_03_PROFILE_REPAIR.md](SIBOL_GEO_001_QA_TEEN_03_PROFILE_REPAIR.md) (PO approval before emulator write) |
 | **Functions reload** | Restart or reload Functions emulator after deploy to pick up registration change |
+
+## 13. FIX-003 — PSGC naming and QA Teen 03 repair
+
+| Item | Detail |
+|------|--------|
+| **Emulator repair** | `organizations/barangay03.name` → `Barangay 3 (Poblacion)`; QA Teen 03 `assignedBarangay` → `Barangay 3, Balingasag` |
+| **Evidence** | [SIBOL_GEO_001_FIX_003_EXECUTION_REPORT.md](SIBOL_GEO_001_FIX_003_EXECUTION_REPORT.md) |
+| **Seed** | `constants.mjs` / `demo_orgs.mjs` display name and routing label aligned; legacy label kept in migration mapping |

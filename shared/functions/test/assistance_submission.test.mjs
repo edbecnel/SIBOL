@@ -25,7 +25,7 @@ before(async () => {
     type: "barangay",
     name: "Barangay Demo",
     status: "active",
-    legacyBarangayLabel: "Barangay Tres, Balingasag",
+    legacyBarangayLabel: "Barangay 3, Balingasag",
     createdAt: now,
     updatedAt: now,
   });
@@ -33,7 +33,7 @@ before(async () => {
     role: "teen",
     displayName: "Teen",
     active: true,
-    assignedBarangay: "Barangay Tres, Balingasag",
+    assignedBarangay: "Barangay 3, Balingasag",
     selectedBarangayOrgId: orgId,
     createdAt: now,
   });

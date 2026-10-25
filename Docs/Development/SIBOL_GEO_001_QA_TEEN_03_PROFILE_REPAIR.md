@@ -2,7 +2,7 @@
 
 **Work item:** SIBOL-GEO-001-FIX-002  
 **Purpose:** One-time emulator correction for teens registered before registration persisted `assignedBarangay`.  
-**Do not run** until the Project Architect / Product Owner authorizes after FIX-002 code is loaded on the Functions emulator.
+**Status:** Executed under **SIBOL-GEO-001-FIX-003** (2026-10-25) on emulator `127.0.0.1:8195` for uid `pjHSdYK7Vh2qYAnBzu6FmMeWjUMU`. See [SIBOL_GEO_001_FIX_003_EXECUTION_REPORT.md](SIBOL_GEO_001_FIX_003_EXECUTION_REPORT.md).
 
 ## Preconditions
 
