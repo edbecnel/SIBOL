@@ -136,11 +136,29 @@ service cloud.firestore {
       return teenProfile().selectedBarangayOrgId;
     }
 
-    function mophHospitalCoordinationGranted() {
-      return isActiveUser()
-          && userDoc().keys().hasAll(['primaryOrgId'])
+    function mophPrimaryOrgIdForCapability() {
+      return userDoc().keys().hasAll(['primaryOrgId'])
+          && userPrimaryOrgId() is string
+          && userPrimaryOrgId().size() > 0
           && isValidOrgId(userPrimaryOrgId())
-          && capabilityGranted(userPrimaryOrgId(), 'coordination.hospital');
+          ? userPrimaryOrgId()
+          : null;
+    }
+
+    // Pilot: single demonstration hospital org when profile primaryOrgId is absent.
+    function mophPilotHospitalOrgId() {
+      return 'hospital01';
+    }
+
+    function mophHospitalCoordinationGranted() {
+      return isMoph()
+          && (
+            (
+              mophPrimaryOrgIdForCapability() != null
+              && capabilityGranted(mophPrimaryOrgIdForCapability(), 'coordination.hospital')
+            )
+            || capabilityGranted(mophPilotHospitalOrgId(), 'coordination.hospital')
+          );
     }
 
     function isValidAssistanceCategory(category) {

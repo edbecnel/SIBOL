@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/coordination/presentation/providers/coordination_providers.dart';
+import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/reporting/presentation/providers/report_providers.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
@@ -14,6 +15,7 @@ class MophHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final accessAsync = ref.watch(mophOperationalContextProvider);
     final coordinationsAsync = ref.watch(mophCoordinationThreadsProvider);
     final reportsAsync = ref.watch(mophSubmittedReportsProvider);
     final dateFmt = DateFormat.yMMMd();
@@ -32,7 +34,12 @@ class MophHomeScreen extends ConsumerWidget {
         children: [
           const FictionalDataBanner(),
           Expanded(
-            child: ListView(
+            child: accessAsync.when(
+              loading: () => const AppLoadingIndicator(
+                message: 'Loading hospital account…',
+              ),
+              error: (e, _) => AppErrorWidget(message: e.toString()),
+              data: (_) => ListView(
               padding: const EdgeInsets.all(16),
               children: [
                 Text(
@@ -127,6 +134,7 @@ class MophHomeScreen extends ConsumerWidget {
                   },
                 ),
               ],
+            ),
             ),
           ),
         ],

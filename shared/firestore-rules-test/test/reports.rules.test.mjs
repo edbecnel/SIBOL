@@ -8,7 +8,14 @@ import {
   assertSucceeds,
 } from "@firebase/rules-unit-testing";
 import { serverTimestamp, Timestamp } from "firebase/firestore";
-import { ORG_BARANGAY_DEMO, ORG_BARANGAY_OTHER, setupM2DemoAuth } from "./helpers/org_auth_seed.mjs";
+import {
+  CAPS,
+  ORG_BARANGAY_DEMO,
+  ORG_BARANGAY_OTHER,
+  ORG_HOSPITAL_DEMO,
+  seedMembership,
+  setupM2DemoAuth,
+} from "./helpers/org_auth_seed.mjs";
 
 const rulesPath = resolve(
   fileURLToPath(new URL(".", import.meta.url)),
@@ -234,6 +241,39 @@ describe("reports collection (DEMO-004 aggregate)", () => {
   it("denies teen MOPH production list query", async () => {
     const teenDb = testEnv.authenticatedContext(teenUid).firestore();
     await assertFails(mophProductionListQuery(teenDb).get());
+  });
+
+  it("allows MOPH production list without primaryOrgId when hospital01 membership grants coordination", async () => {
+    const legacyMophUid = "moph-legacy-reports";
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await db.collection("users").doc(legacyMophUid).set({
+        displayName: "Legacy MOPH",
+        active: true,
+        createdAt: new Date(),
+        role: "moph",
+      });
+      await seedMembership(db, ORG_HOSPITAL_DEMO, legacyMophUid, CAPS.hospitalCoord);
+    });
+    const mophDb = testEnv.authenticatedContext(legacyMophUid).firestore();
+    await assertSucceeds(mophProductionListQuery(mophDb).get());
+  });
+
+  it("denies MOPH management-only admin on production list query", async () => {
+    const adminUid = "moph-admin-reports";
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await db.collection("users").doc(adminUid).set({
+        displayName: "MOPH Org Admin",
+        active: true,
+        createdAt: new Date(),
+        role: "moph",
+        primaryOrgId: ORG_HOSPITAL_DEMO,
+      });
+      await seedMembership(db, ORG_HOSPITAL_DEMO, adminUid, CAPS.orgAdminOnly);
+    });
+    const mophDb = testEnv.authenticatedContext(adminUid).firestore();
+    await assertFails(mophProductionListQuery(mophDb).get());
   });
 
   it("denies other barangay read of submitted report (single doc and list)", async () => {

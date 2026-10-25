@@ -8,7 +8,13 @@ import {
   assertSucceeds,
 } from "@firebase/rules-unit-testing";
 import { Timestamp } from "firebase/firestore";
-import { ORG_BARANGAY_DEMO, setupM2DemoAuth } from "./helpers/org_auth_seed.mjs";
+import {
+  CAPS,
+  ORG_BARANGAY_DEMO,
+  ORG_HOSPITAL_DEMO,
+  seedMembership,
+  setupM2DemoAuth,
+} from "./helpers/org_auth_seed.mjs";
 
 const rulesPath = resolve(
   fileURLToPath(new URL(".", import.meta.url)),
@@ -195,6 +201,39 @@ describe("caseCoordinationThreads reads", () => {
   it("allows MOPH list query on phase and lastStaffEventAt", async () => {
     const db = testEnv.authenticatedContext(mophUid).firestore();
     await assertSucceeds(mophThreadListQuery(db).get());
+  });
+
+  it("allows MOPH list query without primaryOrgId when hospital01 membership grants coordination", async () => {
+    const legacyMophUid = "moph-legacy-no-primary";
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await db.collection("users").doc(legacyMophUid).set({
+        displayName: "Legacy MOPH",
+        active: true,
+        createdAt: new Date(),
+        role: "moph",
+      });
+      await seedMembership(db, ORG_HOSPITAL_DEMO, legacyMophUid, CAPS.hospitalCoord);
+    });
+    const db = testEnv.authenticatedContext(legacyMophUid).firestore();
+    await assertSucceeds(mophThreadListQuery(db).get());
+  });
+
+  it("denies MOPH management-only admin on coordination list query", async () => {
+    const adminUid = "moph-admin-no-coord";
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await db.collection("users").doc(adminUid).set({
+        displayName: "MOPH Org Admin",
+        active: true,
+        createdAt: new Date(),
+        role: "moph",
+        primaryOrgId: ORG_HOSPITAL_DEMO,
+      });
+      await seedMembership(db, ORG_HOSPITAL_DEMO, adminUid, CAPS.orgAdminOnly);
+    });
+    const db = testEnv.authenticatedContext(adminUid).firestore();
+    await assertFails(mophThreadListQuery(db).get());
   });
 
   it("denies MOPH read of private binding", async () => {

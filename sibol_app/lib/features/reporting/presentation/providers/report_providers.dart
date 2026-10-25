@@ -12,13 +12,37 @@ final reportRepositoryProvider = Provider<ReportRepository>((ref) {
   return ReportRepositoryImpl(ref.watch(firestoreProvider));
 });
 
+Stream<List<MophAggregateReport>> _mophSubmittedReportsStream(Ref ref) {
+  final access = ref.watch(mophOperationalContextProvider);
+  if (access.isLoading) {
+    return const Stream<List<MophAggregateReport>>.empty();
+  }
+  if (access.hasError) {
+    return Stream<List<MophAggregateReport>>.error(
+      access.error!,
+      access.stackTrace ?? StackTrace.empty,
+    );
+  }
+  return ref.watch(reportRepositoryProvider).watchSubmittedReportsForMoph();
+}
+
 final mophSubmittedReportsProvider =
     StreamProvider<List<MophAggregateReport>>((ref) {
-  return ref.watch(reportRepositoryProvider).watchSubmittedReportsForMoph();
+  return _mophSubmittedReportsStream(ref);
 });
 
 final mophReportDetailProvider =
     StreamProvider.family<MophAggregateReport?, String>((ref, reportId) {
+  final access = ref.watch(mophOperationalContextProvider);
+  if (access.isLoading) {
+    return const Stream<MophAggregateReport?>.empty();
+  }
+  if (access.hasError) {
+    return Stream<MophAggregateReport?>.error(
+      access.error!,
+      access.stackTrace ?? StackTrace.empty,
+    );
+  }
   return ref.watch(reportRepositoryProvider).watchReportForMoph(reportId);
 });
 

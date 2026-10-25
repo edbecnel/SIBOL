@@ -18,21 +18,57 @@ final coordinationRepositoryProvider = Provider<CoordinationRepository>((ref) {
   );
 });
 
+Stream<List<CoordinationThread>> _mophCoordinationThreadsStream(Ref ref) {
+  final access = ref.watch(mophOperationalContextProvider);
+  if (access.isLoading) {
+    return const Stream<List<CoordinationThread>>.empty();
+  }
+  if (access.hasError) {
+    return Stream<List<CoordinationThread>>.error(
+      access.error!,
+      access.stackTrace ?? StackTrace.empty,
+    );
+  }
+  return ref.watch(coordinationRepositoryProvider).watchOpenThreadsForMoph();
+}
+
 final mophCoordinationThreadsProvider =
     StreamProvider<List<CoordinationThread>>((ref) {
-  return ref.watch(coordinationRepositoryProvider).watchOpenThreadsForMoph();
+  return _mophCoordinationThreadsStream(ref);
 });
+
+Stream<CoordinationThread?> _mophCoordinationThreadStream(Ref ref, String threadId) {
+  final access = ref.watch(mophOperationalContextProvider);
+  if (access.isLoading) {
+    return const Stream<CoordinationThread?>.empty();
+  }
+  if (access.hasError) {
+    return Stream<CoordinationThread?>.error(
+      access.error!,
+      access.stackTrace ?? StackTrace.empty,
+    );
+  }
+  return ref.watch(coordinationRepositoryProvider).watchThreadForMoph(threadId);
+}
 
 final mophCoordinationThreadProvider =
     StreamProvider.family<CoordinationThread?, String>((ref, threadId) {
-  return ref
-      .watch(coordinationRepositoryProvider)
-      .watchThreadForMoph(threadId);
+  return _mophCoordinationThreadStream(ref, threadId);
 });
 
 final mophCoordinationStaffEventsProvider =
     StreamProvider.family<List<CoordinationStaffEvent>, String>(
   (ref, threadId) {
+    final access = ref.watch(mophOperationalContextProvider);
+    if (access.isLoading) {
+      return const Stream<List<CoordinationStaffEvent>>.empty();
+    }
+    if (access.hasError) {
+      return Stream<List<CoordinationStaffEvent>>.error(
+        access.error!,
+        access.stackTrace ?? StackTrace.empty,
+      );
+    }
     return ref
         .watch(coordinationRepositoryProvider)
         .watchStaffEventsForThread(threadId);
