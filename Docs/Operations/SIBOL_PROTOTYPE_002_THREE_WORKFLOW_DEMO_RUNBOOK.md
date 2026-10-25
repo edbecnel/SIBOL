@@ -87,7 +87,7 @@ Do **not** delete or reseed PO QA documents referenced in QA-001 unless authoriz
 
 ## 6. Known limitations (state honestly)
 
-- Offline pending queue exists but is **not** required for these three workflows.
+- **OFF-002:** All three workflows support offline capture and sync after reconnect (W1 queue; W2 Firestore persistence; W3 queued reports with stable `reports/{operationId}` idempotency). See [SIBOL_OFF_002_EXECUTION_REPORT.md](../Development/SIBOL_OFF_002_EXECUTION_REPORT.md).
 - CASE-COORD Increment C (staff event writes) and Teen **My Case** are **out of scope**.
 - Push notifications are not implemented.
 - Physical device vs emulator: PO QA-001 used Android emulator; phone install is optional.
@@ -127,3 +127,20 @@ Expect `regAcknowledgeTeenAssistanceRequest` among registered callables (HTTP **
 | W3 | Barangay | **Submit report to MOPH** (requires ≥1 case) → receipt | MOPH sees aggregate counts only on submitted reports list |
 
 **Note:** At PROTOTYPE-003 export time, `cases` and `reports` counts were **0** on the emulator; W2/W3 acceptance may require creating a fictional case (and thus counts) during the session without touching QA-001 assistance/referral records.
+
+## 10. Minimal offline acceptance (OFF-002; device/emulator)
+
+Use **airplane mode** or emulator network disable between steps. Do **not** restart canonical emulators or mutate QA-001 assistance/referral anchors.
+
+| Step | Role | Action | Expected observation |
+|------|------|--------|----------------------|
+| O1 | Teen | Submit assistance request while offline | Global banner + pending row on **My requests**; not on server until online |
+| O2 | Teen | Kill app → reopen offline | Pending row still visible |
+| O3 | Teen | Restore network | Banner clears after sync; request appears in Firestore list |
+| O4 | Barangay | Open case list online, then go offline | Cached list notice; open cached case |
+| O5 | Barangay | Edit case or add follow-up offline | Sync notice on detail; snackbar on save |
+| O6 | Barangay | Reconnect | Pending writes sync; failures stay visible (no false success) |
+| O7 | Barangay | Submit report offline (after ≥1 case) | **Submitted reports** shows queued card; local snapshot disclaimer on submit screen if cache/pending cases |
+| O8 | Barangay | Reconnect | Queued report becomes normal receipt; MOPH sees aggregate on submitted list |
+
+**Limitation:** W2 concurrent edits are last-write-wins at the Firestore layer (documented; not conflict-detected). W3 counts are frozen at queue time and labeled when case cache is incomplete or has pending writes.
