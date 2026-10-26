@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/admin/presentation/providers/admin_providers.dart';
 import 'package:sibol_app/features/cases/presentation/providers/case_providers.dart';
+import 'package:sibol_app/features/cases/presentation/widgets/case_list_tile_subtitle.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
 import 'package:sibol_app/shared/widgets/cached_data_notice.dart';
@@ -199,8 +200,6 @@ class _BarangayCaseListSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final casesAsync = ref.watch(casesStreamProvider);
-    final dateFmt = DateFormat.yMMMd();
-
     return casesAsync.when(
       loading: () =>
           const AppLoadingIndicator(message: 'Loading fictional cases…'),
@@ -214,8 +213,8 @@ class _BarangayCaseListSection extends ConsumerWidget {
         ),
       ),
       data: (snapshot) {
-        final cases = snapshot.items;
-        if (cases.isEmpty) {
+        final entries = snapshot.items;
+        if (entries.isEmpty) {
           return const Center(
             child: Text(
               'No demonstration cases yet. Run the seed script after Firebase is configured.',
@@ -225,21 +224,18 @@ class _BarangayCaseListSection extends ConsumerWidget {
         }
         return ListView.separated(
           padding: const EdgeInsets.all(16),
-          itemCount: cases.length + 1,
+          itemCount: entries.length + 1,
           separatorBuilder: (_, __) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
             if (index == 0) {
               return CachedDataNotice(isFromCache: snapshot.isFromCache);
             }
-            final caseRecord = cases[index - 1];
+            final entry = entries[index - 1];
+            final caseRecord = entry.record;
             return Card(
               child: ListTile(
                 title: Text(caseRecord.demoName),
-                subtitle: Text(
-                  'Age ${caseRecord.age} · ${caseRecord.caseStatus.firestoreValue}\n'
-                  'Registered ${dateFmt.format(caseRecord.registeredAt)} · '
-                  'Report: ${caseRecord.reportStatus.firestoreValue}',
-                ),
+                subtitle: CaseListTileSubtitle(entry: entry),
                 isThreeLine: true,
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.push(

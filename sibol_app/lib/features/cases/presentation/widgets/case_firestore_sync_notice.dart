@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sibol_app/features/cases/domain/case_presentation_labels.dart';
 
 class CaseFirestoreSyncNotice extends StatelessWidget {
   const CaseFirestoreSyncNotice({
@@ -12,17 +13,12 @@ class CaseFirestoreSyncNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!isFromCache && !hasPendingWrites) {
+    final syncLabel = CasePresentationLabels.synchronizationStatus(
+      isFromCache: isFromCache,
+      hasPendingWrites: hasPendingWrites,
+    );
+    if (syncLabel == null || syncLabel == 'Server confirmed') {
       return const SizedBox.shrink();
-    }
-    final messages = <String>[];
-    if (isFromCache) {
-      messages.add('Showing cached case data — reconnect to refresh from the server.');
-    }
-    if (hasPendingWrites) {
-      messages.add(
-        'Local changes are saved on this device and will sync when online.',
-      );
     }
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -42,7 +38,7 @@ class CaseFirestoreSyncNotice extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  messages.join(' '),
+                  syncLabel,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),

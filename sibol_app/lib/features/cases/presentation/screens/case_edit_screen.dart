@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
+import 'package:sibol_app/features/cases/domain/case_presentation_labels.dart';
 import 'package:sibol_app/features/cases/domain/case_status.dart';
 import 'package:sibol_app/features/cases/domain/case_validation.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
@@ -37,6 +38,7 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
   CaseRecord? _existing;
   String? _formError;
   bool _saving = false;
+  String? _createCaseDocumentId;
 
   @override
   void dispose() {
@@ -84,8 +86,10 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
       if (orgId == null) {
         throw StateError('Organization context is not available for case create.');
       }
+      final caseId = _createCaseDocumentId ??=
+          ref.read(caseRepositoryProvider).newCaseDocumentId();
       return CaseRecord(
-        caseId: '',
+        caseId: caseId,
         demoName: _demoNameController.text.trim(),
         age: age,
         barangay: barangayLabel.trim(),
@@ -130,9 +134,11 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
         final id = await repo.createCase(record);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                'Case saved on this device. Server confirmation happens when online.',
+                CasePresentationLabels.saveConfirmationSnackbar(
+                  hasPendingWritesHint: true,
+                ),
               ),
             ),
           );
@@ -142,9 +148,11 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
         await repo.updateCase(record);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                'Changes saved on this device. They will sync when online.',
+                CasePresentationLabels.saveConfirmationSnackbar(
+                  hasPendingWritesHint: true,
+                ),
               ),
             ),
           );

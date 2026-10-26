@@ -10,6 +10,7 @@ import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/domain/entities/auth_user.dart';
 import 'package:sibol_app/features/auth/domain/entities/user_profile.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:sibol_app/features/cases/domain/entities/case_list_entry.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up_timeline_entry.dart';
@@ -50,7 +51,7 @@ void main() {
 
   testWidgets('dashboard cache warning clears on metadata-only transition', (tester) async {
     final record = sampleCaseRecord();
-    final controller = StreamController<FirestoreListSnapshot<CaseRecord>>();
+    final controller = StreamController<FirestoreListSnapshot<CaseListEntry>>();
     const uid = 'barangay-case-list-uid';
 
     tester.view.physicalSize = const Size(800, 1200);
@@ -101,11 +102,25 @@ void main() {
       ),
     );
 
-    controller.add(FirestoreListSnapshot(items: [record], isFromCache: true));
+    controller.add(
+      FirestoreListSnapshot(
+        items: [
+          CaseListEntry(record: record, isFromCache: true, hasPendingWrites: false),
+        ],
+        isFromCache: true,
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.textContaining('server snapshot'), findsOneWidget);
 
-    controller.add(FirestoreListSnapshot(items: [record], isFromCache: false));
+    controller.add(
+      FirestoreListSnapshot(
+        items: [
+          CaseListEntry(record: record, isFromCache: false, hasPendingWrites: false),
+        ],
+        isFromCache: false,
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.textContaining('server snapshot'), findsNothing);
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:intl/intl.dart';
+import 'package:sibol_app/features/cases/domain/case_presentation_labels.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/presentation/providers/case_providers.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
@@ -94,6 +95,11 @@ class CaseDetailScreen extends ConsumerWidget {
     );
     if (notes == null || !context.mounted) return;
     final now = DateTime.now().toUtc();
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const Center(child: CircularProgressIndicator()),
+    );
     try {
       final repo = ref.read(caseRepositoryProvider);
       await repo.createFollowUp(
@@ -108,16 +114,20 @@ class CaseDetailScreen extends ConsumerWidget {
         createdByUid: uid,
       );
       if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'Follow-up saved on this device. It will sync when online.',
+              CasePresentationLabels.saveConfirmationSnackbar(
+                hasPendingWritesHint: true,
+              ),
             ),
           ),
         );
       }
     } catch (e) {
       if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Could not save follow-up: $e')),
         );
@@ -165,12 +175,24 @@ class CaseDetailBody extends StatelessWidget {
         _DetailTile(label: 'Barangay', value: _orDash(record.barangay)),
         _DetailTile(
           label: 'Case status',
-          value: record.caseStatus.firestoreValue,
+          value: CasePresentationLabels.lifecycleStatus(record.caseStatus),
         ),
         _DetailTile(
-          label: 'Report status',
-          value: record.reportStatus.firestoreValue,
+          label: 'Aggregate report',
+          value: CasePresentationLabels.aggregateReportInclusion(
+            record.reportStatus,
+          ),
         ),
+        () {
+          final syncLabel = CasePresentationLabels.synchronizationStatus(
+            isFromCache: isFromCache,
+            hasPendingWrites: hasPendingWrites,
+          );
+          if (syncLabel == null || syncLabel == 'Server confirmed') {
+            return const SizedBox.shrink();
+          }
+          return _DetailTile(label: 'Synchronization', value: syncLabel);
+        }(),
         _DetailTile(
           label: 'Registered',
           value: dateFmt.format(record.registeredAt),

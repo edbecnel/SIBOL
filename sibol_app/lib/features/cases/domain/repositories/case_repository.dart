@@ -1,11 +1,15 @@
 import 'package:sibol_app/core/domain/firestore_document_snapshot.dart';
 import 'package:sibol_app/core/domain/firestore_list_snapshot.dart';
+import 'package:sibol_app/features/cases/domain/entities/case_list_entry.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up_timeline_entry.dart';
 
 abstract class CaseRepository {
-  Stream<FirestoreListSnapshot<CaseRecord>> watchCasesForOrg(String orgId);
+  Stream<FirestoreListSnapshot<CaseListEntry>> watchCasesForOrg(String orgId);
+
+  /// Stable id for a new case document (allocate once per create screen session).
+  String newCaseDocumentId();
 
   Future<List<CaseRecord>> fetchCasesForOrg(String orgId);
 

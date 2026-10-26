@@ -86,7 +86,7 @@ final barangayReportAggregateProvider =
         error: (e, st) => AsyncError(e, st),
         data: (snapshot) => AsyncData(
           computeBarangayReportAggregate(
-            cases: snapshot.items,
+            cases: snapshot.items.map((e) => e.record).toList(),
             orgId: orgId,
             barangay: presentation.siteLabel,
           ),
