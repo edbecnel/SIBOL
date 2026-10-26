@@ -4,7 +4,7 @@ import 'package:sibol_app/features/geo/data/psgc_bundle.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('official bundle includes Barangay Tres acceptance chain', () async {
+  test('official bundle includes Barangay 3 (Poblacion) acceptance chain', () async {
     final bundle = await PsgcBundle.load(version: 'psgc-psa-2025-2q');
     expect(bundle.synthetic, isFalse);
 

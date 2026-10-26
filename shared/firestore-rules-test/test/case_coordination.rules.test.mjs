@@ -28,7 +28,7 @@ const barangayUid2 = "barangay-user-2";
 const teenUid = "teen-user-1";
 const teenUid2 = "teen-user-2";
 const mophUid = "moph-user-1";
-const site = "Barangay Tres, Balingasag";
+const site = "Barangay 3, Balingasag";
 const otherSite = "Other Demo Barangay";
 
 const threadId = "coord-thread-1";

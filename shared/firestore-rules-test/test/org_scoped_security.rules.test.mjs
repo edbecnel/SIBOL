@@ -25,7 +25,7 @@ const projectId = "demo-sibol-rules-m2-matrix";
 const barangayUid = "barangayStaffUid123456789012";
 const inactiveUid = "inactiveBarangayUid1234567890";
 const centralAdminUid = "centralAdminUid1234567890123";
-const DEMO_BARANGAY = "Barangay Tres, Balingasag";
+const DEMO_BARANGAY = "Barangay 3, Balingasag";
 
 let testEnv;
 

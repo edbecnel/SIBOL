@@ -13,7 +13,7 @@ CaseRecord sampleCaseRecord({
     demoName: demoName,
     age: 17,
     barangay: 'Demo Barangay',
-    orgId: DemoOrgConstants.barangayTresOrgId,
+    orgId: DemoOrgConstants.barangay03OrgId,
     caseStatus: CaseStatus.active,
     registeredAt: registered,
     nextFollowUpAt: DateTime(2026, 4, 1, 10),

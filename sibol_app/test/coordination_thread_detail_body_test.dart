@@ -17,7 +17,7 @@ void main() {
     final thread = CoordinationThread(
       threadId: 'thread-1',
       orgId: 'barangay03',
-      barangay: 'Barangay Tres, Balingasag',
+      barangay: 'Barangay 3, Balingasag',
       displayRef: 'SIBOL-REF-DEMO12345678',
       category: AssistanceRequestCategory.generalSupport,
       barangayReferralSummary: 'Fictional coordination summary for MOPH.',

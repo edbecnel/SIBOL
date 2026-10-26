@@ -55,7 +55,7 @@ void main() {
           ),
           caseRepositoryProvider.overrideWithValue(repo),
           barangayCaseOrgIdProvider.overrideWithValue(
-            DemoOrgConstants.barangayTresOrgId,
+            DemoOrgConstants.barangay03OrgId,
           ),
         ],
         child: MaterialApp.router(routerConfig: router),

@@ -25,7 +25,7 @@ void main() {
         caseId: 'x',
         demoName: 'Ana Demo',
         age: 16,
-        barangay: 'Barangay Tres',
+        barangay: 'Barangay 3, Balingasag',
         orgId: 'barangay03',
         caseStatus: CaseStatus.active,
         registeredAt: DateTime(2026, 10, 1),

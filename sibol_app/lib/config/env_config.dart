@@ -7,10 +7,23 @@ abstract final class EnvConfig {
 
   static bool get isDevelopment => environment == 'development';
 
-  static bool get useEmulators => const bool.fromEnvironment(
-        'USE_FIREBASE_EMULATORS',
-        defaultValue: false,
-      );
+  /// Explicit override via `--dart-define=USE_FIREBASE_EMULATORS=true|false`.
+  /// When unset, development builds use local emulators; staging/production do not.
+  static const String _useFirebaseEmulatorsDefine = String.fromEnvironment(
+    'USE_FIREBASE_EMULATORS',
+    defaultValue: '',
+  );
+
+  static bool get useEmulators {
+    switch (_useFirebaseEmulatorsDefine) {
+      case 'true':
+        return true;
+      case 'false':
+        return false;
+      default:
+        return isDevelopment;
+    }
+  }
 
   /// When `true`, Firestore allows barangay registry reads for missing docs
   /// (rules in repo; deploy pending). When `false` (default), the app maps

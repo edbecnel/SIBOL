@@ -50,7 +50,7 @@ export async function seedMembership(db, orgId, uid, capabilities, status = "act
 
 /** Seeds organizations and memberships for M2 rules tests (users must already exist). */
 export async function setupM2DemoAuth(db, options = {}) {
-  const site = options.site ?? "Barangay Tres, Balingasag";
+  const site = options.site ?? "Barangay 3, Balingasag";
   const otherSite = options.otherSite ?? "Other Demo Barangay";
   await seedOrganization(db, ORG_BARANGAY_DEMO, { name: site, type: "barangay" });
   await seedOrganization(db, ORG_BARANGAY_OTHER, { name: otherSite, type: "barangay" });

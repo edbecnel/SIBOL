@@ -26,7 +26,7 @@ const teenUid = "teen-user-1";
 const teenUid2 = "teen-user-2";
 const barangayUid = "barangay-user-1";
 const barangayUidOther = "barangay-user-2";
-const DEMO_BARANGAY = "Barangay Tres, Balingasag";
+const DEMO_BARANGAY = "Barangay 3, Balingasag";
 const OTHER_BARANGAY = "Other Demo Barangay";
 
 let testEnv;

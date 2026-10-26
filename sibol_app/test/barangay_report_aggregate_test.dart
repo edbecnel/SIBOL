@@ -31,7 +31,7 @@ void main() {
     const orgId = 'barangay03';
     const reportingLabel = 'Barangay 3, Balingasag';
     final cases = [
-      caseAt('1', 'Barangay Tres, Balingasag', CaseStatus.active),
+      caseAt('1', 'Barangay 3, Balingasag', CaseStatus.active),
       caseAt('2', 'Barangay 3, Balingasag', CaseStatus.followUpScheduled),
       caseAt('3', 'Other site', CaseStatus.closed, orgId: 'other'),
     ];

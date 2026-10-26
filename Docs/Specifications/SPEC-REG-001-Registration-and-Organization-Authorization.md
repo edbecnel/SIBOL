@@ -184,7 +184,7 @@ All privileged mutations are **server-authoritative** ([ADR-REG-002](../Architec
 
 ### 11.1 Demonstration data
 
-- Canonical demo label: `Barangay Tres, Balingasag` ([`shared/provisioning/src/constants.mjs`](../../shared/provisioning/src/constants.mjs)).
+- Canonical demo site label: `Barangay 3, Balingasag`; organization display name: `Barangay 3 (Poblacion)` ([`shared/provisioning/src/constants.mjs`](../../shared/provisioning/src/constants.mjs)).
 - Fields: `users.assignedBarangay`, `cases.barangay`, `teenAssistanceRequests.barangay`, `reports.barangay`, coordination `barangay` strings.
 
 ### 11.2 Migration strategy (proposed — not authorized)

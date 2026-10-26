@@ -20,7 +20,7 @@ void main() {
     displayName: 'Barangay Demo',
     active: true,
     createdAt: DateTime.utc(2026, 1, 1),
-    assignedBarangay: 'Barangay Tres, Balingasag',
+    assignedBarangay: 'Barangay 3, Balingasag',
   );
 
   CoordinationThread sampleThread() {
@@ -28,7 +28,7 @@ void main() {
     return CoordinationThread(
       threadId: 'thread-1',
       orgId: 'barangay03',
-      barangay: 'Barangay Tres, Balingasag',
+      barangay: 'Barangay 3, Balingasag',
       displayRef: 'SIBOL-REF-DEMO12345678',
       category: AssistanceRequestCategory.healthInformation,
       barangayReferralSummary: 'Fictional summary.',
@@ -48,7 +48,7 @@ void main() {
         userProfileProvider.overrideWith((ref) => Stream.value(profile)),
         coordinationRepositoryProvider.overrideWithValue(repo),
         barangayCoordinationOrgIdProvider.overrideWithValue(
-          DemoOrgConstants.barangayTresOrgId,
+          DemoOrgConstants.barangay03OrgId,
         ),
       ],
       child: const MaterialApp(

@@ -28,7 +28,7 @@ const barangayUid = "barangay-user-1";
 const barangayUid2 = "barangay-user-2";
 const teenUid = "teen-user-1";
 const mophUid = "moph-user-1";
-const site = "Barangay Tres, Balingasag";
+const site = "Barangay 3, Balingasag";
 const otherSite = "Other Demo Barangay";
 
 let testEnv;

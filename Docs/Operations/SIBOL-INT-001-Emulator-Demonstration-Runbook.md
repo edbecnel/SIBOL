@@ -116,7 +116,7 @@ cd shared/provisioning && npm run seed:emulator -- --dry-run --confirm-emulator-
 
 | Org ID | Type | Name |
 |--------|------|------|
-| `barangay03` | Barangay | Barangay Tres |
+| `barangay03` | Barangay | Barangay 3 (Poblacion) |
 | `hospital01` | Hospital | Misamis Oriental Provincial Hospital |
 
 ### Demonstration accounts (fictional emails)
@@ -147,7 +147,7 @@ flutter run -d <device-id> \
   --dart-define=SIBOL_COORD_REGISTRY_RULES_V2=true
 ```
 
-**Critical:** Without `USE_FIREBASE_EMULATORS=true`, the app talks to **production** Firebase (`sibol-286d0`). Emulator demos will fail or hit live data.
+**Critical:** In `ENVIRONMENT=development` (default), the app uses local emulators unless `--dart-define=USE_FIREBASE_EMULATORS=false`. Staging/production builds talk to hosted Firebase (`sibol-286d0`) and emulator demos will fail or hit live data.
 
 Emulator ports in demonstration mode match §2 (`EmulatorConfig` in `sibol_app/lib/config/emulator_config.dart`).
 
