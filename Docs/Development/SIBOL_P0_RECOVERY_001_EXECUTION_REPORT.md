@@ -8,7 +8,7 @@
 | | SHA |
 |--|-----|
 | Starting HEAD | `4833c5b92cf4b511b371c1f8f3054eb46f465df5` |
-| Ending HEAD | _(see commit below after push)_ |
+| Ending HEAD | `da728a3` |
 
 ## Root causes
 
@@ -81,4 +81,5 @@ No `firebase emulators:start --import` from closure. No `seed:emulator` Auth rew
 
 ## Commits and push
 
-_(filled after commit/push)_
+- `da728a3` — `fix(recovery): emulator defaults, Barangay 3 naming, P0 repair`
+- Push: `origin/main` _(see git status after push)_
