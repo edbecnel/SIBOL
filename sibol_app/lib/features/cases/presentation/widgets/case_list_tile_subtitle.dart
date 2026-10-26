@@ -17,12 +17,12 @@ class CaseListTileSubtitle extends StatelessWidget {
       isFromCache: entry.isFromCache,
       hasPendingWrites: entry.hasPendingWrites,
     );
-    final contactHint = CaseIdentityPresentation.listContactHint(record);
+    final contactLine = CaseIdentityPresentation.listCardContactLine(record);
     final lines = <String>[
       '${CaseIdentityPresentation.subjectClassificationLabel(record)} · '
           'Age ${record.effectiveAge}',
       CasePresentationLabels.lifecycleStatus(record.caseStatus),
-      if (contactHint != null) contactHint,
+      contactLine,
       'Case opened ${dateFmt.format(record.registeredAt)}',
       CaseIdentityPresentation.completenessLabel(record),
       CasePresentationLabels.aggregateReportInclusion(record.reportStatus),

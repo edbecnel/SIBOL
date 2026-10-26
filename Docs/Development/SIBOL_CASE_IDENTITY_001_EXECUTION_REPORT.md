@@ -146,6 +146,16 @@ Do not claim full table in §6 Android checklist as PASS until PO re-authenticat
 
 **QA preservation:** `cases/fhcQrLxE0IhwPFzCPinH` notes and `demoName` unchanged after walkthrough.
 
+### Case card contact display (2026-10-26, handover `8a4e6b92-…`)
+
+**Defect:** Dashboard case cards hid contact email even when Case details showed it (e.g. Maria Offline Test after PO added `contactEmail`).
+
+**Expected:** On list cards only — `Email: …` if nonblank email; else `Phone: …`; else `Contact: Not provided` (trimmed; email wins when both). Drafts keep “Contact details required before activation”. Detail screen unchanged.
+
+**Implementation:** `CaseIdentityPresentation.listCardContactLine` replaces opaque `listContactHint`; `CaseListTileSubtitle` always includes the contact line.
+
+**Verification:** `flutter test test/case_identity_presentation_test.dart` — **8/8 PASS**; `flutter analyze` on touched files — clean. **Android:** no hot-reload session attached to running debug app (`flutter attach` did not connect); device check deferred to next `flutter run` / PO refresh — logic covered by widget test using `maria.offline@test.org`.
+
 ## Limitations
 
 - Legacy follow-ups without staff snapshots still show UID fallback.

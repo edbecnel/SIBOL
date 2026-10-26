@@ -23,27 +23,19 @@ class CaseIdentityPresentation {
     }
   }
 
-  static String? listContactHint(CaseRecord record) {
+  /// Contact line on Barangay dashboard case cards (detail screen shows all fields).
+  static String listCardContactLine(CaseRecord record) {
     if (record.completeness == CaseCompleteness.draft) {
       return 'Contact details required before activation';
     }
-    final hasEmail =
-        record.contactEmail != null && record.contactEmail!.trim().isNotEmpty;
-    final hasPhone =
-        record.contactPhone != null && record.contactPhone!.trim().isNotEmpty;
-    if (CaseSubjectKind.resolveStored(record.subjectKind?.firestoreValue) ==
-        CaseSubjectKind.registered) {
-      if (record.linkedAccountEmail != null &&
-          record.linkedAccountEmail!.trim().isNotEmpty) {
-        return record.linkedAccountEmail!.trim();
-      }
-      if (hasPhone && !hasEmail) {
-        return 'Phone contact on file — see details';
-      }
+    final email = record.contactEmail?.trim();
+    if (email != null && email.isNotEmpty) {
+      return 'Email: $email';
     }
-    if (hasEmail || hasPhone) {
-      return 'Contact on file — see details';
+    final phone = record.contactPhone?.trim();
+    if (phone != null && phone.isNotEmpty) {
+      return 'Phone: $phone';
     }
-    return null;
+    return 'Contact: Not provided';
   }
 }
