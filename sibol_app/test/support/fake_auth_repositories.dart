@@ -47,6 +47,9 @@ class FakeAuthRepository implements AuthRepository {
     required String newPassword,
   }) =>
       throw UnimplementedError();
+
+  @override
+  Future<void> acknowledgeMandatoryPasswordChange() async {}
 }
 
 class FakeUserProfileRepository implements UserProfileRepository {
@@ -112,4 +115,7 @@ class RetryableAuthRepository implements AuthRepository {
     required String newPassword,
   }) =>
       throw UnimplementedError();
+
+  @override
+  Future<void> acknowledgeMandatoryPasswordChange() async {}
 }

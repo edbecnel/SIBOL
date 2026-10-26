@@ -1,6 +1,7 @@
 import { after, before, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { initializeApp, deleteApp, getApps } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
 import { AuthzError } from "../lib/authz/assert.js";
 import {
@@ -35,6 +36,7 @@ const staffEmail = "staff.member@sibol.local";
 const backupAdminEmail = "backup.admin@sibol.local";
 
 let db;
+let auth;
 let orgId;
 
 function expectDenied(fn, code) {
@@ -81,6 +83,7 @@ before(async () => {
     initializeApp({ projectId });
   }
   db = getFirestore();
+  auth = getAuth();
   await seedUser(centralUid, { role: "barangay", isCentralAdmin: true });
   await seedUser(orgAdminUid, { role: "barangay" });
   await seedUser(staffUid, { role: "barangay" });
@@ -123,7 +126,9 @@ describe("REG-B admin operations", () => {
   });
 
   it("allows org admin to list memberships in own org", async () => {
-    const result = await runListOrganizationMemberships(db, orgAdminUid, { orgId });
+    const result = await runListOrganizationMemberships(db, auth, orgAdminUid, {
+      orgId,
+    });
     assert.ok(result.memberships.length >= 1);
   });
 
@@ -134,7 +139,10 @@ describe("REG-B admin operations", () => {
       initialOrgAdminEmail: backupAdminEmail,
     });
     await expectDenied(
-      () => runListOrganizationMemberships(db, orgAdminUid, { orgId: other.orgId }),
+      () =>
+        runListOrganizationMemberships(db, auth, orgAdminUid, {
+          orgId: other.orgId,
+        }),
       "permission-denied",
     );
   });

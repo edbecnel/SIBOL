@@ -25,6 +25,8 @@ import {
   runSuspendMembership,
   runUpdateMembershipCapabilities,
   runProvisionStaffMember,
+  runResetStaffMemberPassword,
+  runAcknowledgeMandatoryPasswordChange,
 } from "./admin/exportHandlers";
 import { runCreateCoordinationReferral } from "./coordination/createCoordinationReferral";
 import {
@@ -115,7 +117,8 @@ export const regSetOrganizationStatus = adminCallable((db, uid, _email, data) =>
   runSetOrganizationStatus(db, uid, data),
 );
 export const regListOrganizationMemberships = adminCallable(
-  (db, uid, _email, data) => runListOrganizationMemberships(db, uid, data),
+  (db, uid, _email, data) =>
+    runListOrganizationMemberships(db, admin.auth(), uid, data),
 );
 export const regAppointOrganizationAdmin = adminCallable((db, uid, _email, data) =>
   runAppointOrganizationAdmin(db, uid, data),
@@ -152,6 +155,14 @@ export const regRevokeInvitation = adminCallable((db, uid, _email, data) =>
 );
 export const regProvisionStaffMember = adminCallable((db, uid, _email, data) =>
   runProvisionStaffMember(db, admin.auth(), uid, data),
+);
+
+export const regResetStaffMemberPassword = adminCallable((db, uid, _email, data) =>
+  runResetStaffMemberPassword(db, admin.auth(), uid, data),
+);
+
+export const regAcknowledgeMandatoryPasswordChange = adminCallable((db, uid) =>
+  runAcknowledgeMandatoryPasswordChange(db, uid),
 );
 
 export const regListBarangayDirectory = onCall(async (request) => {

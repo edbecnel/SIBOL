@@ -1,6 +1,7 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
+import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/coordination/data/repositories/coordination_repository_impl.dart';
 import 'package:sibol_app/features/coordination/domain/entities/coordination_staff_event.dart';
@@ -19,15 +20,13 @@ final coordinationRepositoryProvider = Provider<CoordinationRepository>((ref) {
 });
 
 Stream<List<CoordinationThread>> _mophCoordinationThreadsStream(Ref ref) {
-  final access = ref.watch(mophOperationalContextProvider);
-  if (access.isLoading) {
+  final profileAsync = ref.watch(userProfileProvider);
+  final membershipsAsync = ref.watch(accountMembershipsProvider);
+  if (profileAsync.isLoading || membershipsAsync.isLoading) {
     return const Stream<List<CoordinationThread>>.empty();
   }
-  if (access.hasError) {
-    return Stream<List<CoordinationThread>>.error(
-      access.error!,
-      access.stackTrace ?? StackTrace.empty,
-    );
+  if (ref.watch(mophHospitalOrgIdProvider) == null) {
+    return Stream.value(const []);
   }
   return ref.watch(coordinationRepositoryProvider).watchOpenThreadsForMoph();
 }
@@ -38,15 +37,13 @@ final mophCoordinationThreadsProvider =
 });
 
 Stream<CoordinationThread?> _mophCoordinationThreadStream(Ref ref, String threadId) {
-  final access = ref.watch(mophOperationalContextProvider);
-  if (access.isLoading) {
+  final profileAsync = ref.watch(userProfileProvider);
+  final membershipsAsync = ref.watch(accountMembershipsProvider);
+  if (profileAsync.isLoading || membershipsAsync.isLoading) {
     return const Stream<CoordinationThread?>.empty();
   }
-  if (access.hasError) {
-    return Stream<CoordinationThread?>.error(
-      access.error!,
-      access.stackTrace ?? StackTrace.empty,
-    );
+  if (ref.watch(mophHospitalOrgIdProvider) == null) {
+    return Stream.value(null);
   }
   return ref.watch(coordinationRepositoryProvider).watchThreadForMoph(threadId);
 }
@@ -59,15 +56,13 @@ final mophCoordinationThreadProvider =
 final mophCoordinationStaffEventsProvider =
     StreamProvider.family<List<CoordinationStaffEvent>, String>(
   (ref, threadId) {
-    final access = ref.watch(mophOperationalContextProvider);
-    if (access.isLoading) {
+    final profileAsync = ref.watch(userProfileProvider);
+    final membershipsAsync = ref.watch(accountMembershipsProvider);
+    if (profileAsync.isLoading || membershipsAsync.isLoading) {
       return const Stream<List<CoordinationStaffEvent>>.empty();
     }
-    if (access.hasError) {
-      return Stream<List<CoordinationStaffEvent>>.error(
-        access.error!,
-        access.stackTrace ?? StackTrace.empty,
-      );
+    if (ref.watch(mophHospitalOrgIdProvider) == null) {
+      return Stream.value(const []);
     }
     return ref
         .watch(coordinationRepositoryProvider)

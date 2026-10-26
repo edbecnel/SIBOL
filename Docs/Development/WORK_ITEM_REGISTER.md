@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-26 (SIBOL-REG-001 direct provisioning)  
+> **Last updated:** 2026-10-26 (SIBOL-REG-001 REG-FIX manual QA corrections)  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -38,7 +38,7 @@
 | SIBOL-OFFLINE-QA-001 | Offline emulator checkpoint (O1–O5) | **Closed** | [OFFLINE QA execution](SIBOL_OFFLINE_QA_001_EXECUTION_REPORT.md), [Recovery](../Operations/SIBOL_OFFLINE_QA_001_EMULATOR_RECOVERY.md) |
 | SIBOL-OFFLINE-QA-CLOSE-001 | Offline QA closure + prototype baseline tag | **Closed** @ tag `sibol-prototype-2026-10-26-offline-qa` | [OFFLINE QA execution](SIBOL_OFFLINE_QA_001_EXECUTION_REPORT.md) |
 | SIBOL-OFFLINE-REQ-001 | Cancel pending offline submission (draft) | **Deferred — NOT APPROVED** | [Deferred enhancement](SIBOL_OFFLINE_REQ_001_DEFERRED_ENHANCEMENT.md) |
-| SIBOL-REG-001 | Direct staff provisioning + change password (prototype) | **Complete** (emulator; no prod deploy) | [Direct provisioning report](SIBOL_REG_001_DIRECT_PROVISIONING_EXECUTION_REPORT.md) |
+| SIBOL-REG-001 | Direct staff provisioning + change password (prototype) | **REG-FIX implemented** — PA manual QA pending (emulator; no prod deploy) | [Direct provisioning report](SIBOL_REG_001_DIRECT_PROVISIONING_EXECUTION_REPORT.md) |
 
 ## Prototype development boundary
 

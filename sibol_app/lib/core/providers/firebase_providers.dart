@@ -24,7 +24,10 @@ final firebaseFunctionsProvider = Provider<FirebaseFunctions>((ref) {
 });
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepositoryImpl(ref.watch(firebaseAuthProvider));
+  return AuthRepositoryImpl(
+    ref.watch(firebaseAuthProvider),
+    ref.watch(firebaseFunctionsProvider),
+  );
 });
 
 final userProfileRepositoryProvider = Provider<UserProfileRepository>((ref) {

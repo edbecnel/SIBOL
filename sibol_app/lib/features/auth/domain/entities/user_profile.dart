@@ -13,6 +13,7 @@ class UserProfile extends Equatable {
     this.selectedBarangayOrgId,
     this.isCentralAdmin = false,
     this.onboardingStatus,
+    this.mustChangePassword = false,
   });
 
   final String uid;
@@ -36,6 +37,9 @@ class UserProfile extends Equatable {
   /// Server-controlled teen onboarding gate (`complete`, `pending_email_verification`, …).
   final String? onboardingStatus;
 
+  /// Server-controlled; requires password change before operational use.
+  final bool mustChangePassword;
+
   bool get teenAssistanceAllowed {
     if (role != SibolRole.teen) return true;
     if (selectedBarangayOrgId == null || selectedBarangayOrgId!.isEmpty) {
@@ -57,5 +61,6 @@ class UserProfile extends Equatable {
         selectedBarangayOrgId,
         isCentralAdmin,
         onboardingStatus,
+        mustChangePassword,
       ];
 }

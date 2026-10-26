@@ -148,18 +148,24 @@ void main() {
     expect(find.textContaining('permission-denied'), findsNothing);
   });
 
-  testWidgets('management-only MOPH admin shows authorization error, not loading',
+  testWidgets('management-only MOPH admin sees administration without coordination data',
       (tester) async {
     await pumpDashboard(
       tester,
       profile: _mophProfile(primaryOrgId: _hospitalOrgId),
       memberships: [
-        _hospitalMembership([OrgCapabilities.orgManageMembers]),
+        _hospitalMembership([
+          OrgCapabilities.orgManageMembers,
+          OrgCapabilities.orgManageRoles,
+        ]),
       ],
     );
 
+    expect(find.text('Organization administration'), findsOneWidget);
+    expect(find.text('Staff management'), findsOneWidget);
     expect(find.textContaining('coordination.hospital'), findsOneWidget);
-    expect(find.textContaining('Loading coordinations'), findsNothing);
+    expect(find.text('SIBOL-REF-DEMO'), findsNothing);
+    expect(find.textContaining('Bad state'), findsNothing);
   });
 
   test('membershipListenOrgIdForStaff uses pilot hospital when primaryOrgId missing',

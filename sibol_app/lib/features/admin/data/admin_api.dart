@@ -1,4 +1,15 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:sibol_app/features/org/domain/entities/organization.dart';
+
+class OrganizationStaffDirectory {
+  OrganizationStaffDirectory({
+    required this.organizationType,
+    required this.memberships,
+  });
+
+  final OrganizationType organizationType;
+  final List<Map<String, dynamic>> memberships;
+}
 
 class AdminApi {
   AdminApi(this._functions);
@@ -96,13 +107,34 @@ class AdminApi {
     });
   }
 
-  Future<List<Map<String, dynamic>>> listMemberships(String orgId) async {
+  Future<OrganizationStaffDirectory> listMemberships(String orgId) async {
     final result =
         await _functions.httpsCallable('regListOrganizationMemberships').call({
       'orgId': orgId,
     });
-    final list = (result.data as Map)['memberships'] as List<dynamic>? ?? [];
-    return list.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+    final data = Map<String, dynamic>.from(result.data as Map);
+    final orgTypeRaw = data['organizationType'] as String? ?? 'barangay';
+    final orgType = orgTypeRaw == 'hospital'
+        ? OrganizationType.hospital
+        : OrganizationType.barangay;
+    final list = data['memberships'] as List<dynamic>? ?? [];
+    return OrganizationStaffDirectory(
+      organizationType: orgType,
+      memberships:
+          list.map((e) => Map<String, dynamic>.from(e as Map)).toList(),
+    );
+  }
+
+  Future<void> resetStaffMemberPassword({
+    required String orgId,
+    required String targetAccountUid,
+    required String newPassword,
+  }) async {
+    await _functions.httpsCallable('regResetStaffMemberPassword').call({
+      'orgId': orgId,
+      'targetAccountUid': targetAccountUid,
+      'newPassword': newPassword,
+    });
   }
 
   Future<Map<String, dynamic>> appointOrganizationAdmin({

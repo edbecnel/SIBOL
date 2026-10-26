@@ -1,3 +1,4 @@
+import { Auth } from "firebase-admin/auth";
 import { FieldValue, Firestore, Timestamp } from "firebase-admin/firestore";
 import {
   assertActiveAccount,
@@ -213,6 +214,7 @@ export async function runSetOrganizationStatus(
 
 export async function runListOrganizationMemberships(
   db: Firestore,
+  auth: Auth,
   authUid: string | undefined,
   data: Record<string, unknown>,
 ) {
@@ -221,8 +223,40 @@ export async function runListOrganizationMemberships(
   assertActiveAccount(account);
   const orgId = assertNonEmptyString(data.orgId, "orgId");
   await assertCanManageOrg(db, uid, account, orgId);
+  const org = await loadOrganization(db, orgId);
+  const orgType = org.type === "hospital" ? "hospital" : "barangay";
   const memberships = await listMembershipsForOrg(db, orgId);
-  return { memberships };
+  const enriched = await Promise.all(
+    memberships.map(async (m) => {
+      const accountUid = m.accountUid ?? "";
+      let displayName = "";
+      let email = "";
+      if (accountUid.length > 0) {
+        try {
+          const userDoc = await loadAccount(db, accountUid);
+          displayName = userDoc.displayName?.trim() ?? "";
+        } catch {
+          displayName = "";
+        }
+        try {
+          const authUser = await auth.getUser(accountUid);
+          email = authUser.email?.trim() ?? "";
+        } catch {
+          email = "";
+        }
+      }
+      return {
+        membershipId: m.membershipId,
+        orgId: m.orgId,
+        accountUid,
+        status: m.status,
+        capabilities: m.capabilities ?? [],
+        displayName,
+        email,
+      };
+    }),
+  );
+  return { organizationType: orgType, memberships: enriched };
 }
 
 export async function runAppointOrganizationAdmin(

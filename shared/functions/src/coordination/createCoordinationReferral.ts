@@ -13,6 +13,8 @@ import {
   assertActiveMembership,
   assertActiveOrganization,
   assertCapability,
+  assertPasswordChangeNotRequired,
+  AuthzError,
 } from "../authz/assert";
 import { isValidOrgId, membershipIdFor } from "../authz/identifiers";
 
@@ -97,8 +99,16 @@ export async function runCreateCoordinationReferral(
     }
     try {
       assertActiveAccount(user);
-    } catch {
-      throw new HttpsError("permission-denied", "Account is not active.");
+      assertPasswordChangeNotRequired(user);
+    } catch (err) {
+      if (err instanceof HttpsError) throw err;
+      const message =
+        err instanceof Error ? err.message : "Account is not active.";
+      const code =
+        err instanceof AuthzError && err.code === "failed-precondition"
+          ? "failed-precondition"
+          : "permission-denied";
+      throw new HttpsError(code, message);
     }
 
     if (!assistanceSnap.exists) {

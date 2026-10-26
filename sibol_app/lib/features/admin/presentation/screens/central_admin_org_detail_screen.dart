@@ -33,7 +33,8 @@ class _CentralAdminOrgDetailScreenState
     });
     try {
       final api = ref.read(adminApiProvider);
-      _memberships = await api.listMemberships(widget.orgId);
+      final directory = await api.listMemberships(widget.orgId);
+      _memberships = directory.memberships;
     } catch (e) {
       _error = e.toString();
     } finally {

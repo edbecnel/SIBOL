@@ -19,3 +19,5 @@ export {
   runUpdateMembershipCapabilities,
 } from "./operations";
 export { runProvisionStaffMember } from "./provisionStaffMember";
+export { runResetStaffMemberPassword } from "./resetStaffMemberPassword";
+export { runAcknowledgeMandatoryPasswordChange } from "./acknowledgeMandatoryPasswordChange";

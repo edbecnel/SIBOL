@@ -13,15 +13,13 @@ final reportRepositoryProvider = Provider<ReportRepository>((ref) {
 });
 
 Stream<List<MophAggregateReport>> _mophSubmittedReportsStream(Ref ref) {
-  final access = ref.watch(mophOperationalContextProvider);
-  if (access.isLoading) {
+  final profileAsync = ref.watch(userProfileProvider);
+  final membershipsAsync = ref.watch(accountMembershipsProvider);
+  if (profileAsync.isLoading || membershipsAsync.isLoading) {
     return const Stream<List<MophAggregateReport>>.empty();
   }
-  if (access.hasError) {
-    return Stream<List<MophAggregateReport>>.error(
-      access.error!,
-      access.stackTrace ?? StackTrace.empty,
-    );
+  if (ref.watch(mophHospitalOrgIdProvider) == null) {
+    return Stream.value(const []);
   }
   return ref.watch(reportRepositoryProvider).watchSubmittedReportsForMoph();
 }
@@ -33,15 +31,13 @@ final mophSubmittedReportsProvider =
 
 final mophReportDetailProvider =
     StreamProvider.family<MophAggregateReport?, String>((ref, reportId) {
-  final access = ref.watch(mophOperationalContextProvider);
-  if (access.isLoading) {
+  final profileAsync = ref.watch(userProfileProvider);
+  final membershipsAsync = ref.watch(accountMembershipsProvider);
+  if (profileAsync.isLoading || membershipsAsync.isLoading) {
     return const Stream<MophAggregateReport?>.empty();
   }
-  if (access.hasError) {
-    return Stream<MophAggregateReport?>.error(
-      access.error!,
-      access.stackTrace ?? StackTrace.empty,
-    );
+  if (ref.watch(mophHospitalOrgIdProvider) == null) {
+    return Stream.value(null);
   }
   return ref.watch(reportRepositoryProvider).watchReportForMoph(reportId);
 });

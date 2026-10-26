@@ -3,9 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/features/admin/domain/org_staff_capability_options.dart';
 import 'package:sibol_app/features/admin/presentation/providers/admin_providers.dart';
 import 'package:sibol_app/features/org/domain/entities/organization.dart';
-import 'package:sibol_app/features/org/presentation/providers/organization_directory_providers.dart';
-import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/app_text_field.dart';
+import 'package:sibol_app/shared/widgets/persistent_success_dialog.dart';
 
 class OrgAdminStaffScreen extends ConsumerStatefulWidget {
   const OrgAdminStaffScreen({super.key, required this.orgId});
@@ -20,6 +19,7 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
   bool _loading = true;
   String? _error;
   List<Map<String, dynamic>> _memberships = [];
+  OrganizationType? _organizationType;
 
   @override
   void initState() {
@@ -33,8 +33,10 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
       _error = null;
     });
     try {
-      _memberships =
+      final directory =
           await ref.read(adminApiProvider).listMemberships(widget.orgId);
+      _memberships = directory.memberships;
+      _organizationType = directory.organizationType;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -42,13 +44,14 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
     }
   }
 
-  OrganizationType _orgTypeFromDirectory() {
-    final entry = ref.read(organizationDirectoryEntryProvider(widget.orgId)).value;
-    return entry?.type ?? OrganizationType.barangay;
-  }
+  OrganizationType? _resolvedOrgType() => _organizationType;
 
   Future<void> _addStaffMember() async {
-    final orgType = _orgTypeFromDirectory();
+    final orgType = _resolvedOrgType();
+    if (orgType == null) {
+      _showMessage('Organization context is still loading. Try again.');
+      return;
+    }
     final nameController = TextEditingController();
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
@@ -191,6 +194,140 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
+  String _staffTitle(Map<String, dynamic> membership) {
+    final name = (membership['displayName'] as String?)?.trim();
+    if (name != null && name.isNotEmpty) return name;
+    final email = (membership['email'] as String?)?.trim();
+    if (email != null && email.isNotEmpty) return email;
+    return membership['accountUid'] as String? ?? '—';
+  }
+
+  String _staffSubtitle(Map<String, dynamic> membership) {
+    final email = (membership['email'] as String?)?.trim() ?? '';
+    final status = membership['status'] as String? ?? '';
+    final caps = (membership['capabilities'] as List?)?.join(', ') ?? '';
+    final uid = membership['accountUid'] as String? ?? '';
+    final lines = <String>[
+      if (email.isNotEmpty) email,
+      '$status · $caps',
+      if (uid.isNotEmpty) 'UID: $uid',
+    ];
+    return lines.join('\n');
+  }
+
+  bool _canResetPassword(Map<String, dynamic> membership) {
+    if (membership['status'] != 'active') return false;
+    final caps = (membership['capabilities'] as List?)?.cast<String>() ?? [];
+    final isAdmin = caps.contains('org.manage_members') &&
+        caps.contains('org.manage_roles');
+    return !isAdmin;
+  }
+
+  Future<void> _resetPassword(Map<String, dynamic> membership) async {
+    final accountUid = membership['accountUid'] as String? ?? '';
+    if (accountUid.isEmpty) return;
+    final displayName = _staffTitle(membership);
+    final email = (membership['email'] as String?)?.trim() ?? accountUid;
+
+    final passwordController = TextEditingController();
+    final confirmController = TextEditingController();
+    var submitting = false;
+
+    final proceed = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setLocal) => AlertDialog(
+          title: const Text('Reset password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('Staff member: $displayName'),
+              Text('Email: $email'),
+              const SizedBox(height: 12),
+              AppTextField(
+                controller: passwordController,
+                label: 'Temporary password',
+                isPassword: true,
+              ),
+              const SizedBox(height: 8),
+              AppTextField(
+                controller: confirmController,
+                label: 'Confirm temporary password',
+                isPassword: true,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: submitting ? null : () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: submitting
+                  ? null
+                  : () => Navigator.pop(context, true),
+              child: const Text('Continue'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (proceed != true) return;
+
+    final password = passwordController.text;
+    final confirm = confirmController.text;
+    if (password.length < 8) {
+      _showMessage('Temporary password must be at least 8 characters.');
+      return;
+    }
+    if (password != confirm) {
+      _showMessage('Passwords do not match.');
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm password reset'),
+        content: Text(
+          'Reset the password for $displayName ($email)? '
+          'The staff member must change this password at next sign-in.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Reset password'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await ref.read(adminApiProvider).resetStaffMemberPassword(
+            orgId: widget.orgId,
+            targetAccountUid: accountUid,
+            newPassword: password,
+          );
+      if (!mounted) return;
+      await showPersistentSuccessDialog(
+        context,
+        message:
+            'The staff password has been reset. Share the temporary password privately. '
+            'They must change it at next sign-in.',
+      );
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      _showMessage('$e');
+    }
+  }
+
   Future<void> _approve(String membershipId) async {
     try {
       await ref.read(adminApiProvider).approveMembership(membershipId);
@@ -202,7 +339,11 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
   }
 
   Future<void> _editCapabilities(Map<String, dynamic> membership) async {
-    final orgType = _orgTypeFromDirectory();
+    final orgType = _resolvedOrgType();
+    if (orgType == null) {
+      _showMessage('Organization context is still loading. Try again.');
+      return;
+    }
     final membershipId = membership['membershipId'] as String? ?? '';
     final current = (membership['capabilities'] as List?)?.cast<String>() ?? [];
     final allowed = OrgStaffCapabilityOptions.capabilitiesFor(orgType);
@@ -312,7 +453,7 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _addStaffMember,
+        onPressed: _organizationType == null ? null : _addStaffMember,
         icon: const Icon(Icons.person_add),
         label: const Text('Add staff'),
       ),
@@ -331,10 +472,9 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
                         final membershipId = m['membershipId'] as String? ?? '';
                         final status = m['status'] as String? ?? '';
                         return ListTile(
-                          title: Text(m['accountUid'] as String? ?? '—'),
-                          subtitle: Text(
-                            '$status · ${(m['capabilities'] as List?)?.join(', ') ?? ''}',
-                          ),
+                          title: Text(_staffTitle(m)),
+                          subtitle: Text(_staffSubtitle(m)),
+                          isThreeLine: true,
                           trailing: status == 'pending'
                               ? TextButton(
                                   onPressed: () => _approve(membershipId),
@@ -344,6 +484,11 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
                                   ? Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
+                                        if (_canResetPassword(m))
+                                          TextButton(
+                                            onPressed: () => _resetPassword(m),
+                                            child: const Text('Reset'),
+                                          ),
                                         TextButton(
                                           onPressed: () => _editCapabilities(m),
                                           child: const Text('Caps'),

@@ -13,6 +13,7 @@ import {
   connectFirestoreEmulator,
   getFirestore,
 } from "firebase/firestore";
+import { getAuth as getAdminAuth } from "firebase-admin/auth";
 import { runListOrganizations } from "../../functions/lib/admin/exportHandlers.js";
 import { runListOrganizationMemberships } from "../../functions/lib/admin/exportHandlers.js";
 import { runSubmitTeenAssistanceRequest } from "../../functions/lib/teen/exportHandlers.js";
@@ -58,9 +59,14 @@ describe("INT-001 scenarios A–F (automated smoke)", () => {
 
   it("Scenario B — organization administrator lists memberships", async () => {
     const db = getSmokeDb();
-    const { memberships } = await runListOrganizationMemberships(db, barangayOrgAdminUid, {
-      orgId: DEMO_BARANGAY_ORG_ID,
-    });
+    const { memberships } = await runListOrganizationMemberships(
+      db,
+      getAdminAuth(),
+      barangayOrgAdminUid,
+      {
+        orgId: DEMO_BARANGAY_ORG_ID,
+      },
+    );
     assert.ok(memberships.length >= 1);
   });
 

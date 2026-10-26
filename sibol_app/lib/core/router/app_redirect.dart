@@ -104,6 +104,11 @@ String? resolveAppRedirect({
     return Routes.unauthorized;
   }
 
+  if (profile.mustChangePassword) {
+    if (location == Routes.changePassword) return null;
+    return Routes.changePassword;
+  }
+
   final home = homeForProfile(profile);
   if (onLogin || onSplash || onWelcome || onAccountNotProvisioned) return home;
 

@@ -14,6 +14,7 @@ class UserProfileModel {
     this.selectedBarangayOrgId,
     this.isCentralAdmin = false,
     this.onboardingStatus,
+    this.mustChangePassword = false,
   });
 
   final String uid;
@@ -26,6 +27,7 @@ class UserProfileModel {
   final String? selectedBarangayOrgId;
   final bool isCentralAdmin;
   final String? onboardingStatus;
+  final bool mustChangePassword;
 
   factory UserProfileModel.fromFirestore(String uid, Map<String, dynamic> data) {
     final created = data['createdAt'];
@@ -40,6 +42,7 @@ class UserProfileModel {
       selectedBarangayOrgId: data['selectedBarangayOrgId'] as String?,
       isCentralAdmin: data['isCentralAdmin'] as bool? ?? false,
       onboardingStatus: data['onboardingStatus'] as String?,
+      mustChangePassword: data['mustChangePassword'] as bool? ?? false,
     );
   }
 
@@ -59,6 +62,7 @@ class UserProfileModel {
       selectedBarangayOrgId: selectedBarangayOrgId,
       isCentralAdmin: isCentralAdmin,
       onboardingStatus: onboardingStatus,
+      mustChangePassword: mustChangePassword,
     );
   }
 }

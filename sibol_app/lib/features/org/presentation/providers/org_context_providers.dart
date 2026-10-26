@@ -48,32 +48,6 @@ final accountMembershipsProvider =
       );
 });
 
-/// Hospital coordination context for MOPH dashboard queries (after profile + membership load).
-final mophOperationalContextProvider = Provider<AsyncValue<String>>((ref) {
-  final profileAsync = ref.watch(userProfileProvider);
-  final membershipsAsync = ref.watch(accountMembershipsProvider);
-  if (profileAsync.isLoading || membershipsAsync.isLoading) {
-    return const AsyncLoading();
-  }
-  if (profileAsync.hasError) {
-    return AsyncError(profileAsync.error!, profileAsync.stackTrace!);
-  }
-  if (membershipsAsync.hasError) {
-    return AsyncError(membershipsAsync.error!, membershipsAsync.stackTrace!);
-  }
-  final orgId = ref.watch(mophHospitalOrgIdProvider);
-  if (orgId == null) {
-    return AsyncError(
-      StateError(
-        'Your account is not authorized for hospital coordination. '
-        'Operational MOPH staff need the coordination.hospital capability.',
-      ),
-      StackTrace.current,
-    );
-  }
-  return AsyncData(orgId);
-});
-
 final barangayCaseOrgIdProvider = Provider<String?>((ref) {
   final profile = ref.watch(userProfileProvider).value;
   final memberships = ref.watch(accountMembershipsProvider).value ?? [];

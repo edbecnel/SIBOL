@@ -12,6 +12,7 @@ void main() {
   UserProfile profile({
     SibolRole role = SibolRole.barangay,
     bool active = true,
+    bool mustChangePassword = false,
   }) {
     return UserProfile(
       uid: 'u1',
@@ -19,6 +20,7 @@ void main() {
       displayName: 'Demo',
       active: active,
       createdAt: DateTime(2026),
+      mustChangePassword: mustChangePassword,
     );
   }
 
@@ -165,6 +167,29 @@ void main() {
           profileAsync: AsyncData(profile(role: SibolRole.barangay)),
         ),
         Routes.barangayHome,
+      );
+    });
+
+    test('mustChangePassword redirects to change password', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.barangayHome,
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(
+            profile(role: SibolRole.barangay, mustChangePassword: true),
+          ),
+        ),
+        Routes.changePassword,
+      );
+      expect(
+        resolveAppRedirect(
+          location: Routes.changePassword,
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(
+            profile(role: SibolRole.barangay, mustChangePassword: true),
+          ),
+        ),
+        isNull,
       );
     });
 

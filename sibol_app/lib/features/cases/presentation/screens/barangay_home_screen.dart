@@ -58,7 +58,7 @@ class BarangayHomeScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          'Invite staff, approve memberships, and assign operational '
+                          'Add staff members and assign operational '
                           'capabilities for your Barangay organization.',
                         ),
                         const SizedBox(height: 12),

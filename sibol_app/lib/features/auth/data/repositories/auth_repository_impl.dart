@@ -1,14 +1,16 @@
 import 'dart:developer' as developer;
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sibol_app/core/errors/app_exception.dart';
 import 'package:sibol_app/features/auth/domain/entities/auth_user.dart';
 import 'package:sibol_app/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  AuthRepositoryImpl(this._firebaseAuth);
+  AuthRepositoryImpl(this._firebaseAuth, this._functions);
 
   final FirebaseAuth _firebaseAuth;
+  final FirebaseFunctions _functions;
 
   @override
   Stream<AuthUser?> get authStateChanges {
@@ -136,6 +138,20 @@ class AuthRepositoryImpl implements AuthRepository {
     } on FirebaseAuthException catch (e) {
       throw AuthException(
         message: e.message ?? 'Could not update password',
+        code: e.code,
+      );
+    }
+  }
+
+  @override
+  Future<void> acknowledgeMandatoryPasswordChange() async {
+    try {
+      await _functions
+          .httpsCallable('regAcknowledgeMandatoryPasswordChange')
+          .call();
+    } on FirebaseFunctionsException catch (e) {
+      throw AuthException(
+        message: e.message ?? 'Could not confirm password change',
         code: e.code,
       );
     }

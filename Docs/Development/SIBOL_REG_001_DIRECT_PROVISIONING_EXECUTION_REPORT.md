@@ -1,7 +1,8 @@
 # SIBOL-REG-001 — Direct staff provisioning and password management
 
-**Handover UUID:** `f2d86a41-7c93-4b50-a1e8-6d9c3f207b45`  
-**Starting HEAD:** `807a324`  
+**Handover UUID:** `f2d86a41-7c93-4b50-a1e8-6d9c3f207b45` (initial); **REG-FIX:** `c6e2f891-4a75-4d38-9b20-8e7f31a6c942`  
+**Starting HEAD (REG-FIX):** `2818ddc`  
+**Starting HEAD (initial):** `807a324`  
 **Work item:** SIBOL-REG-001 (prototype staff administration)
 
 ## Summary
@@ -59,9 +60,60 @@ Prototype accounts use fictitious `@sibol.local` identifiers. **Change password*
 
 Unpaid prototype commitment ends **29 October 2026** (see [SIBOL_OFFLINE_QA_001_EXECUTION_REPORT.md](SIBOL_OFFLINE_QA_001_EXECUTION_REPORT.md)).
 
+## Manual QA (2026-10-26, pre–REG-FIX)
+
+| Test | Result |
+|------|--------|
+| UI-01–UI-04, SP-01, PW-01, MOPH admin Settings / Staff Management | **PASS** |
+| SP-02 MOPH staff provisioning | **BLOCKED** (REG-FIX-01, REG-FIX-02) |
+
+Accepted tag: `sibol-prototype-2026-10-26-offline-qa` (unchanged).
+
+## REG-FIX-01 — MOPH administrator dashboard
+
+**Root cause:** `mophOperationalContextProvider` treated missing `coordination.hospital` as a full-screen `StateError`, conflating org administration with hospital coordination.
+
+**Fix:** MOPH home mirrors Barangay: org-administration card when `org.manage_members` + `org.manage_roles`; coordination/report streams use nullable `mophHospitalOrgIdProvider` (empty data when unauthorized, not an error).
+
+## REG-FIX-02 — MOPH Add Staff capabilities
+
+**Root cause:** `OrgAdminStaffScreen` defaulted organization type to Barangay when the directory cache was unset.
+
+**Fix:** `regListOrganizationMemberships` returns authoritative `organizationType`; Add Staff / capability edit use that value (MOPH → `coordination.hospital` only).
+
+## REG-FIX-03 — Administrator password reset
+
+| Callable | Purpose |
+|----------|---------|
+| `regResetStaffMemberPassword` | Admin SDK password update, `mustChangePassword`, refresh-token revoke, audit `staff_password_reset_by_admin` |
+| `regAcknowledgeMandatoryPasswordChange` | Clears `mustChangePassword` after verified client password update |
+
+Authorization: org admin in target org, both org-management capabilities, eligible non-admin staff in same org; central admins and org admins protected. Passwords never logged or returned.
+
+Mandatory change: `users.mustChangePassword` (server-only write); router forces `/settings/change-password`; `assertPasswordChangeNotRequired` on selected server operations (e.g. coordination referral create, staff provision).
+
+## REG-FIX-04 — Staff identity in directory
+
+`regListOrganizationMemberships` enriches each row with `displayName` and `email` (Auth Admin lookup) for authorized org administrators only.
+
+## REG-FIX-05 / REG-FIX-06 — UX copy
+
+Persistent **OK** success dialog after password change and admin reset. Barangay/MOPH admin dashboards use direct-provisioning wording (no invitation UI).
+
+## Verification (REG-FIX)
+
+| Suite | Result |
+|-------|--------|
+| `shared/functions` integration | **80** pass (incl. `admin.resetStaffPassword.test.mjs`, updated list-memberships tests) |
+| `sibol_app` focused tests | `moph_dashboard_authorization_test`, `app_redirect_test`, `barangay_dashboard_capability_test` pass |
+
+**Emulator:** Rebuild Functions (`npm run build`); reload emulator process to register new callables — **do not** reset Auth/Firestore or wipe Android data.
+
+**Remaining manual QA:** MF-01–MF-10, PR-01–PR-11, SL-01–SL-05, PC-01–PC-04, TX-01–TX-03, SP-02 after emulator reload.
+
 ## Known limitations
 
-- No administrator-initiated password reset.
 - No production email for invitations or recovery.
-- Staff list shows `accountUid` (not email) from membership listing API.
+- Mandatory password gate enforced on selected callables (not every Firestore read path).
 - Central admin invitation/bootstrap flows still exist server-side; not exposed on ordinary staff Settings.
+- **Not production-ready**; REG-001 acceptance pending PA-led manual QA.

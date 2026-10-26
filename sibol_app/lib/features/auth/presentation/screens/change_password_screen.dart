@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/errors/app_exception.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
+import 'package:sibol_app/core/router/app_redirect.dart';
+import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/app_text_field.dart';
+import 'package:sibol_app/shared/widgets/persistent_success_dialog.dart';
 
 class ChangePasswordScreen extends ConsumerStatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -51,16 +54,32 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
       return;
     }
     setState(() => _submitting = true);
+    final mandatory =
+        ref.read(userProfileProvider).value?.mustChangePassword ?? false;
     try {
       await ref.read(authRepositoryProvider).changePassword(
             currentPassword: _currentController.text,
             newPassword: _newController.text,
           );
+      if (mandatory) {
+        await ref.read(authRepositoryProvider).acknowledgeMandatoryPasswordChange();
+      }
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password updated successfully.')),
+      await showPersistentSuccessDialog(
+        context,
+        message: 'Your password has been changed successfully.',
       );
-      context.pop();
+      if (!mounted) return;
+      if (mandatory) {
+        final profile = ref.read(userProfileProvider).value;
+        if (profile != null) {
+          context.go(homeForProfile(profile));
+        } else {
+          context.pop();
+        }
+      } else {
+        context.pop();
+      }
     } on AuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -76,21 +95,29 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mandatory =
+        ref.watch(userProfileProvider).value?.mustChangePassword ?? false;
     return Scaffold(
-      appBar: AppBar(title: const Text('Change password')),
+      appBar: AppBar(
+        title: const Text('Change password'),
+        automaticallyImplyLeading: !mandatory,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Prototype accounts use fictitious email identifiers. '
-              'Email-based password recovery is not available for this demo.',
+            Text(
+              mandatory
+                  ? 'Your administrator assigned a temporary password. '
+                      'Choose a new password before continuing.'
+                  : 'Prototype accounts use fictitious email identifiers. '
+                      'Email-based password recovery is not available for this demo.',
             ),
             const SizedBox(height: 16),
             AppTextField(
               controller: _currentController,
-              label: 'Current password',
+              label: mandatory ? 'Temporary password' : 'Current password',
               isPassword: true,
             ),
             const SizedBox(height: 12),

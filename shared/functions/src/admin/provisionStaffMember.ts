@@ -2,6 +2,7 @@ import { Auth } from "firebase-admin/auth";
 import { Firestore, Timestamp } from "firebase-admin/firestore";
 import {
   assertAuthenticated,
+  assertPasswordChangeNotRequired,
   AuthzError,
 } from "../authz/assert";
 import { membershipIdFor } from "../authz/identifiers";
@@ -78,6 +79,7 @@ export async function runProvisionStaffMember(
 ) {
   const actorUid = assertAuthenticated(authUid);
   const account = await loadAccount(db, actorUid);
+  assertPasswordChangeNotRequired(account);
   const orgId = assertNonEmptyString(data.orgId, "orgId");
   const email = assertValidEmail(assertNonEmptyString(data.email, "email"));
   const displayName = assertNonEmptyString(data.displayName, "displayName");

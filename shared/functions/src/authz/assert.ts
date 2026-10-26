@@ -4,6 +4,8 @@ import { isValidOrgId, membershipIdFor } from "./identifiers";
 export type AccountDoc = {
   active?: boolean;
   isCentralAdmin?: boolean;
+  mustChangePassword?: boolean;
+  displayName?: string;
 };
 
 export type OrganizationDoc = {
@@ -43,6 +45,17 @@ export function assertAuthenticated(authUid: string | undefined): string {
 export function assertActiveAccount(account: AccountDoc | undefined): void {
   if (!account || account.active !== true) {
     throw new AuthzError("Account is not active.", "permission-denied");
+  }
+}
+
+export function assertPasswordChangeNotRequired(
+  account: AccountDoc | undefined,
+): void {
+  if (account?.mustChangePassword === true) {
+    throw new AuthzError(
+      "Change your password before using this feature.",
+      "failed-precondition",
+    );
   }
 }
 
