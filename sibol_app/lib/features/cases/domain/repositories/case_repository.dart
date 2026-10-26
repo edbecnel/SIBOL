@@ -36,5 +36,7 @@ abstract class CaseRepository {
   Future<String> createFollowUp({
     required FollowUp followUp,
     required String createdByUid,
+    String? createdByDisplayName,
+    String? createdByStaffEmail,
   });
 }

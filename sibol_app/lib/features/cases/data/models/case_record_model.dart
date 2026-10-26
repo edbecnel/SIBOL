@@ -31,6 +31,7 @@ class CaseRecordModel {
     this.teenUid,
     this.linkedAccountEmail,
     this.identityLinkedAt,
+    this.teenProfileSyncedAt,
   });
 
   final String caseId;
@@ -55,6 +56,7 @@ class CaseRecordModel {
   final String? teenUid;
   final String? linkedAccountEmail;
   final DateTime? identityLinkedAt;
+  final DateTime? teenProfileSyncedAt;
 
   factory CaseRecordModel.fromFirestore(String id, Map<String, dynamic> data) {
     return CaseRecordModel(
@@ -84,6 +86,9 @@ class CaseRecordModel {
       identityLinkedAt: data['identityLinkedAt'] == null
           ? null
           : _toDate(data['identityLinkedAt']),
+      teenProfileSyncedAt: data['teenProfileSyncedAt'] == null
+          ? null
+          : _toDate(data['teenProfileSyncedAt']),
     );
   }
 
@@ -123,6 +128,8 @@ class CaseRecordModel {
         'linkedAccountEmail': linkedAccountEmail!.trim(),
       if (identityLinkedAt != null)
         'identityLinkedAt': Timestamp.fromDate(identityLinkedAt!),
+      if (teenProfileSyncedAt != null)
+        'teenProfileSyncedAt': Timestamp.fromDate(teenProfileSyncedAt!),
     };
   }
 
@@ -165,6 +172,7 @@ class CaseRecordModel {
       teenUid: record.teenUid,
       linkedAccountEmail: record.linkedAccountEmail,
       identityLinkedAt: record.identityLinkedAt,
+      teenProfileSyncedAt: record.teenProfileSyncedAt,
     );
   }
 
@@ -197,6 +205,7 @@ class CaseRecordModel {
       teenUid: teenUid,
       linkedAccountEmail: linkedAccountEmail,
       identityLinkedAt: identityLinkedAt,
+      teenProfileSyncedAt: teenProfileSyncedAt,
     );
   }
 

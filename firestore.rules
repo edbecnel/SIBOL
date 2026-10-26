@@ -103,7 +103,7 @@ service cloud.firestore {
         'nextFollowUpAt', 'notes', 'createdAt', 'updatedAt', 'reportStatus',
         'subjectKind', 'caseCompleteness', 'fullName', 'dateOfBirth',
         'contactEmail', 'contactPhone', 'parentGuardianContact',
-        'teenUid', 'linkedAccountEmail', 'identityLinkedAt'
+        'teenUid', 'linkedAccountEmail', 'identityLinkedAt', 'teenProfileSyncedAt'
       ];
     }
 

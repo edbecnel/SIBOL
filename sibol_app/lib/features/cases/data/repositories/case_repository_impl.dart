@@ -227,6 +227,8 @@ class CaseRepositoryImpl implements CaseRepository {
   Future<String> createFollowUp({
     required FollowUp followUp,
     required String createdByUid,
+    String? createdByDisplayName,
+    String? createdByStaffEmail,
   }) async {
     if (createdByUid.isEmpty) {
       throw FormatException('Staff identity is required to record a follow-up.');
@@ -269,7 +271,13 @@ class CaseRepositoryImpl implements CaseRepository {
       ),
     );
     await commitWriteLocalFirst(
-      write: ref.set(model.toFirestoreCreate(createdByUid: createdByUid)),
+      write: ref.set(
+        model.toFirestoreCreate(
+          createdByUid: createdByUid,
+          createdByDisplayName: createdByDisplayName,
+          createdByStaffEmail: createdByStaffEmail,
+        ),
+      ),
       isPersistedLocally: () => documentExistsInCache(ref),
     );
     return followUpId;

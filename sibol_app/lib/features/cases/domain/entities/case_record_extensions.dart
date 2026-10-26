@@ -28,6 +28,7 @@ extension CaseRecordCopy on CaseRecord {
     String? teenUid,
     String? linkedAccountEmail,
     DateTime? identityLinkedAt,
+    DateTime? teenProfileSyncedAt,
   }) {
     return CaseRecord(
       caseId: caseId ?? this.caseId,
@@ -53,6 +54,7 @@ extension CaseRecordCopy on CaseRecord {
       teenUid: teenUid ?? this.teenUid,
       linkedAccountEmail: linkedAccountEmail ?? this.linkedAccountEmail,
       identityLinkedAt: identityLinkedAt ?? this.identityLinkedAt,
+      teenProfileSyncedAt: teenProfileSyncedAt ?? this.teenProfileSyncedAt,
     );
   }
 }

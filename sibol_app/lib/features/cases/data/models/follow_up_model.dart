@@ -11,6 +11,8 @@ class FollowUpModel {
     required this.notes,
     this.createdAt,
     this.createdByUid,
+    this.createdByDisplayName,
+    this.createdByStaffEmail,
   });
 
   final String followUpId;
@@ -21,6 +23,8 @@ class FollowUpModel {
   final String notes;
   final DateTime? createdAt;
   final String? createdByUid;
+  final String? createdByDisplayName;
+  final String? createdByStaffEmail;
 
   factory FollowUpModel.fromFirestore(String id, Map<String, dynamic> data) {
     return FollowUpModel(
@@ -36,10 +40,16 @@ class FollowUpModel {
           ? null
           : _toDate(data['createdAt']),
       createdByUid: data['createdByUid'] as String?,
+      createdByDisplayName: data['createdByDisplayName'] as String?,
+      createdByStaffEmail: data['createdByStaffEmail'] as String?,
     );
   }
 
-  Map<String, dynamic> toFirestoreCreate({required String createdByUid}) {
+  Map<String, dynamic> toFirestoreCreate({
+    required String createdByUid,
+    String? createdByDisplayName,
+    String? createdByStaffEmail,
+  }) {
     return {
       'caseId': caseId,
       'scheduledAt': Timestamp.fromDate(scheduledAt),
@@ -47,6 +57,10 @@ class FollowUpModel {
       'status': status,
       'notes': notes,
       'createdByUid': createdByUid,
+      if (createdByDisplayName != null && createdByDisplayName.trim().isNotEmpty)
+        'createdByDisplayName': createdByDisplayName.trim(),
+      if (createdByStaffEmail != null && createdByStaffEmail.trim().isNotEmpty)
+        'createdByStaffEmail': createdByStaffEmail.trim(),
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
@@ -61,6 +75,8 @@ class FollowUpModel {
       notes: entity.notes,
       createdAt: entity.createdAt,
       createdByUid: entity.createdByUid,
+      createdByDisplayName: entity.createdByDisplayName,
+      createdByStaffEmail: entity.createdByStaffEmail,
     );
   }
 
@@ -78,6 +94,8 @@ class FollowUpModel {
       notes: notes,
       createdAt: createdAt,
       createdByUid: createdByUid,
+      createdByDisplayName: createdByDisplayName,
+      createdByStaffEmail: createdByStaffEmail,
     );
   }
 

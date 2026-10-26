@@ -3,7 +3,7 @@
 **Handover UUID:** `e1c5f782-3a94-4b61-9f27-6d0e8b413ac5`  
 **Reference baseline:** `8221fcf`  
 **Starting HEAD:** `8221fcf`  
-**Ending HEAD:** `a7f431c`  
+**Ending HEAD:** `d1b9599` (verification milestone pending below)  
 **Firebase:** `sibol-286d0` (no production deploy)
 
 ## Summary
@@ -73,12 +73,55 @@ Implemented registered and unregistered teen identity for Barangay cases: date-o
 - Functions: `shared/functions/src/cases/*`, exports in `index.ts`.
 - Rules/contract: `firestore.rules`, `shared/contracts/case_record.schema.json`.
 
+## Final verification (2026-10-26, handover `8d3c7f21-…`)
+
+### Security (Firestore rules emulator)
+
+| Suite | Result |
+|-------|--------|
+| `shared/firestore-rules-test` full suite | **126/126 PASS** (includes 5 new case-identity cases) |
+
+Verified themes: legacy case read, extended draft/active contact rules, registered `teenUid` org linkage denial, unregistered `teenUid` denial, teen/MOPH/cross-org denials (existing suites unchanged).
+
+### Follow-up staff identity
+
+New follow-ups store `createdByDisplayName` and `createdByStaffEmail` snapshots at write time; UI uses `FollowUpStaffIdentity` (name + email, UID fallback for legacy rows). `createdByUid` unchanged for audit.
+
+### Registered teen profile → case contact sync
+
+Callable `regSyncRegisteredTeenCasesFromProfile`:
+
+- **Teen:** after profile save, syncs all registered cases for that teen in their org (contact fields + `teenProfileSyncedAt`).
+- **Barangay:** **Refresh contact from teen profile** on registered case detail (requires online).
+
+Does not alter follow-up history or `teenUid` / `linkedAccountEmail`. Offline case reads show cached-contact notice when applicable.
+
+### Flutter / Functions
+
+| Check | Result |
+|-------|--------|
+| `flutter test` | **199/199 PASS** |
+| `flutter analyze` | No errors |
+| `npm run build` (functions) | PASS |
+
+### Android acceptance
+
+| Item | Result |
+|------|--------|
+| Pre-install session | Barangay dashboard showed **Maria Offline Test** on case list (legacy build strings) |
+| `flutter install -d emulator-5554` | Installed updated APK; **session cleared** (login required) |
+| Post-install flows | **Blocked** pending PO `LOGIN COMPLETE` at Sign in (`barangay.demo@sibol.local`) |
+
+Do not claim full table in §6 Android checklist as PASS until PO re-authenticates and Cursor completes ADB walkthrough on the new build.
+
 ## Limitations
 
-- Follow-up staff line still shows UID unless profile lookup is added later.
-- Case-to-profile refresh after teen profile change is not automatic (case stores snapshot at linkage).
-- Firestore rules tests and full Android O5 regression not claimed from unit tests alone.
+- Legacy follow-ups without staff snapshots still show UID fallback.
+- Profile sync requires online callable (teen save retries sync silently on failure).
+- `teenProfileSyncedAt` is server-written; client displays when present after sync.
 
 ## Commits
 
 - `a7f431c` — SIBOL-CASE-IDENTITY-001 implementation (pushed to `origin/main`)
+- `d1b9599` — execution report HEAD reference
+- _(verification milestone commit pending push)_

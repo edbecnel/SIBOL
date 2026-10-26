@@ -30,6 +30,7 @@ class CaseRecord extends Equatable {
     this.teenUid,
     this.linkedAccountEmail,
     this.identityLinkedAt,
+    this.teenProfileSyncedAt,
   });
 
   final String caseId;
@@ -58,6 +59,7 @@ class CaseRecord extends Equatable {
   /// Firebase Authentication email snapshot for registered cases (not contact email).
   final String? linkedAccountEmail;
   final DateTime? identityLinkedAt;
+  final DateTime? teenProfileSyncedAt;
 
   String get displayFullName {
     final name = fullName.trim();
@@ -135,5 +137,6 @@ class CaseRecord extends Equatable {
         teenUid,
         linkedAccountEmail,
         identityLinkedAt,
+        teenProfileSyncedAt,
       ];
 }

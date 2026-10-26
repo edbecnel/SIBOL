@@ -36,6 +36,7 @@
     "teenUid": { "type": "string" },
     "linkedAccountEmail": { "type": "string" },
     "identityLinkedAt": { "type": "string", "format": "date-time" },
+    "teenProfileSyncedAt": { "type": "string", "format": "date-time" },
     "registeredAt": { "type": "string", "format": "date-time" },
     "nextFollowUpAt": { "type": "string", "format": "date-time" },
     "notes": { "type": "string" },

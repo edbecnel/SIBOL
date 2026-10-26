@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up_timeline_entry.dart';
+import 'package:sibol_app/features/cases/domain/follow_up_staff_identity.dart';
 import 'package:sibol_app/features/cases/presentation/providers/case_providers.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
@@ -104,7 +105,7 @@ class _FollowUpTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
-                'Recorded by staff (${followUp.createdByUid})',
+                FollowUpStaffIdentity.recordedByLine(followUp),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ),

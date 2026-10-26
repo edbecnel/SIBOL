@@ -67,6 +67,8 @@ class _HarnessRepo implements CaseRepository {
   Future<String> createFollowUp({
     required FollowUp followUp,
     required String createdByUid,
+    String? createdByDisplayName,
+    String? createdByStaffEmail,
   }) =>
       throw UnimplementedError();
 }

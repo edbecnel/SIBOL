@@ -414,6 +414,83 @@ describe("cases collection", () => {
         .set(validCase({ caseStatus: "archived" })),
     );
   });
+
+  function extendedCase(overrides = {}) {
+    return {
+      ...validCase(),
+      subjectKind: "unregistered",
+      caseCompleteness: "active",
+      fullName: "Fictional Teen",
+      dateOfBirth: "2009-06-01",
+      contactEmail: "teen.fictional@sibol.local",
+      ...overrides,
+    };
+  }
+
+  it("allows extended active unregistered case with contact", async () => {
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertSucceeds(
+      db.collection("cases").doc("case-ext-unreg").set(extendedCase()),
+    );
+  });
+
+  it("denies active extended case without contact method", async () => {
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    const payload = extendedCase();
+    delete payload.contactEmail;
+    delete payload.contactPhone;
+    await assertFails(
+      db.collection("cases").doc("case-ext-no-contact").set(payload),
+    );
+  });
+
+  it("allows draft extended case without contact or DOB", async () => {
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    const payload = extendedCase({
+      caseCompleteness: "draft",
+      age: 0,
+    });
+    delete payload.dateOfBirth;
+    delete payload.contactEmail;
+    await assertSucceeds(
+      db.collection("cases").doc("case-ext-draft").set(payload),
+    );
+  });
+
+  it("denies registered case when teenUid is not in case org", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await db.collection("users").doc("foreign-teen").set({
+        role: "teen",
+        active: true,
+        displayName: "Foreign Teen",
+        selectedBarangayOrgId: ORG_BARANGAY_OTHER,
+        createdAt: new Date(),
+        assignedBarangay: "Other Demo Barangay",
+      });
+    });
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertFails(
+      db.collection("cases").doc("case-bad-teen-link").set(
+        extendedCase({
+          subjectKind: "registered",
+          teenUid: "foreign-teen",
+          linkedAccountEmail: "foreign.teen@sibol.local",
+        }),
+      ),
+    );
+  });
+
+  it("denies unregistered case with teenUid field", async () => {
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertFails(
+      db.collection("cases").doc("case-unreg-teenuid").set(
+        extendedCase({
+          teenUid: "teen-user-1",
+        }),
+      ),
+    );
+  });
 });
 
 describe("reports collection (legacy per-case client payload denied)", () => {

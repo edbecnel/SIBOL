@@ -28,6 +28,8 @@ class FollowUp extends Equatable {
     this.notes = '',
     this.createdAt,
     this.createdByUid,
+    this.createdByDisplayName,
+    this.createdByStaffEmail,
   });
 
   final String followUpId;
@@ -38,6 +40,8 @@ class FollowUp extends Equatable {
   final String notes;
   final DateTime? createdAt;
   final String? createdByUid;
+  final String? createdByDisplayName;
+  final String? createdByStaffEmail;
 
   @override
   List<Object?> get props => [
@@ -49,5 +53,7 @@ class FollowUp extends Equatable {
         notes,
         createdAt,
         createdByUid,
+        createdByDisplayName,
+        createdByStaffEmail,
       ];
 }

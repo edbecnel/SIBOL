@@ -12,6 +12,7 @@ import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/add_follow_up_dialog.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/case_firestore_sync_notice.dart';
 import 'package:sibol_app/features/cases/domain/case_identity_presentation.dart';
+import 'package:sibol_app/features/cases/domain/case_subject_kind.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/case_follow_up_timeline.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
@@ -71,6 +72,10 @@ class CaseDetailScreen extends ConsumerWidget {
                   isFromCache: snapshot.isFromCache,
                   hasPendingWrites: snapshot.hasPendingWrites,
                   onAddFollowUp: () => _showAddFollowUp(context, ref),
+                  onRefreshRegisteredContact: record.resolvedSubjectKind ==
+                          CaseSubjectKind.registered
+                      ? () => _refreshRegisteredContact(context, ref)
+                      : null,
                 );
               },
             ),
@@ -80,8 +85,34 @@ class CaseDetailScreen extends ConsumerWidget {
     );
   }
 
+  Future<void> _refreshRegisteredContact(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    try {
+      await ref.read(caseRegistrationApiProvider).syncRegisteredTeenContactFromProfile(
+            caseId: caseId,
+          );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Contact information refreshed from teen profile.'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not refresh contact: $e')),
+        );
+      }
+    }
+  }
+
   Future<void> _showAddFollowUp(BuildContext context, WidgetRef ref) async {
-    final uid = ref.read(authStateChangesProvider).value?.uid;
+    final authUser = ref.read(authStateChangesProvider).value;
+    final uid = authUser?.uid;
+    final profile = ref.read(userProfileProvider).value;
     if (uid == null) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -113,6 +144,8 @@ class CaseDetailScreen extends ConsumerWidget {
           notes: notes,
         ),
         createdByUid: uid,
+        createdByDisplayName: profile?.displayName,
+        createdByStaffEmail: authUser?.email,
       );
       if (context.mounted) {
         Navigator.of(context, rootNavigator: true).pop();
@@ -146,6 +179,7 @@ class CaseDetailBody extends StatelessWidget {
     required this.isFromCache,
     required this.hasPendingWrites,
     required this.onAddFollowUp,
+    this.onRefreshRegisteredContact,
   });
 
   final CaseRecord record;
@@ -153,6 +187,7 @@ class CaseDetailBody extends StatelessWidget {
   final bool isFromCache;
   final bool hasPendingWrites;
   final VoidCallback onAddFollowUp;
+  final VoidCallback? onRefreshRegisteredContact;
 
   @override
   Widget build(BuildContext context) {
@@ -201,6 +236,29 @@ class CaseDetailBody extends StatelessWidget {
             label: 'Parent/guardian contact',
             value: record.parentGuardianContact!.trim(),
           ),
+        if (record.resolvedSubjectKind == CaseSubjectKind.registered) ...[
+          if (isFromCache || hasPendingWrites)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                'Contact details on this device may be cached until synchronization completes.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+          if (record.teenProfileSyncedAt != null)
+            _DetailTile(
+              label: 'Teen profile contact synced',
+              value: dateTimeFmt.format(record.teenProfileSyncedAt!),
+            ),
+          if (onRefreshRegisteredContact != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: OutlinedButton(
+                onPressed: onRefreshRegisteredContact,
+                child: const Text('Refresh contact from teen profile'),
+              ),
+            ),
+        ],
         _DetailTile(
           label: 'Case status',
           value: CasePresentationLabels.lifecycleStatus(record.caseStatus),

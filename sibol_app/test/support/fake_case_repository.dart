@@ -123,6 +123,8 @@ class FakeCaseRepository implements CaseRepository {
   Future<String> createFollowUp({
     required FollowUp followUp,
     required String createdByUid,
+    String? createdByDisplayName,
+    String? createdByStaffEmail,
   }) async {
     final notesError = FollowUpValidation.validateNotes(followUp.notes);
     if (notesError != null) throw FormatException(notesError);
@@ -138,6 +140,8 @@ class FakeCaseRepository implements CaseRepository {
       notes: followUp.notes,
       createdAt: DateTime.now().toUtc(),
       createdByUid: createdByUid,
+      createdByDisplayName: createdByDisplayName,
+      createdByStaffEmail: createdByStaffEmail,
     );
     _followUps.add(stored);
     return id;
