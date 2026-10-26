@@ -4,6 +4,10 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+### Accepted
+
+- SIBOL-REG-001 **prototype functional closure** (`b4e81c62-7d39-4a50-9f26-c3a108e75d92`): PA acceptance of manual QA (staff provisioning, password reset, mandatory change UX) @ `19bfc20`; mandatory-password **backend** enforcement **deferred** for production — see [SIBOL_REG_001_PROTOTYPE_CLOSURE_EXECUTION_REPORT.md](Docs/Development/SIBOL_REG_001_PROTOTYPE_CLOSURE_EXECUTION_REPORT.md) and [SIBOL_REG_001_MANDATORY_PASSWORD_SECURITY_INVESTIGATION.md](Docs/Development/SIBOL_REG_001_MANDATORY_PASSWORD_SECURITY_INVESTIGATION.md). **Not** production deployment authorization.
+
 ### Added
 
 - SIBOL-ORG-001-FIX-002: canonical membership document listen via `primaryOrgId`; rules tests for query deny; INV-002 report.

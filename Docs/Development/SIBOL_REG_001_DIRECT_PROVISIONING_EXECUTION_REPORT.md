@@ -109,11 +109,17 @@ Persistent **OK** success dialog after password change and admin reset. Barangay
 
 **Emulator:** Rebuild Functions (`npm run build`); reload emulator process to register new callables — **do not** reset Auth/Firestore or wipe Android data.
 
-**Remaining manual QA:** MF-01–MF-10, PR-01–PR-11, SL-01–SL-05, PC-01–PC-04, TX-01–TX-03, SP-02 after emulator reload.
+## Prototype closure (2026-10-26)
+
+**Handover UUID:** `b4e81c62-7d39-4a50-9f26-c3a108e75d92`
+
+SIBOL-REG-001 is **functionally accepted and closed** for the academic prototype scope. Manual QA evidence, PA decision, and production deployment restriction are recorded in [SIBOL_REG_001_PROTOTYPE_CLOSURE_EXECUTION_REPORT.md](SIBOL_REG_001_PROTOTYPE_CLOSURE_EXECUTION_REPORT.md).
+
+Deferred mandatory-password backend enforcement (not production-acceptable): [SIBOL_REG_001_MANDATORY_PASSWORD_SECURITY_INVESTIGATION.md](SIBOL_REG_001_MANDATORY_PASSWORD_SECURITY_INVESTIGATION.md).
 
 ## Known limitations
 
 - No production email for invitations or recovery.
-- Mandatory password gate enforced on selected callables (not every Firestore read path).
+- Mandatory password gate enforced on **selected** callables only (not every Firestore read/write path); see security investigation.
 - Central admin invitation/bootstrap flows still exist server-side; not exposed on ordinary staff Settings.
-- **Not production-ready**; REG-001 acceptance pending PA-led manual QA.
+- **Not production-ready** — deployment prohibited until deferred security work is completed under a future work item.
