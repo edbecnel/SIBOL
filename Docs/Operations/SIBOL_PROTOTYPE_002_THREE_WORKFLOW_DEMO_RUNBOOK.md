@@ -114,7 +114,7 @@ node shared/scripts/verify-canonical-emulator-health.mjs
 
 Expect `regAcknowledgeTeenAssistanceRequest` among registered callables (HTTP **401** unauthenticated is OK).
 
-**Latest full export (preserve QA-001 data):** `.firebase-qa-backups/pre-prototype-003-20261025/` — see [SIBOL_PROTOTYPE_003_EMULATOR_RECOVERY.md](SIBOL_PROTOTYPE_003_EMULATOR_RECOVERY.md).
+**Latest full export (offline QA accepted):** `.firebase-qa-backups/offline-qa-accepted-20261026-084832/` — see [SIBOL_OFFLINE_QA_001_EMULATOR_RECOVERY.md](SIBOL_OFFLINE_QA_001_EMULATOR_RECOVERY.md). Prior snapshot: `pre-prototype-003-20261025` — [SIBOL_PROTOTYPE_003_EMULATOR_RECOVERY.md](SIBOL_PROTOTYPE_003_EMULATOR_RECOVERY.md).
 
 ## 9. Minimal final Product Owner acceptance (do not repeat full QA-001)
 

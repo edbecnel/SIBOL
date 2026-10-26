@@ -2,7 +2,11 @@
 
 > **Not for production.** Canonical ports: Auth **9099**, Firestore **8195**, Functions **5001**.
 
-## Current backup (2026-10-25)
+## Superseded for offline QA (2026-10-26)
+
+Accepted offline QA checkpoint: `.firebase-qa-backups/offline-qa-accepted-20261026-084832/` — [SIBOL_OFFLINE_QA_001_EMULATOR_RECOVERY.md](SIBOL_OFFLINE_QA_001_EMULATOR_RECOVERY.md). The export below remains valid for early PROTOTYPE-003 recovery only.
+
+## Historical backup (2026-10-25)
 
 | Field | Value |
 |-------|--------|
