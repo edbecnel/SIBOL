@@ -169,23 +169,19 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
   @override
   Widget build(BuildContext context) {
     if (!widget.isCreate) {
-      final caseAsync = ref.watch(caseDetailStreamProvider(widget.caseId!));
+      final caseAsync = ref.watch(caseEditRecordProvider(widget.caseId!));
       return caseAsync.when(
-        loading: () => const Scaffold(
-          body: AppLoadingIndicator(message: 'Loading case…'),
+        loading: () => Scaffold(
+          appBar: AppBar(title: const Text('Edit case')),
+          body: const AppLoadingIndicator(
+            message: 'Loading case from this device…',
+          ),
         ),
         error: (e, _) => Scaffold(
           appBar: AppBar(title: const Text('Edit case')),
           body: AppErrorWidget(message: e.toString()),
         ),
-        data: (snapshot) {
-          final record = snapshot.data;
-          if (record == null) {
-            return Scaffold(
-              appBar: AppBar(title: const Text('Edit case')),
-              body: const Center(child: Text('Case not found.')),
-            );
-          }
+        data: (record) {
           if (_existing?.caseId != record.caseId) {
             _populateFromRecord(record);
           }
@@ -277,7 +273,9 @@ class _CaseEditScreenState extends ConsumerState<CaseEditScreen> {
                       .map(
                         (s) => DropdownMenuItem(
                           value: s,
-                          child: Text(s.firestoreValue),
+                          child: Text(
+                            CasePresentationLabels.lifecycleStatus(s),
+                          ),
                         ),
                       )
                       .toList(),

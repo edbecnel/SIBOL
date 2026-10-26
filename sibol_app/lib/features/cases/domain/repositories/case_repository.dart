@@ -16,6 +16,15 @@ abstract class CaseRepository {
   /// Live case document; `null` when the document does not exist.
   Stream<FirestoreDocumentSnapshot<CaseRecord>> watchCase(String caseId);
 
+  /// Reads a case document from the local Firestore cache when present.
+  Future<CaseRecord?> fetchCasePreferCache(String caseId);
+
+  /// One-shot read (cache then server per SDK defaults).
+  Future<CaseRecord?> fetchCase(String caseId);
+
+  /// Cache-first stream for the case edit form.
+  Stream<CaseRecord> watchCaseForEdit(String caseId);
+
   /// Creates a case document; returns the generated document id.
   Future<String> createCase(CaseRecord record);
 

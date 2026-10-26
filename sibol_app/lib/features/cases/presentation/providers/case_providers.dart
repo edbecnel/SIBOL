@@ -26,6 +26,13 @@ final caseDetailStreamProvider =
   return ref.watch(caseRepositoryProvider).watchCase(caseId);
 });
 
+/// Cache-first case record for the edit form (offline-safe bootstrap).
+final caseEditRecordProvider = StreamProvider.family<CaseRecord, String>(
+  (ref, caseId) {
+    return ref.watch(caseRepositoryProvider).watchCaseForEdit(caseId);
+  },
+);
+
 final followUpsStreamProvider =
     StreamProvider.family<List<FollowUpTimelineEntry>, String>((ref, caseId) {
   return ref.watch(caseRepositoryProvider).watchFollowUps(caseId);

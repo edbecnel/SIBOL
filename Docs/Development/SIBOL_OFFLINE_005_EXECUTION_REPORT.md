@@ -3,7 +3,9 @@
 **Handover UUID:** `f8a2c614-3d79-4b50-9e27-6c1d84a039b5`  
 **Investigation:** `a5d9c271-6e42-4b18-9f30-82c6d4e71905`  
 **Starting HEAD:** `d2f4123`  
-**Ending HEAD:** `3b3cbd5`
+**Ending HEAD:** _(see post–edit-route commit below)_
+
+**Edit-route follow-up handover:** `c42e7a91-8f35-4d60-b2a9-7e61f0c43825` · **Baseline:** `a096242`
 
 ## Defect
 
@@ -39,6 +41,24 @@ Executed against local Firestore emulator (no writes, no reseed):
 - **Server rejection** after local queue (rules/capability) is not surfaced as a dedicated in-app state; pending writes remain until Firestore clears or retries exhaust (prototype).
 - Save snackbars assume **local-first success** (`hasPendingWritesHint: true`); detail/list sync lines use snapshot metadata for confirmation.
 - Connectivity / Wi-Fi state is **not** used for sync labels.
+
+## O5 incident — offline edit route (diagnosis)
+
+During manual O5, **Edit case** after a second airplane-mode cycle left a **blank or stuck** screen while logcat showed repeated Firestore **`ENETUNREACH`** to `10.0.2.2:8195` and occasional **`ENHANCE_YOUR_CALM` / `too_many_pings`** on `WatchStream`. The emulator VM and app process remained responsive (no crash/ANR). **Maria Offline Test** (`fhcQrLxE0IhwPFzCPinH`) was preserved.
+
+**Mechanism:** Edit mode used `caseDetailStreamProvider` → unbounded `watchCase` before rendering the form. Under airplane mode the SDK reconnect loop could delay or prevent a useful first emission even when the case existed in the local cache.
+
+## Edit-route correction
+
+1. [`CaseEditRecordResolver`](sibol_app/lib/features/cases/domain/case_edit_record_resolver.dart) — `fetchCasePreferCache` first, bounded `fetchCase` bootstrap, then resilient `watchCase` (errors swallowed when cache already loaded).
+2. [`caseEditRecordProvider`](sibol_app/lib/features/cases/presentation/providers/case_providers.dart) — edit screen subscribes to `watchCaseForEdit` instead of raw detail snapshots.
+3. [`CaseEditUnavailable`](sibol_app/lib/features/cases/domain/case_edit_unavailable.dart) — recoverable message when no local copy exists.
+
+**SDK note:** Firestore may still log reconnect warnings under airplane mode; the app no longer blocks the edit form on server reachability when a cached document exists.
+
+## Automated verification (cumulative)
+
+- `flutter test` — **181** tests pass (adds `case_edit_record_resolver_test`, `case_edit_screen_offline_test`).
 
 ## Manual QA
 

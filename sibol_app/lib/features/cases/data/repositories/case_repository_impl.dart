@@ -8,6 +8,7 @@ import 'package:sibol_app/core/firestore/firestore_snapshot_listeners.dart';
 import 'package:sibol_app/core/firestore/local_firestore_write.dart';
 import 'package:sibol_app/features/cases/data/models/case_record_model.dart';
 import 'package:sibol_app/features/cases/data/models/follow_up_model.dart';
+import 'package:sibol_app/features/cases/domain/case_edit_record_resolver.dart';
 import 'package:sibol_app/features/cases/domain/case_write_policy.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_list_entry.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
@@ -84,6 +85,28 @@ class CaseRepositoryImpl implements CaseRepository {
         hasPendingWrites: snap.metadata.hasPendingWrites,
       );
     });
+  }
+
+  @override
+  Future<CaseRecord?> fetchCasePreferCache(String caseId) async {
+    return _readCaseFromCache(_caseRef(caseId));
+  }
+
+  @override
+  Future<CaseRecord?> fetchCase(String caseId) async {
+    final ref = _caseRef(caseId);
+    try {
+      final snap = await ref.get(const GetOptions(source: Source.serverAndCache));
+      if (!snap.exists || snap.data() == null) return null;
+      return CaseRecordModel.fromFirestore(ref.id, snap.data()!).toEntity();
+    } on FirebaseException {
+      return await fetchCasePreferCache(caseId);
+    }
+  }
+
+  @override
+  Stream<CaseRecord> watchCaseForEdit(String caseId) {
+    return CaseEditRecordResolver(this).watchForEdit(caseId);
   }
 
   @override
@@ -240,6 +263,10 @@ class CaseRepositoryImpl implements CaseRepository {
       isPersistedLocally: () => documentExistsInCache(ref),
     );
     return followUpId;
+  }
+
+  DocumentReference<Map<String, dynamic>> _caseRef(String caseId) {
+    return _firestore.collection(FirestorePaths.cases).doc(caseId);
   }
 
   Future<CaseRecord?> _readCaseFromCache(

@@ -1,5 +1,6 @@
 import 'package:sibol_app/core/domain/firestore_document_snapshot.dart';
 import 'package:sibol_app/core/domain/firestore_list_snapshot.dart';
+import 'package:sibol_app/features/cases/domain/case_edit_record_resolver.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_list_entry.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
@@ -54,6 +55,22 @@ class FakeCaseRepository implements CaseRepository {
   Stream<FirestoreDocumentSnapshot<CaseRecord>> watchCase(String caseId) {
     return _caseStreams[caseId] ??
         Stream.value(const FirestoreDocumentSnapshot(data: null, isFromCache: false));
+  }
+
+  @override
+  Future<CaseRecord?> fetchCasePreferCache(String caseId) async {
+    for (final c in _cases) {
+      if (c.caseId == caseId) return c;
+    }
+    return null;
+  }
+
+  @override
+  Future<CaseRecord?> fetchCase(String caseId) async => fetchCasePreferCache(caseId);
+
+  @override
+  Stream<CaseRecord> watchCaseForEdit(String caseId) {
+    return CaseEditRecordResolver(this).watchForEdit(caseId);
   }
 
   @override
