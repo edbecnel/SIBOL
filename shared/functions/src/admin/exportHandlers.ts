@@ -18,3 +18,4 @@ export {
   runSuspendMembership,
   runUpdateMembershipCapabilities,
 } from "./operations";
+export { runProvisionStaffMember } from "./provisionStaffMember";

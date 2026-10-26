@@ -24,6 +24,7 @@ import {
   runSetOrganizationStatus,
   runSuspendMembership,
   runUpdateMembershipCapabilities,
+  runProvisionStaffMember,
 } from "./admin/exportHandlers";
 import { runCreateCoordinationReferral } from "./coordination/createCoordinationReferral";
 import {
@@ -148,6 +149,9 @@ export const regRevokeMembership = adminCallable((db, uid, _email, data) =>
 );
 export const regRevokeInvitation = adminCallable((db, uid, _email, data) =>
   runRevokeInvitation(db, uid, data),
+);
+export const regProvisionStaffMember = adminCallable((db, uid, _email, data) =>
+  runProvisionStaffMember(db, admin.auth(), uid, data),
 );
 
 export const regListBarangayDirectory = onCall(async (request) => {
