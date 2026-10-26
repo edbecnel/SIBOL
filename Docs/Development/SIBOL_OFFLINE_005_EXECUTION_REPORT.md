@@ -3,7 +3,7 @@
 **Handover UUID:** `f8a2c614-3d79-4b50-9e27-6c1d84a039b5`  
 **Investigation:** `a5d9c271-6e42-4b18-9f30-82c6d4e71905`  
 **Starting HEAD:** `d2f4123`  
-**Ending HEAD:** _(see post–edit-route commit below)_
+**Ending HEAD:** `52ca5de` (local-first saves `3b3cbd5` / `a096242`)
 
 **Edit-route follow-up handover:** `c42e7a91-8f35-4d60-b2a9-7e61f0c43825` · **Baseline:** `a096242`
 
