@@ -117,6 +117,26 @@ class AdminApi {
     return Map<String, dynamic>.from(result.data as Map);
   }
 
+  Future<Map<String, dynamic>> provisionStaffMember({
+    required String orgId,
+    required String email,
+    required String displayName,
+    required String password,
+    required List<String> capabilities,
+    String? clientOperationId,
+  }) async {
+    final result =
+        await _functions.httpsCallable('regProvisionStaffMember').call({
+      'orgId': orgId,
+      'email': email,
+      'displayName': displayName,
+      'password': password,
+      'capabilities': capabilities,
+      if (clientOperationId != null) 'clientOperationId': clientOperationId,
+    });
+    return Map<String, dynamic>.from(result.data as Map);
+  }
+
   Future<Map<String, dynamic>> inviteStaffMember({
     required String orgId,
     required String email,

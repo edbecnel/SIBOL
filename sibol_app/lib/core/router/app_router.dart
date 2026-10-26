@@ -8,6 +8,7 @@ import 'package:sibol_app/features/auth/presentation/providers/auth_providers.da
 import 'package:sibol_app/features/auth/presentation/screens/account_not_provisioned_screen.dart';
 import 'package:sibol_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:sibol_app/features/auth/presentation/screens/welcome_screen.dart';
+import 'package:sibol_app/features/auth/presentation/screens/change_password_screen.dart';
 import 'package:sibol_app/features/auth/presentation/screens/password_reset_screen.dart';
 import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_intent_providers.dart';
 import 'package:sibol_app/features/teen_registration/presentation/screens/teen_register_complete_screen.dart';
@@ -223,6 +224,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.settings,
         builder: (context, state) => const SettingsScreen(),
+        routes: [
+          GoRoute(
+            path: 'change-password',
+            builder: (context, state) => const ChangePasswordScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: Routes.centralAdminOrganizations,

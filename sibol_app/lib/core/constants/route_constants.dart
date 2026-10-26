@@ -66,6 +66,7 @@ abstract final class Routes {
       '$barangayHome/$barangaySubmittedReferralsSegment/$threadId';
 
   static const settings = '/settings';
+  static const changePassword = '/settings/change-password';
   static const unauthorized = '/unauthorized';
 
   static const centralAdminOrganizations = '/admin/organizations';

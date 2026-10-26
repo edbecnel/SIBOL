@@ -22,4 +22,9 @@ abstract class AuthRepository {
   Future<AuthUser> reloadCurrentUser();
 
   Future<void> sendPasswordResetEmail(String email);
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  });
 }

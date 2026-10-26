@@ -39,15 +39,15 @@ class SettingsScreen extends ConsumerWidget {
             if (orgAdminOrgIds.isNotEmpty) ...[
               const SizedBox(height: 12),
               AppButton.primary(
-                label: 'Organization staff administration',
+                label: 'Staff management',
                 onPressed: () =>
                     context.push(Routes.orgAdminStaff(orgAdminOrgIds.first)),
               ),
             ],
             const SizedBox(height: 12),
             AppButton.primary(
-              label: 'Pending invitations',
-              onPressed: () => context.push(Routes.myInvitations),
+              label: 'Change password',
+              onPressed: () => context.push(Routes.changePassword),
             ),
             const Spacer(),
             AppButton.primary(

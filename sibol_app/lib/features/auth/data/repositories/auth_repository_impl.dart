@@ -116,4 +116,28 @@ class AuthRepositoryImpl implements AuthRepository {
       throw AuthException(message: e.message ?? 'Password reset failed', code: e.code);
     }
   }
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final user = _firebaseAuth.currentUser;
+    if (user == null || user.email == null || user.email!.isEmpty) {
+      throw const AuthException(message: 'Not signed in');
+    }
+    try {
+      final credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPassword,
+      );
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(newPassword);
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(
+        message: e.message ?? 'Could not update password',
+        code: e.code,
+      );
+    }
+  }
 }

@@ -14,14 +14,16 @@ final isCentralAdminProvider = Provider<bool>((ref) {
   return ref.watch(userProfileProvider).value?.isCentralAdmin ?? false;
 });
 
+bool membershipIsOrgAdministrator(OrganizationMembership membership) {
+  return membership.status == MembershipStatus.active &&
+      membership.hasCapability(OrgCapabilities.orgManageMembers) &&
+      membership.hasCapability(OrgCapabilities.orgManageRoles);
+}
+
 final orgAdminManagedOrgIdsProvider = Provider<List<String>>((ref) {
   final memberships = ref.watch(accountMembershipsProvider).value ?? [];
   return memberships
-      .where(
-        (m) =>
-            m.status == MembershipStatus.active &&
-            m.hasCapability(OrgCapabilities.orgManageMembers),
-      )
+      .where(membershipIsOrgAdministrator)
       .map((m) => m.orgId)
       .toList();
 });

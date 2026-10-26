@@ -40,6 +40,13 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<void> sendPasswordResetEmail(String email) => throw UnimplementedError();
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) =>
+      throw UnimplementedError();
 }
 
 class FakeUserProfileRepository implements UserProfileRepository {
@@ -98,4 +105,11 @@ class RetryableAuthRepository implements AuthRepository {
 
   @override
   Future<void> sendPasswordResetEmail(String email) => throw UnimplementedError();
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) =>
+      throw UnimplementedError();
 }

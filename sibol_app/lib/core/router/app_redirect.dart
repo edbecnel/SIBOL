@@ -107,7 +107,9 @@ String? resolveAppRedirect({
   final home = homeForProfile(profile);
   if (onLogin || onSplash || onWelcome || onAccountNotProvisioned) return home;
 
-  if (location == Routes.settings) return null;
+  if (location == Routes.settings || location == Routes.changePassword) {
+    return null;
+  }
 
   if (onTeenRegister && profile.role == SibolRole.teen) {
     return home;

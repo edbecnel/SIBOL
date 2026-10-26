@@ -67,7 +67,7 @@ class BarangayHomeScreen extends ConsumerWidget {
                             Routes.orgAdminStaff(orgAdminOrgIds.first),
                           ),
                           icon: const Icon(Icons.groups_outlined),
-                          label: const Text('Staff administration'),
+                          label: const Text('Staff management'),
                         ),
                       ],
                     ),

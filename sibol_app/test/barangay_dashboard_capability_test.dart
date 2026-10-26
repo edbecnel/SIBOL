@@ -86,7 +86,7 @@ void main() {
 
     expect(find.textContaining('Bad state'), findsNothing);
     expect(find.text('Organization administration'), findsOneWidget);
-    expect(find.text('Staff administration'), findsOneWidget);
+    expect(find.text('Staff management'), findsOneWidget);
     expect(find.textContaining('Operational case access is not assigned'), findsOneWidget);
     expect(find.widgetWithIcon(FloatingActionButton, Icons.add), findsNothing);
     final incoming = find.widgetWithText(OutlinedButton, 'Incoming requests');

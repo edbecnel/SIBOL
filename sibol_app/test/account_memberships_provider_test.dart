@@ -77,7 +77,7 @@ void main() {
         _membership(
           orgId: orgId,
           uid: uidA,
-          caps: ['org.manage_members'],
+          caps: ['org.manage_members', 'org.manage_roles'],
         ),
       ]),
     });
