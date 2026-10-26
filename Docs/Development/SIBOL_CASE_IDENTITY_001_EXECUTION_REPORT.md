@@ -114,6 +114,20 @@ Does not alter follow-up history or `teenUid` / `linkedAccountEmail`. Offline ca
 
 Do not claim full table in §6 Android checklist as PASS until PO re-authenticates and Cursor completes ADB walkthrough on the new build.
 
+### Android auth/connectivity recovery (2026-10-26, handover `2c71f9a4-…`)
+
+| Check | Result |
+|-------|--------|
+| Starting HEAD | `6dbd558` |
+| Auth emulator (`127.0.0.1:9099`) | Running; `barangay.demo@sibol.local` present (uid `6dCjs4T7E4Lk3bzyhHhHNKMXZF5h`) |
+| Firestore emulator (`127.0.0.1:8195`) | Running; profile doc for barangay demo intact |
+| Emulator → host TCP (`10.0.2.2:8195`, `10.0.2.2:9099`) | **Reachable** (`nc` from `emulator-5554`) |
+| Prior `ENETUNREACH` in logs | **Transient** Android route to host (not Auth credential loss); distinct from PO “Invalid email or password” unless correlated on same attempt |
+| Client Firebase target | Debug session: `USE_FIREBASE_EMULATORS=true`, `SIBOL_COORD_REGISTRY_RULES_V2=true` → Auth/Firestore/Functions on `10.0.2.2` |
+| Login error persistence | **Fixed** — `authControllerProvider` error cleared on login screen open and when leaving via back; widget test added |
+| `flutter test test/login_screen_test.dart` | **6/6 PASS** (includes stale-error clear) |
+| Android CASE-IDENTITY walkthrough | **Pending** PO `LOGIN COMPLETE` after manual sign-in |
+
 ## Limitations
 
 - Legacy follow-ups without staff snapshots still show UID fallback.
@@ -125,3 +139,4 @@ Do not claim full table in §6 Android checklist as PASS until PO re-authenticat
 - `a7f431c` — SIBOL-CASE-IDENTITY-001 implementation (pushed to `origin/main`)
 - `d1b9599` — execution report HEAD reference
 - `1e6fa99` — verification: staff follow-up identity, profile sync, rules tests (pushed)
+- _(recovery commit SHA after push)_ — login stale-error clear + Android auth recovery evidence

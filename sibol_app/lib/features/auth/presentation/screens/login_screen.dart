@@ -21,6 +21,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authControllerProvider.notifier).clearSignInError();
+    });
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -42,7 +50,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('${AppConfig.appName} — Sign in'),
-        leading: BackButton(onPressed: () => context.go(Routes.welcome)),
+        leading: BackButton(
+          onPressed: () {
+            ref.read(authControllerProvider.notifier).clearSignInError();
+            context.go(Routes.welcome);
+          },
+        ),
       ),
       body: Column(
         children: [

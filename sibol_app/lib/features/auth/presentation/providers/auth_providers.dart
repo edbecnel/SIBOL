@@ -34,6 +34,13 @@ class AuthController extends Notifier<AsyncValue<void>> {
   @override
   AsyncValue<void> build() => const AsyncData(null);
 
+  /// Clears a prior sign-in failure (e.g. when reopening [LoginScreen]).
+  void clearSignInError() {
+    if (!state.isLoading && state.hasError) {
+      state = const AsyncData(null);
+    }
+  }
+
   Future<void> signIn(String email, String password) async {
     state = const AsyncLoading();
     try {
