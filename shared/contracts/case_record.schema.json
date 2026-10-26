@@ -34,9 +34,16 @@
     "contactPhone": { "type": "string" },
     "parentGuardianContact": { "type": "string" },
     "teenUid": { "type": "string" },
-    "linkedAccountEmail": { "type": "string" },
+    "linkedAccountEmail": {
+      "type": "string",
+      "description": "Auth email snapshot at registered linkage; not a live Auth mirror."
+    },
     "identityLinkedAt": { "type": "string", "format": "date-time" },
-    "teenProfileSyncedAt": { "type": "string", "format": "date-time" },
+    "teenProfileSyncedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Legacy: last automatic teen-profile-to-case sync before ongoing sync was disabled; no longer written."
+    },
     "registeredAt": { "type": "string", "format": "date-time" },
     "nextFollowUpAt": { "type": "string", "format": "date-time" },
     "notes": { "type": "string" },

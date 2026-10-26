@@ -32,8 +32,11 @@
 | `contactPhone` | string? | |
 | `parentGuardianContact` | string? | |
 | `teenUid` | string? | Required for `registered` active cases |
-| `linkedAccountEmail` | string? | Auth email snapshot from verified linkage |
+| `linkedAccountEmail` | string? | Auth email **snapshot** recorded at verified linkage (not a live Auth mirror) |
 | `identityLinkedAt` | timestamp? | When registered linkage was verified |
+| `teenProfileSyncedAt` | timestamp? | **Legacy only** — last automatic profile→case sync before SIBOL-CASE-IDENTITY-001 ownership correction; no longer written |
+
+**Independence rule (SIBOL-CASE-IDENTITY-001 ownership correction):** Teen profile edits (`users/{uid}`) never automatically overwrite established Barangay case identity/contact fields (`cases/{caseId}`). Barangay case edits never overwrite teen site registration or Firebase Authentication credentials. Registered cases may receive a **one-time** identity/contact snapshot when linkage is verified via `regResolveRegisteredTeenForCase`; subsequent changes on either side remain independent.
 
 **Legacy documents** without `caseCompleteness` remain valid (age-only QA/demo records).
 
@@ -55,8 +58,9 @@ Sign-in email remains Firebase Authentication (separate from `contactEmail`).
 
 ## Callable verification (registered case linkage)
 
-- `regListRegisteredTeensForCase` — org-scoped teen picker (case.write).
-- `regResolveRegisteredTeenForCase` — authoritative snapshot before registered case activation (online).
+- `regListRegisteredTeensForCase` — org-scoped teen picker (`case.write`).
+- `regResolveRegisteredTeenForCase` — **one-time** authoritative snapshot before registered case activation or linkage (online). Does not modify `users/{uid}`.
+- `regSyncRegisteredTeenCasesFromProfile` — **disabled (compatibility stub).** Callable remains registered for older clients but returns `failed-precondition` and performs **no Firestore writes**. Ongoing profile↔case synchronization was removed; use case edit for Barangay corrections and **Edit my profile** for teen self-service.
 
 ## Follow-up (`cases/{caseId}/followUps/{followUpId}`)
 

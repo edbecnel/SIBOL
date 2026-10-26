@@ -72,10 +72,6 @@ class CaseDetailScreen extends ConsumerWidget {
                   isFromCache: snapshot.isFromCache,
                   hasPendingWrites: snapshot.hasPendingWrites,
                   onAddFollowUp: () => _showAddFollowUp(context, ref),
-                  onRefreshRegisteredContact: record.resolvedSubjectKind ==
-                          CaseSubjectKind.registered
-                      ? () => _refreshRegisteredContact(context, ref)
-                      : null,
                 );
               },
             ),
@@ -83,30 +79,6 @@ class CaseDetailScreen extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  Future<void> _refreshRegisteredContact(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
-    try {
-      await ref.read(caseRegistrationApiProvider).syncRegisteredTeenContactFromProfile(
-            caseId: caseId,
-          );
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Contact information refreshed from teen profile.'),
-          ),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not refresh contact: $e')),
-        );
-      }
-    }
   }
 
   Future<void> _showAddFollowUp(BuildContext context, WidgetRef ref) async {
@@ -179,7 +151,6 @@ class CaseDetailBody extends StatelessWidget {
     required this.isFromCache,
     required this.hasPendingWrites,
     required this.onAddFollowUp,
-    this.onRefreshRegisteredContact,
   });
 
   final CaseRecord record;
@@ -187,7 +158,6 @@ class CaseDetailBody extends StatelessWidget {
   final bool isFromCache;
   final bool hasPendingWrites;
   final VoidCallback onAddFollowUp;
-  final VoidCallback? onRefreshRegisteredContact;
 
   @override
   Widget build(BuildContext context) {
@@ -247,16 +217,8 @@ class CaseDetailBody extends StatelessWidget {
             ),
           if (record.teenProfileSyncedAt != null)
             _DetailTile(
-              label: 'Teen profile contact synced',
+              label: 'Legacy profile sync (historical)',
               value: dateTimeFmt.format(record.teenProfileSyncedAt!),
-            ),
-          if (onRefreshRegisteredContact != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: OutlinedButton(
-                onPressed: onRefreshRegisteredContact,
-                child: const Text('Refresh contact from teen profile'),
-              ),
             ),
         ],
         _DetailTile(

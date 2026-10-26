@@ -72,19 +72,6 @@ class CaseRegistrationApi {
     }).toList();
   }
 
-  Future<List<String>> syncRegisteredTeenContactFromProfile({
-    String? caseId,
-  }) async {
-    final result = await _functions
-        .httpsCallable('regSyncRegisteredTeenCasesFromProfile')
-        .call({
-      if (caseId != null && caseId.isNotEmpty) 'caseId': caseId,
-    });
-    final data = Map<String, dynamic>.from(result.data as Map);
-    final ids = data['updatedCaseIds'] as List<Object?>? ?? [];
-    return ids.map((e) => '$e').toList();
-  }
-
   Future<ResolvedRegisteredTeenForCase> resolveRegisteredTeen({
     required String orgId,
     required String teenUid,

@@ -87,14 +87,27 @@ Verified themes: legacy case read, extended draft/active contact rules, register
 
 New follow-ups store `createdByDisplayName` and `createdByStaffEmail` snapshots at write time; UI uses `FollowUpStaffIdentity` (name + email, UID fallback for legacy rows). `createdByUid` unchanged for audit.
 
-### Registered teen profile → case contact sync
+### Identity ownership correction (2026-10-26, handover `d62b15e8-…`)
 
-Callable `regSyncRegisteredTeenCasesFromProfile`:
+**Policy:** Teen site profile (`users/{uid}`) and Barangay case identity (`cases/{caseId}`) are independently owned. Linkage does **not** imply ongoing synchronization.
 
-- **Teen:** after profile save, syncs all registered cases for that teen in their org (contact fields + `teenProfileSyncedAt`).
-- **Barangay:** **Refresh contact from teen profile** on registered case detail (requires online).
+| Change | Detail |
+|--------|--------|
+| Teen **Edit my profile** | Writes `users/{uid}` only; no callable sync |
+| `regSyncRegisteredTeenCasesFromProfile` | Stub: `failed-precondition`, **no writes**; export retained |
+| Case detail UI | Removed **Refresh contact from teen profile**; legacy `teenProfileSyncedAt` labeled historical |
+| `regResolveRegisteredTeenForCase` | Unchanged one-time snapshot at registered linkage |
+| `linkedAccountEmail` | Snapshot at linkage (not live Auth mirror) |
 
-Does not alter follow-up history or `teenUid` / `linkedAccountEmail`. Offline case reads show cached-contact notice when applicable.
+Callable contract: [CASE_REGISTERED_TEEN_CALLABLES.md](../../shared/docs/CASE_REGISTERED_TEEN_CALLABLES.md). Model: [CASE_AND_REPORTING_MODEL.md](../Specifications/CASE_AND_REPORTING_MODEL.md).
+
+**Verification (this milestone):**
+
+| Suite | Result |
+|-------|--------|
+| `shared/functions` `test/sync_registered_teen_cases_disabled.test.mjs` | **3/3 PASS** |
+| `sibol_app` `test/user_profile_repository_impl_test.dart` | **1/1 PASS** |
+| `shared/firestore-rules-test` full suite | **126/126 PASS** |
 
 ### Flutter / Functions
 
@@ -176,8 +189,8 @@ Do not claim full table in §6 Android checklist as PASS until PO re-authenticat
 ## Limitations
 
 - Legacy follow-ups without staff snapshots still show UID fallback.
-- Profile sync requires online callable (teen save retries sync silently on failure).
-- `teenProfileSyncedAt` is server-written; client displays when present after sync.
+- `teenProfileSyncedAt` on existing cases is display-only history; new values are not written.
+- Barangay staff must edit the case directly to correct case identity/contact after initial linkage.
 
 ## Commits
 

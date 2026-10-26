@@ -2,14 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sibol_app/core/constants/firestore_paths.dart';
 import 'package:sibol_app/features/auth/data/models/user_profile_model.dart';
 import 'package:sibol_app/features/auth/domain/entities/user_profile.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:sibol_app/features/auth/domain/repositories/user_profile_repository.dart';
 
 class UserProfileRepositoryImpl implements UserProfileRepository {
-  UserProfileRepositoryImpl(this._firestore, this._functions);
+  UserProfileRepositoryImpl(this._firestore);
 
   final FirebaseFirestore _firestore;
-  final FirebaseFunctions _functions;
 
   @override
   Stream<UserProfile?> watchProfile(String uid) {
@@ -56,12 +54,5 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       parentGuardianContact: parentGuardianContact,
     );
     await _firestore.collection(FirestorePaths.users).doc(uid).update(payload);
-    try {
-      await _functions
-          .httpsCallable('regSyncRegisteredTeenCasesFromProfile')
-          .call({});
-    } catch (_) {
-      // Profile save succeeded; case sync can retry when online.
-    }
   }
 }
