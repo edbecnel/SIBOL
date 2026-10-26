@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
+import 'package:sibol_app/features/teenager/domain/assistance_request_submitter_identity.dart';
 import 'package:sibol_app/features/teenager/presentation/providers/barangay_assistance_providers.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
@@ -54,11 +55,11 @@ class BarangayIncomingRequestsScreen extends ConsumerWidget {
                       child: ListTile(
                         title: Text(request.category.label),
                         subtitle: Text(
+                          '${assistanceIncomingRequestCardAccountEmailLine(request.submitterAccountEmail)}\n'
                           'Ref: ${request.requestId}\n'
                           'Submitted ${dateFmt.format(request.createdAt)}\n'
                           'Status: ${request.status.label}',
                         ),
-                        isThreeLine: true,
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => context.push(
                           Routes.barangayIncomingRequestDetail(request.requestId),

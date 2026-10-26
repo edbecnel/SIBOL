@@ -30,6 +30,17 @@ void main() {
     );
   });
 
+  test('formats incoming card account email line', () {
+    expect(
+      assistanceIncomingRequestCardAccountEmailLine('teen.demo@sibol.local'),
+      'Account email: teen.demo@sibol.local',
+    );
+    expect(
+      assistanceIncomingRequestCardAccountEmailLine(null),
+      'Account email: Not available',
+    );
+  });
+
   test('shows trimmed cached values when present', () {
     expect(assistanceSubmitterDisplayLabel('  Maria  '), 'Maria');
     expect(

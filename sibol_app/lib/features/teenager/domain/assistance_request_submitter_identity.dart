@@ -49,3 +49,9 @@ String assistanceSubmitterEmailLabel(String? cachedAccountEmail) {
   }
   return trimmed;
 }
+
+/// Incoming Requests list card line (email snapshot only; no display name).
+String assistanceIncomingRequestCardAccountEmailLine(String? cachedAccountEmail) {
+  return '${AssistanceRequestSubmitterIdentityLabels.accountEmail}: '
+      '${assistanceSubmitterEmailLabel(cachedAccountEmail)}';
+}
