@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-25 (SIBOL-GIT-CHK-002 P0 online acceptance)  
+> **Last updated:** 2026-10-26 (SIBOL-OFFLINE-QA-CLOSE-001)  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -35,6 +35,13 @@
 | SIBOL-ORG-NAME-003 A02 | Remove redundant geographic site UI | **Accepted** (P0 online emulator) | [A02 UI cleanup](SIBOL_ORG_NAME_003_A02_UI_CLEANUP.md) |
 | SIBOL-REPORT-P0-002 | Aggregate report submit (pre-read fix) | **Accepted** (P0 online emulator) | [Execution report](SIBOL_REPORT_P0_002_EXECUTION_REPORT.md) |
 | SIBOL-GIT-CHK-002 | P0 online acceptance + repository sync | **Closed** @ `6df57ba`+ | [P0 online acceptance](SIBOL_P0_ONLINE_ACCEPTANCE_REPORT.md) |
+| SIBOL-OFFLINE-QA-001 | Offline emulator checkpoint (O1–O5) | **Closed** | [OFFLINE QA execution](SIBOL_OFFLINE_QA_001_EXECUTION_REPORT.md), [Recovery](../Operations/SIBOL_OFFLINE_QA_001_EMULATOR_RECOVERY.md) |
+| SIBOL-OFFLINE-QA-CLOSE-001 | Offline QA closure + prototype baseline tag | **Closed** @ tag `sibol-prototype-2026-10-26-offline-qa` | [OFFLINE QA execution](SIBOL_OFFLINE_QA_001_EXECUTION_REPORT.md) |
+| SIBOL-OFFLINE-REQ-001 | Cancel pending offline submission (draft) | **Deferred — NOT APPROVED** | [Deferred enhancement](SIBOL_OFFLINE_REQ_001_DEFERRED_ENHANCEMENT.md) |
+
+## Prototype development boundary
+
+Unpaid prototype development commitment ends **29 October 2026**. Further work requires a separately agreed arrangement (planning note only; not a legal or IP determination). See [SIBOL_OFFLINE_QA_001_EXECUTION_REPORT.md](SIBOL_OFFLINE_QA_001_EXECUTION_REPORT.md).
 
 ## Tranche 2 implementation gate
 

@@ -4,7 +4,7 @@
 
 ## Superseded for offline QA (2026-10-26)
 
-Accepted offline QA checkpoint: `.firebase-qa-backups/offline-qa-accepted-20261026-084832/` — [SIBOL_OFFLINE_QA_001_EMULATOR_RECOVERY.md](SIBOL_OFFLINE_QA_001_EMULATOR_RECOVERY.md). The export below remains valid for early PROTOTYPE-003 recovery only.
+Accepted offline QA closure (O1–O8): `.firebase-qa-backups/offline-qa-closure-20261026-095408/` — [SIBOL_OFFLINE_QA_001_EMULATOR_RECOVERY.md](SIBOL_OFFLINE_QA_001_EMULATOR_RECOVERY.md). The export below remains valid for early PROTOTYPE-003 recovery only.
 
 ## Historical backup (2026-10-25)
 
