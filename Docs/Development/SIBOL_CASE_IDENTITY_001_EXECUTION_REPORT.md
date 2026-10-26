@@ -156,6 +156,23 @@ Do not claim full table in §6 Android checklist as PASS until PO re-authenticat
 
 **Verification:** `flutter test test/case_identity_presentation_test.dart` — **8/8 PASS**; `flutter analyze` on touched files — clean. **Android:** no hot-reload session attached to running debug app (`flutter attach` did not connect); device check deferred to next `flutter run` / PO refresh — logic covered by widget test using `maria.offline@test.org`.
 
+### Teen registration identity completion (2026-10-26, handover `b7e2a03d-…`)
+
+**Gap:** Teen self-registration UI collected only sign-in email and password; profile identity/contact fields existed on **Edit my profile** and Barangay cases but not at registration.
+
+**Correction:** Single registration form collects full name, DOB (computed age shown), PSGC Barangay, contact email/phone (email-or-phone rule), then sign-in credentials. Identity is validated **before** `registerWithEmail`. `regRegisterTeenAccount` persists `displayName`, `dateOfBirth`, `contactEmail`/`contactPhone` on first profile create (`teenIdentityFields.ts`). Contact email prefills from sign-in email until manually edited.
+
+**Verification:**
+
+| Suite | Result |
+|-------|--------|
+| `test/teen_registration_validation_test.dart` | **11/11 PASS** |
+| `test/teen_registration_screen_test.dart` | **1/1 PASS** |
+| `shared/functions` `test/teen.registration.test.mjs` | **12/12 PASS** |
+| `org_identity.test.mjs` (teen re-register seed) | updated identity payload |
+
+**Android:** Not navigated to Teen registration on device to preserve active Barangay session; widget test confirms field labels.
+
 ## Limitations
 
 - Legacy follow-ups without staff snapshots still show UID fallback.

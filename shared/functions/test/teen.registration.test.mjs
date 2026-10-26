@@ -18,6 +18,12 @@ const centralUid = "centralTeenRegUid1234567890123";
 
 let db;
 
+const sampleTeenIdentity = {
+  displayName: "Teen Demo",
+  dateOfBirth: "2010-06-15",
+  contactEmail: "teen.reg.identity@sibol.local",
+};
+
 function expectDenied(fn, code) {
   return assert.rejects(fn, (err) => {
     assert.ok(err instanceof AuthzError);
@@ -83,13 +89,15 @@ describe("REG-C teen registration", () => {
     const result = await runRegisterTeenAccount(db, teenUid, true, {
       selectedBarangayOrgId: activeOrgId,
       privacyConsentAcknowledged: true,
-      displayName: "Teen Demo",
+      ...sampleTeenIdentity,
     });
     assert.equal(result.created, true);
     const snap = await db.collection("users").doc(teenUid).get();
     assert.equal(snap.data()?.role, "teen");
     assert.equal(snap.data()?.selectedBarangayOrgId, activeOrgId);
     assert.equal(snap.data()?.assignedBarangay, "Barangay Alpha, Demo");
+    assert.equal(snap.data()?.dateOfBirth, sampleTeenIdentity.dateOfBirth);
+    assert.equal(snap.data()?.contactEmail, sampleTeenIdentity.contactEmail);
     assert.equal(snap.data()?.isCentralAdmin, undefined);
   });
 
@@ -111,6 +119,9 @@ describe("REG-C teen registration", () => {
       psgcProvinceCode: "SYNTH_P102",
       psgcCityMunCode: "SYNTH_M301",
       privacyConsentAcknowledged: true,
+      displayName: "PSGC Teen",
+      dateOfBirth: "2011-03-01",
+      contactPhone: "+639171112233",
     });
     const snap = await db.collection("users").doc(psgcTeenUid).get();
     assert.equal(snap.data()?.selectedBarangayOrgId, created.orgId);
@@ -161,8 +172,25 @@ describe("REG-C teen registration", () => {
           psgcRegionCode: "SYNTH_R10",
           psgcCityMunCode: "SYNTH_C201",
           privacyConsentAcknowledged: true,
+          displayName: "Suspended Org Teen",
+          dateOfBirth: "2010-06-15",
+          contactPhone: "+639171234567",
         }),
       "failed-precondition",
+    );
+  });
+
+  it("rejects registration without contact method", async () => {
+    const otherUid = "teenNoContactUid1234567890123";
+    await expectDenied(
+      () =>
+        runRegisterTeenAccount(db, otherUid, true, {
+          selectedBarangayOrgId: activeOrgId,
+          privacyConsentAcknowledged: true,
+          displayName: "No Contact",
+          dateOfBirth: "2010-01-01",
+        }),
+      "invalid-argument",
     );
   });
 
@@ -225,6 +253,9 @@ describe("REG-C teen registration", () => {
     await runRegisterTeenAccount(db, freshUid, true, {
       selectedBarangayOrgId: activeOrgId,
       privacyConsentAcknowledged: true,
+      displayName: "Audit Teen",
+      dateOfBirth: "2010-07-01",
+      contactEmail: "audit.teen@sibol.local",
     });
     const snap = await db
       .collection("auditEvents")

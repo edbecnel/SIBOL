@@ -39,7 +39,10 @@ class TeenRegistrationApi {
     required String psgcRegionCode,
     String? psgcProvinceCode,
     required String psgcCityMunCode,
-    String? displayName,
+    required String displayName,
+    required String dateOfBirth,
+    String? contactEmail,
+    String? contactPhone,
     required bool privacyConsentAcknowledged,
   }) async {
     final result = await _functions.httpsCallable('regRegisterTeenAccount').call({
@@ -48,7 +51,12 @@ class TeenRegistrationApi {
       'psgcRegionCode': psgcRegionCode,
       if (psgcProvinceCode != null) 'psgcProvinceCode': psgcProvinceCode,
       'psgcCityMunCode': psgcCityMunCode,
-      if (displayName != null && displayName.isNotEmpty) 'displayName': displayName,
+      'displayName': displayName,
+      'dateOfBirth': dateOfBirth,
+      if (contactEmail != null && contactEmail.isNotEmpty)
+        'contactEmail': contactEmail,
+      if (contactPhone != null && contactPhone.isNotEmpty)
+        'contactPhone': contactPhone,
       'privacyConsentAcknowledged': privacyConsentAcknowledged,
     });
     return Map<String, dynamic>.from(result.data as Map);

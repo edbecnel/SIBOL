@@ -12,6 +12,7 @@ import {
 } from "./resolveBarangayOrg";
 import { allowLegacyTeenOrgBinding } from "../geo/demoFlags";
 import { resolveTeenAssignedBarangayLabel } from "./teenAssignedBarangay";
+import { resolveTeenIdentityFields } from "./teenIdentityFields";
 
 const STAFF_ROLES = new Set(["barangay", "moph"]);
 
@@ -23,6 +24,9 @@ export type RegisterTeenInput = {
   psgcCityMunCode?: string;
   selectedBarangayOrgId?: string;
   displayName?: string;
+  dateOfBirth?: string;
+  contactEmail?: string;
+  contactPhone?: string;
   privacyConsentAcknowledged?: boolean;
 };
 
@@ -85,11 +89,6 @@ export async function runRegisterTeenAccount(
     );
   }
 
-  const displayName =
-    typeof data.displayName === "string" && data.displayName.trim().length >= 2
-      ? data.displayName.trim()
-      : "Teen account";
-
   const userRef = db.collection("users").doc(uid);
   const orgRef = db.collection("organizations").doc(orgId);
 
@@ -143,12 +142,16 @@ export async function runRegisterTeenAccount(
       );
     }
 
+    const identity = resolveTeenIdentityFields(data);
     const onboardingStatus = resolveTeenOnboardingStatus(authEmailVerified);
     const assignedBarangay = resolveTeenAssignedBarangayLabel(org, data);
     const now = Timestamp.now();
     tx.create(userRef, {
       role: "teen",
-      displayName,
+      displayName: identity.displayName,
+      dateOfBirth: identity.dateOfBirth,
+      ...(identity.contactEmail ? { contactEmail: identity.contactEmail } : {}),
+      ...(identity.contactPhone ? { contactPhone: identity.contactPhone } : {}),
       active: true,
       createdAt: now,
       selectedBarangayOrgId: orgId,

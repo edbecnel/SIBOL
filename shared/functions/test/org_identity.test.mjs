@@ -172,6 +172,9 @@ describe("organization identity", () => {
       psgcProvinceCode: "SYNTH_P102",
       psgcCityMunCode: "SYNTH_M301",
       privacyConsentAcknowledged: true,
+      displayName: "Change Brgy Teen",
+      dateOfBirth: "2010-06-15",
+      contactEmail: "change.brgy@sibol.local",
     });
     await assert.rejects(
       () =>

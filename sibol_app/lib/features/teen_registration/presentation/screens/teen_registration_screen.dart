@@ -5,9 +5,11 @@ import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/core/errors/user_error_message.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/auth/presentation/sign_out_pending_guard.dart';
+import 'package:sibol_app/features/cases/domain/case_date_of_birth.dart';
 import 'package:sibol_app/features/geo/presentation/geo_providers.dart';
 import 'package:sibol_app/features/geo/presentation/psgc_geo_picker.dart';
 import 'package:sibol_app/features/teen_registration/domain/teen_onboarding_policy.dart';
+import 'package:sibol_app/features/teen_registration/domain/teen_registration_validation.dart';
 import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_intent_providers.dart';
 import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_providers.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
@@ -24,85 +26,108 @@ class TeenRegistrationScreen extends ConsumerStatefulWidget {
 
 class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen> {
   int _step = 0;
-  final _emailController = TextEditingController();
+  final _signInEmailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _displayNameController = TextEditingController();
-  bool _consent = false;
+  final _fullNameController = TextEditingController();
+  final _dobController = TextEditingController();
+  final _contactEmailController = TextEditingController();
+  final _contactPhoneController = TextEditingController();
   PsgcSelection? _psgcSelection;
+  bool _consent = false;
   bool _submitting = false;
   String? _error;
-  bool _authCreated = false;
+  bool _contactEmailManuallyEdited = false;
 
   @override
   void initState() {
     super.initState();
+    _signInEmailController.addListener(_maybePrefillContactEmail);
+    _contactEmailController.addListener(_onContactEmailEdited);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(teenRegistrationIntentProvider.notifier).markInProgress();
     });
   }
 
+  void _maybePrefillContactEmail() {
+    if (_contactEmailManuallyEdited) return;
+    final signIn = _signInEmailController.text.trim();
+    if (_contactEmailController.text.trim() != signIn) {
+      _contactEmailController.text = signIn;
+    }
+  }
+
+  void _onContactEmailEdited() {
+    final signIn = _signInEmailController.text.trim();
+    final contact = _contactEmailController.text.trim();
+    if (contact.isNotEmpty && contact != signIn) {
+      _contactEmailManuallyEdited = true;
+    }
+  }
+
   @override
   void dispose() {
-    _emailController.dispose();
+    _signInEmailController.removeListener(_maybePrefillContactEmail);
+    _contactEmailController.removeListener(_onContactEmailEdited);
+    _signInEmailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    _displayNameController.dispose();
+    _fullNameController.dispose();
+    _dobController.dispose();
+    _contactEmailController.dispose();
+    _contactPhoneController.dispose();
     super.dispose();
   }
 
-  String? _validateCredentials() {
-    final email = _emailController.text.trim();
-    if (email.isEmpty || !email.contains('@')) {
-      return 'Enter a valid email address.';
-    }
-    if (_passwordController.text.length < 8) {
-      return 'Password must be at least 8 characters.';
-    }
-    if (_passwordController.text != _confirmPasswordController.text) {
-      return 'Passwords do not match.';
-    }
-    return null;
+  String? _computedAgeLabel() {
+    final age = TeenRegistrationValidation.computedAge(_dobController.text);
+    if (age == null) return null;
+    return 'Calculated age: $age';
   }
 
-  Future<void> _createAuthAccount() async {
-    final validation = _validateCredentials();
+  Future<void> _submitRegistration() async {
+    final authUser = ref.read(authStateChangesProvider).value;
+    final needsAuth = authUser == null;
+
+    final validation = needsAuth
+        ? TeenRegistrationValidation.validateBeforeAccountCreation(
+            fullName: _fullNameController.text,
+            dateOfBirth: _dobController.text,
+            contactEmail: _contactEmailController.text,
+            contactPhone: _contactPhoneController.text,
+            barangaySelected: _psgcSelection != null,
+            signInEmail: _signInEmailController.text,
+            password: _passwordController.text,
+            confirmPassword: _confirmPasswordController.text,
+            privacyConsent: _consent,
+          )
+        : TeenRegistrationValidation.validateBeforeProfileCompletion(
+            fullName: _fullNameController.text,
+            dateOfBirth: _dobController.text,
+            contactEmail: _contactEmailController.text,
+            contactPhone: _contactPhoneController.text,
+            barangaySelected: _psgcSelection != null,
+            privacyConsent: _consent,
+          );
+
     if (validation != null) {
       setState(() => _error = validation);
       return;
     }
-    setState(() {
-      _submitting = true;
-      _error = null;
-    });
-    try {
-      await ref.read(authControllerProvider.notifier).registerWithEmail(
-            _emailController.text.trim(),
-            _passwordController.text,
-          );
-      _authCreated = true;
-      setState(() => _step = 2);
-    } catch (e) {
-      setState(() => _error = userErrorMessage(e));
-    } finally {
-      setState(() => _submitting = false);
-    }
-  }
 
-  Future<void> _submitProfile() async {
-    if (_psgcSelection == null) {
-      setState(() => _error = 'Select a Barangay for assistance routing.');
-      return;
-    }
-    if (!_consent) {
-      setState(() => _error = 'Acknowledge the privacy notice to continue.');
-      return;
-    }
     setState(() {
       _submitting = true;
       _error = null;
     });
+
     try {
+      if (needsAuth) {
+        await ref.read(authControllerProvider.notifier).registerWithEmail(
+              _signInEmailController.text.trim(),
+              _passwordController.text,
+            );
+      }
+
       final sel = _psgcSelection!;
       await ref.read(teenRegistrationApiProvider).registerTeenAccount(
             selectedBarangayPsgcCode: sel.psgcBarangayCode,
@@ -110,9 +135,18 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
             psgcRegionCode: sel.psgcRegionCode,
             psgcProvinceCode: sel.psgcProvinceCode,
             psgcCityMunCode: sel.psgcCityMunCode,
-            displayName: _displayNameController.text.trim(),
+            displayName: _fullNameController.text.trim(),
+            dateOfBirth: CaseDateOfBirth.parse(_dobController.text.trim())!
+                .toStorageString(),
+            contactEmail: _contactEmailController.text.trim().isEmpty
+                ? null
+                : _contactEmailController.text.trim(),
+            contactPhone: _contactPhoneController.text.trim().isEmpty
+                ? null
+                : _contactPhoneController.text.trim(),
             privacyConsentAcknowledged: true,
           );
+
       await ref.read(teenRegistrationIntentProvider.notifier).clear();
       if (TeenOnboardingPolicy.requireEmailVerificationBeforeAssistance) {
         await ref.read(authControllerProvider.notifier).sendEmailVerification();
@@ -123,7 +157,7 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
     } catch (e) {
       setState(() => _error = userErrorMessage(e));
     } finally {
-      setState(() => _submitting = false);
+      if (mounted) setState(() => _submitting = false);
     }
   }
 
@@ -132,6 +166,8 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
     final psgcBundle = ref.watch(psgcBundleProvider);
     final authUser = ref.watch(authStateChangesProvider).value;
     final profile = ref.watch(userProfileProvider).value;
+    final needsAuth = authUser == null;
+    final ageLabel = _computedAgeLabel();
 
     return Scaffold(
       appBar: AppBar(
@@ -169,54 +205,35 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
                       label: 'Continue',
                       onPressed: () => setState(() {
                         if (authUser != null && profile == null) {
-                          _step = 2;
+                          _step = 1;
                         } else {
                           _step = 1;
                         }
                       }),
                     ),
                   ],
-                  if (_step == 1 && authUser == null) ...[
-                    AppTextField(
-                      controller: _emailController,
-                      label: 'Email',
-                      keyboardType: TextInputType.emailAddress,
+                  if (_step >= 1) ...[
+                    const Text(
+                      'Identity and contact',
+                      style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 12),
                     AppTextField(
-                      controller: _passwordController,
-                      label: 'Password',
-                      isPassword: true,
+                      controller: _fullNameController,
+                      label: 'Full name',
                       textInputAction: TextInputAction.next,
                     ),
                     const SizedBox(height: 12),
                     AppTextField(
-                      controller: _confirmPasswordController,
-                      label: 'Confirm password',
-                      isPassword: true,
+                      controller: _dobController,
+                      label: 'Date of birth (YYYY-MM-DD)',
+                      keyboardType: TextInputType.datetime,
+                      textInputAction: TextInputAction.next,
                     ),
-                    const SizedBox(height: 16),
-                    AppButton.primary(
-                      label: _submitting ? 'Creating account…' : 'Create sign-in',
-                      onPressed: _submitting ? null : _createAuthAccount,
-                    ),
-                  ],
-                  if (_step == 1 && authUser != null && profile == null && !_authCreated) ...[
-                    const Text(
-                      'You are already signed in. Continue to complete your Teen profile, '
-                      'or sign out to use a different account.',
-                    ),
-                    const SizedBox(height: 16),
-                    AppButton.primary(
-                      label: 'Continue profile setup',
-                      onPressed: () => setState(() => _step = 2),
-                    ),
-                  ],
-                  if (_step >= 2) ...[
-                    AppTextField(
-                      controller: _displayNameController,
-                      label: 'Display name (optional)',
-                    ),
+                    if (ageLabel != null) ...[
+                      const SizedBox(height: 4),
+                      Text(ageLabel, style: Theme.of(context).textTheme.bodySmall),
+                    ],
                     const SizedBox(height: 16),
                     const Text(
                       'Select the Barangay that should receive your assistance requests. '
@@ -227,12 +244,66 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
                     const SizedBox(height: 8),
                     psgcBundle.when(
                       loading: () => const Center(child: CircularProgressIndicator()),
-                      error: (e, _) => Text('Could not load geographic reference data.\n$e'),
+                      error: (e, _) =>
+                          Text('Could not load geographic reference data.\n$e'),
                       data: (bundle) => PsgcGeoPicker(
                         bundle: bundle,
                         onChanged: (v) => setState(() => _psgcSelection = v),
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    AppTextField(
+                      controller: _contactEmailController,
+                      label: 'Contact email (optional if phone provided)',
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 12),
+                    AppTextField(
+                      controller: _contactPhoneController,
+                      label: 'Contact phone (optional if email provided)',
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Provide at least one contact method. Contact email is prefilled from '
+                      'sign-in email but may differ.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 24),
+                    if (needsAuth) ...[
+                      const Text(
+                        'Sign-in credentials',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 12),
+                      AppTextField(
+                        controller: _signInEmailController,
+                        label: 'Sign-in email',
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                      ),
+                      const SizedBox(height: 12),
+                      AppTextField(
+                        controller: _passwordController,
+                        label: 'Password',
+                        isPassword: true,
+                        textInputAction: TextInputAction.next,
+                      ),
+                      const SizedBox(height: 12),
+                      AppTextField(
+                        controller: _confirmPasswordController,
+                        label: 'Confirm password',
+                        isPassword: true,
+                      ),
+                    ] else ...[
+                      const Text(
+                        'You are signed in. Complete your Teen profile below, '
+                        'or sign out to use a different account.',
+                      ),
+                      const SizedBox(height: 12),
+                    ],
                     const SizedBox(height: 16),
                     CheckboxListTile(
                       value: _consent,
@@ -242,8 +313,12 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
                     ),
                     const SizedBox(height: 16),
                     AppButton.primary(
-                      label: _submitting ? 'Submitting…' : 'Complete registration',
-                      onPressed: _submitting ? null : _submitProfile,
+                      label: _submitting
+                          ? 'Submitting…'
+                          : needsAuth
+                              ? 'Create account and register'
+                              : 'Complete registration',
+                      onPressed: _submitting ? null : _submitRegistration,
                     ),
                   ],
                   if (_error != null) ...[
