@@ -347,6 +347,39 @@ void main() {
       );
     });
 
+    test('teen on settings → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.settings,
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.teen)),
+        ),
+        isNull,
+      );
+    });
+
+    test('teen on profile editor route → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.teenProfileEdit,
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.teen)),
+        ),
+        isNull,
+      );
+    });
+
+    test('barangay on teen profile editor → barangay home', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.teenProfileEdit,
+          authAsync: const AsyncData(user),
+          profileAsync: AsyncData(profile(role: SibolRole.barangay)),
+        ),
+        Routes.barangayHome,
+      );
+    });
+
     test('moph on barangay case detail → moph home', () {
       expect(
         resolveAppRedirect(

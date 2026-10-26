@@ -46,6 +46,11 @@ bool isProfileHome(String location, UserProfile profile) {
   return location == home || location.startsWith('$home/');
 }
 
+bool isSettingsRoute(String location) {
+  return location == Routes.settings ||
+      location.startsWith('${Routes.settings}/');
+}
+
 /// Pure redirect resolver for go_router; used by [appRouterProvider] and tests.
 String? resolveAppRedirect({
   required String location,
@@ -112,7 +117,10 @@ String? resolveAppRedirect({
   final home = homeForProfile(profile);
   if (onLogin || onSplash || onWelcome || onAccountNotProvisioned) return home;
 
-  if (location == Routes.settings || location == Routes.changePassword) {
+  if (isSettingsRoute(location)) {
+    if (location == Routes.teenProfileEdit && profile.role != SibolRole.teen) {
+      return home;
+    }
     return null;
   }
 
@@ -126,7 +134,7 @@ String? resolveAppRedirect({
 
   if (!isProfileHome(location, profile) &&
       location != Routes.unauthorized &&
-      location != Routes.settings &&
+      !isSettingsRoute(location) &&
       !location.startsWith('/admin')) {
     return home;
   }

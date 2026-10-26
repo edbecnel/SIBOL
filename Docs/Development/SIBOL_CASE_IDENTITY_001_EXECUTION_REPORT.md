@@ -186,6 +186,20 @@ Do not claim full table in §6 Android checklist as PASS until PO re-authenticat
 
 **Android:** Not navigated to Teen registration on device to preserve active Barangay session; widget test confirms field labels.
 
+### Teen profile editor navigation (2026-10-26, handover `5d8b2f60-…`)
+
+**Defect:** Settings → **Edit my profile** sent authenticated teens to the teenager dashboard instead of the profile editor.
+
+**Root cause:** `resolveAppRedirect` allowed only `/settings` and `/settings/change-password`. Navigating to `/settings/profile` failed the settings exemption and was redirected to `homeForProfile` (`/teen`).
+
+**Correction:** Treat all `/settings/*` routes as settings navigation (`isSettingsRoute`). Restrict `/settings/profile` to `SibolRole.teen` (staff deep-links still redirect to role home).
+
+| Check | Result |
+|-------|--------|
+| `test/app_redirect_test.dart` | PASS (incl. teen profile editor route) |
+| `test/teen_settings_profile_navigation_test.dart` | PASS |
+| `flutter analyze` (`app_redirect.dart`) | No issues |
+
 ## Limitations
 
 - Legacy follow-ups without staff snapshots still show UID fallback.
