@@ -128,6 +128,24 @@ Do not claim full table in §6 Android checklist as PASS until PO re-authenticat
 | `flutter test test/login_screen_test.dart` | **6/6 PASS** (includes stale-error clear) |
 | Android CASE-IDENTITY walkthrough | **Pending** PO `LOGIN COMPLETE` after manual sign-in |
 
+### Android acceptance (2026-10-26, handover `2c71f9a4-…` post-`LOGIN COMPLETE`)
+
+**Environment:** `emulator-5554`, local Firebase emulators (`USE_FIREBASE_EMULATORS=true`), Barangay session `barangay.demo@sibol.local`. Session-preserving ADB + screencap evidence (Flutter semantics not exposed to UI Automator text dumps).
+
+| Check | Result | Evidence |
+|-------|--------|----------|
+| Barangay dashboard after PO login | **PASS** | Dashboard loaded; case list visible |
+| **Maria Offline Test** list identity | **PASS** | Manual record · Age 16; Active case; `Legacy record — complete contact and DOB when ready`; aggregate report line |
+| **Maria** case detail | **PASS** | Case ID `fhcQrLxE0IhwPFzCPinH`; legacy incomplete copy; QA-OFFLINE notes preserved; Barangay 3, Balingasag |
+| **Follow-ups** (legacy row) | **PASS** | `QA-OFFLINE-FOLLOWUP-001` visible; staff line uses **UID fallback** (`Recorded by staff (6dCjs4T7E4Lk3bzyhHhHNKMXZF5h)`) — no snapshots on seeded row (expected) |
+| **Follow-ups** (new row staff name/email) | **Not exercised** | Would require new follow-up write; deferred to avoid extra QA mutations |
+| **Maria edit offline** (O5 path) | **PASS** | Airplane mode on: Edit case form loads from cache — Full name, legacy age 16, QA notes, “No SIBOL account” |
+| **Draft create offline** | **BLOCKED (ADB)** | `Save draft` requires Full name via Flutter `TextField`; `adb shell input text` / paste did not bind to the correct field (text landed in Notes). No new `cases` doc created (`DraftAccept001` query = 0). Covered by `case_edit_screen_offline_test` + prior O5 Maria notes sync |
+| **Reconnect / session** | **PASS** | Airplane toggled off; `am start` resumed app on dashboard **without** re-login; Maria Firestore doc unchanged |
+| Registered-teen picker / profile sync button | **Not exercised** | Requires registered case or teen account checkpoint |
+
+**QA preservation:** `cases/fhcQrLxE0IhwPFzCPinH` notes and `demoName` unchanged after walkthrough.
+
 ## Limitations
 
 - Legacy follow-ups without staff snapshots still show UID fallback.
@@ -140,3 +158,4 @@ Do not claim full table in §6 Android checklist as PASS until PO re-authenticat
 - `d1b9599` — execution report HEAD reference
 - `1e6fa99` — verification: staff follow-up identity, profile sync, rules tests (pushed)
 - `1dd47ff` — login stale-error clear + Android auth recovery evidence
+- `9afb274` — EDF recovery SHA; Android CASE-IDENTITY acceptance evidence (this section)
