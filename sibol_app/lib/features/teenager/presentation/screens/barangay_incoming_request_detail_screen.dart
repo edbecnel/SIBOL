@@ -1,3 +1,5 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +10,7 @@ import 'package:sibol_app/features/coordination/presentation/widgets/barangay_mo
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_status.dart';
+import 'package:sibol_app/features/teenager/domain/entities/assistance_request.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/org/presentation/widgets/organization_directory_display.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_submitter_identity.dart';
@@ -39,28 +42,90 @@ class _BarangayIncomingRequestDetailScreenState
     extends ConsumerState<BarangayIncomingRequestDetailScreen> {
   bool _acknowledging = false;
   String? _actionError;
-  bool _submitterRefreshScheduled = false;
   bool _submitterRefreshInFlight = false;
+  bool _waitingForConnectivity = false;
+  String? _identityResolveUserMessage;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
 
-  void _scheduleSubmitterIdentityRefresh() {
-    if (_submitterRefreshScheduled || _submitterRefreshInFlight) return;
-    _submitterRefreshScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      unawaited(_refreshSubmitterIdentityIfOnline());
+  @override
+  void initState() {
+    super.initState();
+    _connectivitySubscription =
+        Connectivity().onConnectivityChanged.listen((results) {
+      final online = !results.contains(ConnectivityResult.none);
+      if (online && _waitingForConnectivity && mounted) {
+        _waitingForConnectivity = false;
+        final request =
+            ref.read(barangayAssistanceRequestDetailProvider(widget.requestId)).value;
+        if (request != null &&
+            assistanceRequestNeedsSubmitterIdentitySnapshot(
+              submitterDisplayName: request.submitterDisplayName,
+              submitterAccountEmail: request.submitterAccountEmail,
+            )) {
+          unawaited(_refreshSubmitterIdentityIfNeeded(request));
+        }
+      }
     });
   }
 
-  Future<void> _refreshSubmitterIdentityIfOnline() async {
+  @override
+  void dispose() {
+    _connectivitySubscription?.cancel();
+    super.dispose();
+  }
+
+  void _scheduleSubmitterIdentityRefresh(AssistanceRequest request) {
+    if (!assistanceRequestNeedsSubmitterIdentitySnapshot(
+      submitterDisplayName: request.submitterDisplayName,
+      submitterAccountEmail: request.submitterAccountEmail,
+    )) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_refreshSubmitterIdentityIfNeeded(request));
+    });
+  }
+
+  Future<void> _refreshSubmitterIdentityIfNeeded(AssistanceRequest request) async {
     if (_submitterRefreshInFlight) return;
+    if (!assistanceRequestNeedsSubmitterIdentitySnapshot(
+      submitterDisplayName: request.submitterDisplayName,
+      submitterAccountEmail: request.submitterAccountEmail,
+    )) {
+      if (mounted) {
+        setState(() => _identityResolveUserMessage = null);
+      }
+      return;
+    }
+
     final sync = ref.read(offlineSyncServiceProvider);
-    if (!await sync.hasConnectivity()) return;
+    if (!await sync.hasConnectivity()) {
+      _waitingForConnectivity = true;
+      return;
+    }
+    _waitingForConnectivity = false;
     _submitterRefreshInFlight = true;
     try {
       await ref
           .read(assistanceRequestRepositoryProvider)
           .resolveAssistanceRequestSubmitter(widget.requestId);
-    } catch (_) {
-      // Preserve cached snapshot on transient failure.
+      if (mounted) {
+        setState(() => _identityResolveUserMessage = null);
+      }
+    } catch (e, st) {
+      if (kDebugMode) {
+        debugPrint(
+          'SIBOL assistance identity resolve failed for ${widget.requestId}: '
+          '${assistanceIdentityResolveLogMessage(e)}',
+        );
+        debugPrintStack(stackTrace: st, label: 'assistance identity resolve');
+      }
+      if (mounted) {
+        setState(
+          () => _identityResolveUserMessage =
+              AssistanceRequestSubmitterIdentityLabels.resolveFailed,
+        );
+      }
     } finally {
       _submitterRefreshInFlight = false;
     }
@@ -168,7 +233,7 @@ class _BarangayIncomingRequestDetailScreenState
                     request.status == AssistanceRequestStatus.submitted;
                 final isAcknowledged =
                     request.status == AssistanceRequestStatus.acknowledged;
-                _scheduleSubmitterIdentityRefresh();
+                _scheduleSubmitterIdentityRefresh(request);
                 return ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
@@ -205,6 +270,16 @@ class _BarangayIncomingRequestDetailScreenState
                         request.submitterAccountEmail,
                       ),
                     ),
+                    if (_identityResolveUserMessage != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        _identityResolveUserMessage!,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                     OrganizationIdentityDetailRows(orgId: request.orgId),
                     if (request.acknowledgedAt != null) ...[
                       _DetailRow(

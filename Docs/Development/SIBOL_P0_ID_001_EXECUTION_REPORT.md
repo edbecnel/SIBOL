@@ -2,7 +2,7 @@
 
 **Handover:** `e9b73c14-5d62-4a81-9f20-c638b2d70451`  
 **Work item:** SIBOL-P0-ID-001  
-**Status:** Implemented — **manual QA NOT RUN** (pending PA)  
+**Status:** Implemented — **emulator manual/device QA PASS** (see [SIBOL_P0_RECOVERY_001_EXECUTION_REPORT.md](SIBOL_P0_RECOVERY_001_EXECUTION_REPORT.md))  
 **Baseline:** `main` @ implementation commit (see Git section)
 
 ## Problem

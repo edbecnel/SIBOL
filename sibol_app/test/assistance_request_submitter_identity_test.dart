@@ -13,6 +13,23 @@ void main() {
     );
   });
 
+  test('needs snapshot when name or email missing', () {
+    expect(
+      assistanceRequestNeedsSubmitterIdentitySnapshot(
+        submitterDisplayName: 'Teen',
+        submitterAccountEmail: null,
+      ),
+      isTrue,
+    );
+    expect(
+      assistanceRequestNeedsSubmitterIdentitySnapshot(
+        submitterDisplayName: 'Teen',
+        submitterAccountEmail: 'a@b.c',
+      ),
+      isFalse,
+    );
+  });
+
   test('shows trimmed cached values when present', () {
     expect(assistanceSubmitterDisplayLabel('  Maria  '), 'Maria');
     expect(
