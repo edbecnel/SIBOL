@@ -139,4 +139,4 @@ Do not claim full table in §6 Android checklist as PASS until PO re-authenticat
 - `a7f431c` — SIBOL-CASE-IDENTITY-001 implementation (pushed to `origin/main`)
 - `d1b9599` — execution report HEAD reference
 - `1e6fa99` — verification: staff follow-up identity, profile sync, rules tests (pushed)
-- _(recovery commit SHA after push)_ — login stale-error clear + Android auth recovery evidence
+- `1dd47ff` — login stale-error clear + Android auth recovery evidence
