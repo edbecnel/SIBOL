@@ -15,6 +15,10 @@ class UserProfileModel {
     this.isCentralAdmin = false,
     this.onboardingStatus,
     this.mustChangePassword = false,
+    this.dateOfBirth,
+    this.contactEmail,
+    this.contactPhone,
+    this.parentGuardianContact,
   });
 
   final String uid;
@@ -28,6 +32,10 @@ class UserProfileModel {
   final bool isCentralAdmin;
   final String? onboardingStatus;
   final bool mustChangePassword;
+  final String? dateOfBirth;
+  final String? contactEmail;
+  final String? contactPhone;
+  final String? parentGuardianContact;
 
   factory UserProfileModel.fromFirestore(String uid, Map<String, dynamic> data) {
     final created = data['createdAt'];
@@ -43,7 +51,34 @@ class UserProfileModel {
       isCentralAdmin: data['isCentralAdmin'] as bool? ?? false,
       onboardingStatus: data['onboardingStatus'] as String?,
       mustChangePassword: data['mustChangePassword'] as bool? ?? false,
+      dateOfBirth: data['dateOfBirth'] as String?,
+      contactEmail: data['contactEmail'] as String?,
+      contactPhone: data['contactPhone'] as String?,
+      parentGuardianContact: data['parentGuardianContact'] as String?,
     );
+  }
+
+  Map<String, dynamic> toTeenSelfUpdate({
+    required String displayName,
+    required String assignedBarangay,
+    String? dateOfBirth,
+    String? contactEmail,
+    String? contactPhone,
+    String? parentGuardianContact,
+  }) {
+    return {
+      'displayName': displayName.trim(),
+      'assignedBarangay': assignedBarangay.trim(),
+      if (dateOfBirth != null && dateOfBirth.trim().isNotEmpty)
+        'dateOfBirth': dateOfBirth.trim(),
+      if (contactEmail != null && contactEmail.trim().isNotEmpty)
+        'contactEmail': contactEmail.trim(),
+      if (contactPhone != null && contactPhone.trim().isNotEmpty)
+        'contactPhone': contactPhone.trim(),
+      if (parentGuardianContact != null &&
+          parentGuardianContact.trim().isNotEmpty)
+        'parentGuardianContact': parentGuardianContact.trim(),
+    };
   }
 
   UserProfile toEntity() {
@@ -63,6 +98,10 @@ class UserProfileModel {
       isCentralAdmin: isCentralAdmin,
       onboardingStatus: onboardingStatus,
       mustChangePassword: mustChangePassword,
+      dateOfBirth: dateOfBirth,
+      contactEmail: contactEmail,
+      contactPhone: contactPhone,
+      parentGuardianContact: parentGuardianContact,
     );
   }
 }

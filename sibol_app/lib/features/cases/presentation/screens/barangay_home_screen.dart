@@ -234,7 +234,7 @@ class _BarangayCaseListSection extends ConsumerWidget {
             final caseRecord = entry.record;
             return Card(
               child: ListTile(
-                title: Text(caseRecord.demoName),
+                title: Text(caseRecord.displayFullName),
                 subtitle: CaseListTileSubtitle(entry: entry),
                 isThreeLine: true,
                 trailing: const Icon(Icons.chevron_right),

@@ -64,6 +64,17 @@ class FakeUserProfileRepository implements UserProfileRepository {
 
   @override
   Future<UserProfile?> fetchProfile(String uid) async => null;
+
+  @override
+  Future<void> updateTeenSelfProfile({
+    required String uid,
+    required String displayName,
+    required String assignedBarangay,
+    String? dateOfBirth,
+    String? contactEmail,
+    String? contactPhone,
+    String? parentGuardianContact,
+  }) async {}
 }
 
 /// Auth repo whose [authStateChanges] stream changes after each invalidation.

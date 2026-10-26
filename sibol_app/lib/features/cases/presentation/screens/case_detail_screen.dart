@@ -11,6 +11,7 @@ import 'package:sibol_app/features/auth/presentation/providers/auth_providers.da
 import 'package:sibol_app/features/cases/domain/entities/follow_up.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/add_follow_up_dialog.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/case_firestore_sync_notice.dart';
+import 'package:sibol_app/features/cases/domain/case_identity_presentation.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/case_follow_up_timeline.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
@@ -166,13 +167,40 @@ class CaseDetailBody extends StatelessWidget {
           hasPendingWrites: hasPendingWrites,
         ),
         Text(
-          record.demoName,
+          record.displayFullName,
           style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          CaseIdentityPresentation.subjectClassificationLabel(record),
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        Text(
+          CaseIdentityPresentation.completenessLabel(record),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 16),
         _DetailTile(label: 'Case ID', value: record.caseId),
-        _DetailTile(label: 'Age', value: '${record.age}'),
+        if (record.dateOfBirth != null)
+          _DetailTile(label: 'Date of birth', value: record.dateOfBirth!),
+        _DetailTile(label: 'Age', value: '${record.effectiveAge}'),
         _DetailTile(label: 'Barangay', value: _orDash(record.barangay)),
+        if (record.linkedAccountEmail != null &&
+            record.linkedAccountEmail!.trim().isNotEmpty)
+          _DetailTile(
+            label: 'SIBOL account email',
+            value: record.linkedAccountEmail!.trim(),
+          ),
+        if (record.contactEmail != null && record.contactEmail!.trim().isNotEmpty)
+          _DetailTile(label: 'Contact email', value: record.contactEmail!.trim()),
+        if (record.contactPhone != null && record.contactPhone!.trim().isNotEmpty)
+          _DetailTile(label: 'Contact phone', value: record.contactPhone!.trim()),
+        if (record.parentGuardianContact != null &&
+            record.parentGuardianContact!.trim().isNotEmpty)
+          _DetailTile(
+            label: 'Parent/guardian contact',
+            value: record.parentGuardianContact!.trim(),
+          ),
         _DetailTile(
           label: 'Case status',
           value: CasePresentationLabels.lifecycleStatus(record.caseStatus),
@@ -194,7 +222,7 @@ class CaseDetailBody extends StatelessWidget {
           return _DetailTile(label: 'Synchronization', value: syncLabel);
         }(),
         _DetailTile(
-          label: 'Registered',
+          label: 'Case opened',
           value: dateFmt.format(record.registeredAt),
         ),
         _DetailTile(
@@ -226,6 +254,11 @@ class CaseDetailBody extends StatelessWidget {
               label: const Text('Add follow-up'),
             ),
           ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Teen subject: ${record.displayFullName}',
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: 8),
         CaseFollowUpTimeline(caseId: caseId),

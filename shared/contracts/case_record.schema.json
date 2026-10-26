@@ -1,11 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "SibolFictionalCase",
+  "title": "SibolCaseRecord",
   "type": "object",
   "required": [
     "demoName",
     "age",
     "barangay",
+    "orgId",
     "caseStatus",
     "registeredAt",
     "createdAt",
@@ -14,11 +15,27 @@
   ],
   "properties": {
     "demoName": { "type": "string", "minLength": 2 },
-    "age": { "type": "integer", "minimum": 13, "maximum": 19 },
+    "fullName": { "type": "string", "minLength": 2 },
+    "age": { "type": "integer", "minimum": 0, "maximum": 19 },
     "barangay": { "type": "string", "minLength": 1 },
+    "orgId": { "type": "string", "minLength": 1 },
     "caseStatus": {
       "enum": ["active", "followUpScheduled", "followUpCompleted", "closed"]
     },
+    "subjectKind": { "enum": ["registered", "unregistered"] },
+    "caseCompleteness": {
+      "enum": ["draft", "active", "legacyIncomplete"]
+    },
+    "dateOfBirth": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "contactEmail": { "type": "string" },
+    "contactPhone": { "type": "string" },
+    "parentGuardianContact": { "type": "string" },
+    "teenUid": { "type": "string" },
+    "linkedAccountEmail": { "type": "string" },
+    "identityLinkedAt": { "type": "string", "format": "date-time" },
     "registeredAt": { "type": "string", "format": "date-time" },
     "nextFollowUpAt": { "type": "string", "format": "date-time" },
     "notes": { "type": "string" },

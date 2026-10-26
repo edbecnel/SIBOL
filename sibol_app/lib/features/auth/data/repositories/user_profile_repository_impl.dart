@@ -27,4 +27,32 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     if (!snap.exists || snap.data() == null) return null;
     return UserProfileModel.fromFirestore(snap.id, snap.data()!).toEntity();
   }
+
+  @override
+  Future<void> updateTeenSelfProfile({
+    required String uid,
+    required String displayName,
+    required String assignedBarangay,
+    String? dateOfBirth,
+    String? contactEmail,
+    String? contactPhone,
+    String? parentGuardianContact,
+  }) async {
+    final payload = UserProfileModel(
+      uid: uid,
+      role: 'teen',
+      displayName: displayName,
+      active: true,
+      createdAt: DateTime.now(),
+      assignedBarangay: assignedBarangay,
+    ).toTeenSelfUpdate(
+      displayName: displayName,
+      assignedBarangay: assignedBarangay,
+      dateOfBirth: dateOfBirth,
+      contactEmail: contactEmail,
+      contactPhone: contactPhone,
+      parentGuardianContact: parentGuardianContact,
+    );
+    await _firestore.collection(FirestorePaths.users).doc(uid).update(payload);
+  }
 }

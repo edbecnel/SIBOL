@@ -12,6 +12,7 @@ class AppTextField extends StatefulWidget {
     this.onSubmitted,
     this.maxLines = 1,
     this.minLines,
+    this.enabled = true,
   });
 
   final TextEditingController controller;
@@ -27,6 +28,7 @@ class AppTextField extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
   final int maxLines;
   final int? minLines;
+  final bool enabled;
 
   bool get _usesPasswordToggle => isPassword || obscureText;
 
@@ -56,6 +58,7 @@ class _AppTextFieldState extends State<AppTextField> {
     final passwordField = widget._usesPasswordToggle;
     return TextField(
       controller: widget.controller,
+      enabled: widget.enabled,
       obscureText: passwordField ? _obscured : false,
       keyboardType: widget.keyboardType,
       textInputAction: widget.textInputAction,

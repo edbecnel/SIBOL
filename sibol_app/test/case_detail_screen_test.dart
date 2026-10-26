@@ -35,6 +35,10 @@ void main() {
 
     expect(find.text('Bea Demo Santos'), findsOneWidget);
     expect(find.text('demo-case-001'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Fictional demonstration case for academic review.'),
+      200,
+    );
     expect(find.text('Fictional demonstration case for academic review.'),
         findsOneWidget);
     expect(find.byType(TextField), findsNothing);
@@ -133,8 +137,9 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    expect(find.text('—'), findsWidgets);
+    expect(find.text('Case opened'), findsOneWidget);
+    expect(find.text('Next follow-up'), findsOneWidget);
   });
 }

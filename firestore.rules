@@ -100,8 +100,127 @@ service cloud.firestore {
     function caseAllowedKeys() {
       return [
         'demoName', 'age', 'barangay', 'orgId', 'caseStatus', 'registeredAt',
-        'nextFollowUpAt', 'notes', 'createdAt', 'updatedAt', 'reportStatus'
+        'nextFollowUpAt', 'notes', 'createdAt', 'updatedAt', 'reportStatus',
+        'subjectKind', 'caseCompleteness', 'fullName', 'dateOfBirth',
+        'contactEmail', 'contactPhone', 'parentGuardianContact',
+        'teenUid', 'linkedAccountEmail', 'identityLinkedAt'
       ];
+    }
+
+    function caseIsLegacyDocument(data) {
+      return !('caseCompleteness' in data);
+    }
+
+    function isValidSubjectKind(kind) {
+      return kind in ['registered', 'unregistered'];
+    }
+
+    function isValidCaseCompleteness(status) {
+      return status in ['draft', 'active', 'legacyIncomplete'];
+    }
+
+    function isValidDateOfBirthString(value) {
+      return value is string && value.matches('^\\d{4}-\\d{2}-\\d{2}$');
+    }
+
+    function caseHasContactMethod(data) {
+      return ('contactEmail' in data
+              && data.contactEmail is string
+              && data.contactEmail.size() >= 5)
+          || ('contactPhone' in data
+              && data.contactPhone is string
+              && data.contactPhone.size() >= 7);
+    }
+
+    function teenAccountLinkedToOrg(teenUid, orgId) {
+      return exists(/databases/$(database)/documents/users/$(teenUid))
+          && get(/databases/$(database)/documents/users/$(teenUid)).data.role == 'teen'
+          && get(/databases/$(database)/documents/users/$(teenUid)).data.active == true
+          && get(/databases/$(database)/documents/users/$(teenUid)).data.selectedBarangayOrgId == orgId;
+    }
+
+    function caseLegacyCoreFieldsValid(data) {
+      return data.keys().hasAll([
+            'demoName', 'age', 'barangay', 'caseStatus', 'registeredAt',
+            'createdAt', 'updatedAt', 'reportStatus'
+          ])
+          && data.keys().hasOnly(caseAllowedKeys())
+          && data.demoName is string
+          && data.demoName.size() >= 2
+          && data.age is int
+          && data.age >= 13
+          && data.age <= 19
+          && data.barangay is string
+          && data.barangay.size() >= 1
+          && isValidOrgId(data.orgId)
+          && isValidCaseStatus(data.caseStatus)
+          && data.registeredAt is timestamp
+          && data.createdAt is timestamp
+          && data.updatedAt is timestamp
+          && isValidClientReportStatus(data.reportStatus)
+          && (!('nextFollowUpAt' in data) || data.nextFollowUpAt is timestamp)
+          && (!('notes' in data) || data.notes is string);
+    }
+
+    function caseExtendedCoreFieldsValid(data) {
+      return data.keys().hasAll([
+            'demoName', 'fullName', 'age', 'barangay', 'orgId', 'caseStatus',
+            'registeredAt', 'createdAt', 'updatedAt', 'reportStatus',
+            'subjectKind', 'caseCompleteness'
+          ])
+          && data.keys().hasOnly(caseAllowedKeys())
+          && data.demoName is string
+          && data.demoName.size() >= 2
+          && data.fullName is string
+          && data.fullName.size() >= 2
+          && isValidSubjectKind(data.subjectKind)
+          && isValidCaseCompleteness(data.caseCompleteness)
+          && data.age is int
+          && ((data.caseCompleteness == 'draft'
+                  && data.age >= 0
+                  && data.age <= 19)
+              || (data.age >= 13 && data.age <= 19))
+          && data.barangay is string
+          && data.barangay.size() >= 1
+          && isValidOrgId(data.orgId)
+          && isValidCaseStatus(data.caseStatus)
+          && data.registeredAt is timestamp
+          && data.createdAt is timestamp
+          && data.updatedAt is timestamp
+          && isValidClientReportStatus(data.reportStatus)
+          && (!('nextFollowUpAt' in data) || data.nextFollowUpAt is timestamp)
+          && (!('notes' in data) || data.notes is string)
+          && (!('dateOfBirth' in data) || isValidDateOfBirthString(data.dateOfBirth))
+          && (!('contactEmail' in data) || data.contactEmail is string)
+          && (!('contactPhone' in data) || data.contactPhone is string)
+          && (data.caseCompleteness != 'active' || caseHasContactMethod(data))
+          && (data.caseCompleteness != 'active'
+              || ('dateOfBirth' in data && isValidDateOfBirthString(data.dateOfBirth)))
+          && (data.subjectKind != 'registered'
+              || ('teenUid' in data
+                  && data.teenUid is string
+                  && data.teenUid.size() >= 1
+                  && teenAccountLinkedToOrg(data.teenUid, data.orgId)
+                  && ('linkedAccountEmail' in data)
+                  && data.linkedAccountEmail is string
+                  && data.linkedAccountEmail.size() >= 3))
+          && (data.subjectKind != 'unregistered' || !('teenUid' in data));
+    }
+
+    function caseTeenUidImmutable() {
+      return !('teenUid' in resource.data)
+          || !('teenUid' in request.resource.data)
+          || request.resource.data.teenUid == resource.data.teenUid;
+    }
+
+    function caseSubjectKindImmutable() {
+      return !('subjectKind' in resource.data)
+          || request.resource.data.subjectKind == resource.data.subjectKind;
+    }
+
+    function teenProfileContactValid(data) {
+      return caseHasContactMethod(data)
+          || (('contactEmail' in data) == false && ('contactPhone' in data) == false);
     }
 
     function caseOrgIdImmutable() {
@@ -233,26 +352,9 @@ service cloud.firestore {
     }
 
     function caseCoreFieldsValid(data) {
-      return data.keys().hasAll([
-            'demoName', 'age', 'barangay', 'caseStatus', 'registeredAt',
-            'createdAt', 'updatedAt', 'reportStatus'
-          ])
-          && data.keys().hasOnly(caseAllowedKeys())
-          && data.demoName is string
-          && data.demoName.size() >= 2
-          && data.age is int
-          && data.age >= 13
-          && data.age <= 19
-          && data.barangay is string
-          && data.barangay.size() >= 1
-          && isValidOrgId(data.orgId)
-          && isValidCaseStatus(data.caseStatus)
-          && data.registeredAt is timestamp
-          && data.createdAt is timestamp
-          && data.updatedAt is timestamp
-          && isValidClientReportStatus(data.reportStatus)
-          && (!('nextFollowUpAt' in data) || data.nextFollowUpAt is timestamp)
-          && (!('notes' in data) || data.notes is string);
+      return caseIsLegacyDocument(data)
+          ? caseLegacyCoreFieldsValid(data)
+          : caseExtendedCoreFieldsValid(data);
     }
 
     match /organizations/{orgId} {
@@ -328,10 +430,27 @@ service cloud.firestore {
           && roleUnchanged()
           && request.resource.data.role == resource.data.role
           && !('isCentralAdmin' in request.resource.data)
-          && request.resource.data.diff(resource.data).affectedKeys()
-              .hasOnly(['displayName']);
+          && (teenSelfProfileUpdate()
+              || nonTeenDisplayNameOnlyUpdate());
 
       allow delete: if false;
+    }
+
+    function teenSelfProfileUpdate() {
+      return isTeen()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'displayName', 'dateOfBirth', 'contactEmail', 'contactPhone',
+            'assignedBarangay', 'parentGuardianContact'
+          ])
+          && (!('dateOfBirth' in request.resource.data)
+              || isValidDateOfBirthString(request.resource.data.dateOfBirth))
+          && teenProfileContactValid(request.resource.data);
+    }
+
+    function nonTeenDisplayNameOnlyUpdate() {
+      return !isTeen()
+          && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['displayName']);
     }
 
     match /cases/{caseId} {
@@ -345,6 +464,8 @@ service cloud.firestore {
       allow update: if canWriteCaseOrg(resource.data.orgId)
           && caseCoreFieldsValid(request.resource.data)
           && caseOrgIdImmutable()
+          && caseTeenUidImmutable()
+          && caseSubjectKindImmutable()
           && request.resource.data.createdAt == resource.data.createdAt
           && request.resource.data.reportStatus == resource.data.reportStatus;
 

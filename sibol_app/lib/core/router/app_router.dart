@@ -28,6 +28,7 @@ import 'package:sibol_app/features/reporting/presentation/screens/barangay_repor
 import 'package:sibol_app/features/reporting/presentation/screens/barangay_submit_report_screen.dart';
 import 'package:sibol_app/features/reporting/presentation/screens/barangay_submitted_reports_screen.dart';
 import 'package:sibol_app/features/settings/presentation/screens/settings_screen.dart';
+import 'package:sibol_app/features/settings/presentation/screens/teen_profile_edit_screen.dart';
 import 'package:sibol_app/features/teenager/presentation/screens/barangay_incoming_request_detail_screen.dart';
 import 'package:sibol_app/features/teenager/presentation/screens/barangay_incoming_requests_screen.dart';
 import 'package:sibol_app/features/teenager/presentation/screens/assistance_request_detail_screen.dart';
@@ -225,6 +226,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: Routes.settings,
         builder: (context, state) => const SettingsScreen(),
         routes: [
+          GoRoute(
+            path: 'profile',
+            builder: (context, state) => const TeenProfileEditScreen(),
+          ),
           GoRoute(
             path: 'change-password',
             builder: (context, state) => const ChangePasswordScreen(),

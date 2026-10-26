@@ -81,6 +81,7 @@ class FakeCaseRepository implements CaseRepository {
     final stored = CaseRecord(
       caseId: id,
       demoName: record.demoName,
+      fullName: record.fullName,
       age: record.age,
       barangay: record.barangay,
       orgId: record.orgId,
@@ -91,6 +92,15 @@ class FakeCaseRepository implements CaseRepository {
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
       reportStatus: record.reportStatus,
+      subjectKind: record.subjectKind,
+      caseCompleteness: record.caseCompleteness,
+      dateOfBirth: record.dateOfBirth,
+      contactEmail: record.contactEmail,
+      contactPhone: record.contactPhone,
+      parentGuardianContact: record.parentGuardianContact,
+      teenUid: record.teenUid,
+      linkedAccountEmail: record.linkedAccountEmail,
+      identityLinkedAt: record.identityLinkedAt,
     );
     _cases.add(stored);
     return id;

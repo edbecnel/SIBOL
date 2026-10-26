@@ -142,6 +142,16 @@ class CaseRepositoryImpl implements CaseRepository {
         createdAt: record.createdAt,
         updatedAt: record.updatedAt,
         reportStatus: record.reportStatus,
+        subjectKind: record.subjectKind,
+        caseCompleteness: record.caseCompleteness,
+        fullName: record.fullName,
+        dateOfBirth: record.dateOfBirth,
+        contactEmail: record.contactEmail,
+        contactPhone: record.contactPhone,
+        parentGuardianContact: record.parentGuardianContact,
+        teenUid: record.teenUid,
+        linkedAccountEmail: record.linkedAccountEmail,
+        identityLinkedAt: record.identityLinkedAt,
       ),
     );
     final payload = model.toFirestoreCreate();

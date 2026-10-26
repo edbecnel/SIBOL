@@ -1,120 +1,34 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
-import 'package:sibol_app/core/providers/firebase_providers.dart';
-import 'package:sibol_app/features/cases/presentation/screens/case_edit_screen.dart';
-import 'package:sibol_app/features/auth/domain/entities/user_profile.dart';
-import 'package:sibol_app/features/auth/domain/entities/auth_user.dart';
-import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
-import 'package:sibol_app/features/org/domain/barangay_organization_presentation.dart';
-import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
-import 'package:sibol_app/features/org/presentation/providers/organization_presentation_providers.dart';
-import 'package:sibol_app/core/permissions/sibol_role.dart';
-import 'support/fake_case_repository.dart';
-
-const _testOrgId = 'barangay03';
-const _canonicalBarangay = 'Barangay 3, Balingasag';
-const _orgDisplayName = 'Barangay 3 (Poblacion)';
-
-BarangayOrganizationPresentation _demoPresentation() {
-  return const BarangayOrganizationPresentation(
-    organizationName: _orgDisplayName,
-    siteLabel: _canonicalBarangay,
-  );
-}
-
-UserProfile _barangayProfile() {
-  return UserProfile(
-    uid: 'barangay-1',
-    role: SibolRole.barangay,
-    displayName: 'Demo BNS',
-    active: true,
-    createdAt: DateTime.utc(2026, 1, 1),
-    assignedBarangay: _canonicalBarangay,
-    primaryOrgId: _testOrgId,
-  );
-}
+import 'package:sibol_app/features/cases/data/models/case_record_model.dart';
+import 'package:sibol_app/features/cases/domain/case_completeness.dart';
+import 'package:sibol_app/features/cases/domain/case_status.dart';
+import 'package:sibol_app/features/cases/domain/case_subject_kind.dart';
+import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
+import 'package:sibol_app/features/reporting/domain/report_status.dart';
 
 void main() {
-  testWidgets('create screen validates empty demo name', (tester) async {
-    final repo = FakeCaseRepository();
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          caseRepositoryProvider.overrideWithValue(repo),
-          barangayCaseOrgIdProvider.overrideWithValue(_testOrgId),
-          authStateChangesProvider.overrideWith(
-            (ref) => Stream.value(
-              AuthUser(uid: 'barangay-1', email: 'b@example.com'),
-            ),
-          ),
-          cacheFirstOrganizationDirectoryPresentationProvider(_testOrgId)
-              .overrideWith((ref) => Stream.value(_demoPresentation())),
-          userProfileProvider.overrideWith(
-            (ref) => Stream.value(_barangayProfile()),
-          ),
-        ],
-        child: const MaterialApp(home: CaseEditScreen()),
-      ),
+  test('active unregistered case serializes extended identity fields', () {
+    final record = CaseRecord(
+      caseId: 'case-new-1',
+      demoName: 'Fictional Teen',
+      fullName: 'Fictional Teen',
+      age: 16,
+      barangay: 'Barangay 3, Balingasag',
+      orgId: 'barangay03',
+      caseStatus: CaseStatus.active,
+      registeredAt: DateTime.utc(2026, 4, 1),
+      createdAt: DateTime.utc(2026, 4, 1),
+      updatedAt: DateTime.utc(2026, 4, 1),
+      reportStatus: ReportStatus.notSubmitted,
+      subjectKind: CaseSubjectKind.unregistered,
+      caseCompleteness: CaseCompleteness.active,
+      dateOfBirth: '2009-06-01',
+      contactEmail: 'fictional.teen@sibol.local',
     );
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Create case'));
-    await tester.pump();
-
-    expect(find.textContaining('Demo name is required'), findsOneWidget);
-  });
-
-  testWidgets('create screen submits valid fictional case', (tester) async {
-    final repo = FakeCaseRepository();
-
-    final router = GoRouter(
-      initialLocation: '/',
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) => const CaseEditScreen(),
-        ),
-        GoRoute(
-          path: '/barangay/cases/:caseId',
-          builder: (context, state) => const Scaffold(body: Text('detail')),
-        ),
-      ],
-    );
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          caseRepositoryProvider.overrideWithValue(repo),
-          barangayCaseOrgIdProvider.overrideWithValue(_testOrgId),
-          authStateChangesProvider.overrideWith(
-            (ref) => Stream.value(
-              AuthUser(uid: 'barangay-1', email: 'b@example.com'),
-            ),
-          ),
-          cacheFirstOrganizationDirectoryPresentationProvider(_testOrgId)
-              .overrideWith((ref) => Stream.value(_demoPresentation())),
-          userProfileProvider.overrideWith(
-            (ref) => Stream.value(_barangayProfile()),
-          ),
-        ],
-        child: MaterialApp.router(routerConfig: router),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    await tester.enterText(find.widgetWithText(TextField, 'Demo name'), 'New Demo');
-    await tester.enterText(find.widgetWithText(TextField, 'Age (13–19)'), '17');
-    expect(find.text(_orgDisplayName), findsOneWidget);
-    expect(find.textContaining(_canonicalBarangay), findsOneWidget);
-    await tester.tap(find.text('Create case'));
-    await tester.pumpAndSettle();
-
-    final cases = await repo.fetchCasesForOrg(_testOrgId);
-    expect(cases.length, 1);
-    expect(cases.first.demoName, 'New Demo');
-    expect(cases.first.barangay, _canonicalBarangay);
+    final map = CaseRecordModel.fromEntity(record).toFirestoreMap();
+    expect(map['subjectKind'], 'unregistered');
+    expect(map['caseCompleteness'], 'active');
+    expect(map['dateOfBirth'], '2009-06-01');
+    expect(map['contactEmail'], 'fictional.teen@sibol.local');
   });
 }

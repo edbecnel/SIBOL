@@ -14,6 +14,10 @@ class UserProfile extends Equatable {
     this.isCentralAdmin = false,
     this.onboardingStatus,
     this.mustChangePassword = false,
+    this.dateOfBirth,
+    this.contactEmail,
+    this.contactPhone,
+    this.parentGuardianContact,
   });
 
   final String uid;
@@ -21,6 +25,11 @@ class UserProfile extends Equatable {
   final String displayName;
   final bool active;
   final DateTime createdAt;
+
+  final String? dateOfBirth;
+  final String? contactEmail;
+  final String? contactPhone;
+  final String? parentGuardianContact;
 
   /// Provisioned demo site label; used for teen assistance routing (not client-writable).
   final String? assignedBarangay;
@@ -62,5 +71,9 @@ class UserProfile extends Equatable {
         isCentralAdmin,
         onboardingStatus,
         mustChangePassword,
+        dateOfBirth,
+        contactEmail,
+        contactPhone,
+        parentGuardianContact,
       ];
 }

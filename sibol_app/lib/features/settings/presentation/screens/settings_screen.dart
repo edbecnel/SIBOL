@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sibol_app/config/app_config.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
+import 'package:sibol_app/core/permissions/sibol_role.dart';
 import 'package:sibol_app/features/admin/presentation/providers/admin_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/auth/presentation/sign_out_pending_guard.dart';
@@ -42,6 +43,13 @@ class SettingsScreen extends ConsumerWidget {
                 label: 'Staff management',
                 onPressed: () =>
                     context.push(Routes.orgAdminStaff(orgAdminOrgIds.first)),
+              ),
+            ],
+            if (profile?.role == SibolRole.teen) ...[
+              const SizedBox(height: 12),
+              AppButton.primary(
+                label: 'Edit my profile',
+                onPressed: () => context.push(Routes.teenProfileEdit),
               ),
             ],
             const SizedBox(height: 12),

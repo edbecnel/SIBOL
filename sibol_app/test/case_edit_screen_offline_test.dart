@@ -44,9 +44,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Edit case'), findsWidgets);
-    expect(find.text('Maria Offline Test'), findsOneWidget);
+    expect(
+      find.widgetWithText(TextField, 'Maria Offline Test'),
+      findsOneWidget,
+    );
     expect(find.textContaining('fhcQrLxE0IhwPFzCPinH'), findsOneWidget);
-    expect(find.textContaining('QA-OFFLINE-CASE-001'), findsOneWidget);
+    expect(find.textContaining('Legacy record'), findsOneWidget);
   });
 
   testWidgets('edit screen shows recoverable error when case not cached',

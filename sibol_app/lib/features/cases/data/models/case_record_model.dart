@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sibol_app/features/cases/domain/case_completeness.dart';
+import 'package:sibol_app/features/cases/domain/case_date_of_birth.dart';
 import 'package:sibol_app/features/cases/domain/case_status.dart';
+import 'package:sibol_app/features/cases/domain/case_subject_kind.dart';
 import 'package:sibol_app/features/cases/domain/case_validation.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/reporting/domain/report_status.dart';
@@ -18,6 +21,16 @@ class CaseRecordModel {
     required this.createdAt,
     required this.updatedAt,
     required this.reportStatus,
+    this.subjectKind,
+    this.caseCompleteness,
+    this.fullName,
+    this.dateOfBirth,
+    this.contactEmail,
+    this.contactPhone,
+    this.parentGuardianContact,
+    this.teenUid,
+    this.linkedAccountEmail,
+    this.identityLinkedAt,
   });
 
   final String caseId;
@@ -32,6 +45,16 @@ class CaseRecordModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String reportStatus;
+  final String? subjectKind;
+  final String? caseCompleteness;
+  final String? fullName;
+  final String? dateOfBirth;
+  final String? contactEmail;
+  final String? contactPhone;
+  final String? parentGuardianContact;
+  final String? teenUid;
+  final String? linkedAccountEmail;
+  final DateTime? identityLinkedAt;
 
   factory CaseRecordModel.fromFirestore(String id, Map<String, dynamic> data) {
     return CaseRecordModel(
@@ -49,13 +72,29 @@ class CaseRecordModel {
       createdAt: _toDate(data['createdAt']),
       updatedAt: _toDate(data['updatedAt']),
       reportStatus: data['reportStatus'] as String? ?? 'notSubmitted',
+      subjectKind: data['subjectKind'] as String?,
+      caseCompleteness: data['caseCompleteness'] as String?,
+      fullName: data['fullName'] as String?,
+      dateOfBirth: data['dateOfBirth'] as String?,
+      contactEmail: data['contactEmail'] as String?,
+      contactPhone: data['contactPhone'] as String?,
+      parentGuardianContact: data['parentGuardianContact'] as String?,
+      teenUid: data['teenUid'] as String?,
+      linkedAccountEmail: data['linkedAccountEmail'] as String?,
+      identityLinkedAt: data['identityLinkedAt'] == null
+          ? null
+          : _toDate(data['identityLinkedAt']),
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toFirestoreMap() {
+    final entity = toEntity();
+    final displayName = entity.displayFullName;
+    final storedAge = _storedAgeForEntity(entity);
     return {
-      'demoName': demoName,
-      'age': age,
+      'demoName': displayName,
+      'fullName': displayName,
+      'age': storedAge,
       'barangay': barangay,
       'orgId': orgId,
       'caseStatus': caseStatus,
@@ -66,50 +105,47 @@ class CaseRecordModel {
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
       'reportStatus': reportStatus,
+      if (subjectKind != null && subjectKind!.isNotEmpty)
+        'subjectKind': subjectKind,
+      if (caseCompleteness != null && caseCompleteness!.isNotEmpty)
+        'caseCompleteness': caseCompleteness,
+      if (dateOfBirth != null && dateOfBirth!.trim().isNotEmpty)
+        'dateOfBirth': dateOfBirth!.trim(),
+      if (contactEmail != null && contactEmail!.trim().isNotEmpty)
+        'contactEmail': contactEmail!.trim(),
+      if (contactPhone != null && contactPhone!.trim().isNotEmpty)
+        'contactPhone': contactPhone!.trim(),
+      if (parentGuardianContact != null &&
+          parentGuardianContact!.trim().isNotEmpty)
+        'parentGuardianContact': parentGuardianContact!.trim(),
+      if (teenUid != null && teenUid!.trim().isNotEmpty) 'teenUid': teenUid,
+      if (linkedAccountEmail != null && linkedAccountEmail!.trim().isNotEmpty)
+        'linkedAccountEmail': linkedAccountEmail!.trim(),
+      if (identityLinkedAt != null)
+        'identityLinkedAt': Timestamp.fromDate(identityLinkedAt!),
     };
   }
 
-  /// Firestore payload for client create (server timestamps for audit fields).
   Map<String, dynamic> toFirestoreCreate() {
-    return {
-      'demoName': demoName,
-      'age': age,
-      'barangay': barangay,
-      'orgId': orgId,
-      'caseStatus': caseStatus,
-      'registeredAt': Timestamp.fromDate(registeredAt),
-      if (nextFollowUpAt != null)
-        'nextFollowUpAt': Timestamp.fromDate(nextFollowUpAt!),
-      'notes': notes,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
-      'reportStatus': reportStatus,
-    };
+    final map = toFirestoreMap();
+    map['createdAt'] = FieldValue.serverTimestamp();
+    map['updatedAt'] = FieldValue.serverTimestamp();
+    return map;
   }
 
-  /// Firestore payload for client update (preserves [createdAt]).
   Map<String, dynamic> toFirestoreUpdate({required DateTime createdAt}) {
-    return {
-      'demoName': demoName,
-      'age': age,
-      'barangay': barangay,
-      'orgId': orgId,
-      'caseStatus': caseStatus,
-      'registeredAt': Timestamp.fromDate(registeredAt),
-      if (nextFollowUpAt != null)
-        'nextFollowUpAt': Timestamp.fromDate(nextFollowUpAt!),
-      'notes': notes,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': FieldValue.serverTimestamp(),
-      'reportStatus': reportStatus,
-    };
+    final map = toFirestoreMap();
+    map['createdAt'] = Timestamp.fromDate(createdAt);
+    map['updatedAt'] = FieldValue.serverTimestamp();
+    return map;
   }
 
   factory CaseRecordModel.fromEntity(CaseRecord record) {
+    final displayName = record.displayFullName;
     return CaseRecordModel(
       caseId: record.caseId,
-      demoName: record.demoName,
-      age: record.age,
+      demoName: displayName,
+      age: _storedAgeForEntity(record),
       barangay: record.barangay,
       orgId: record.orgId,
       caseStatus: record.caseStatus.firestoreValue,
@@ -119,6 +155,16 @@ class CaseRecordModel {
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
       reportStatus: record.reportStatus.firestoreValue,
+      subjectKind: record.subjectKind?.firestoreValue,
+      caseCompleteness: record.caseCompleteness?.firestoreValue,
+      fullName: displayName,
+      dateOfBirth: record.dateOfBirth,
+      contactEmail: record.contactEmail,
+      contactPhone: record.contactPhone,
+      parentGuardianContact: record.parentGuardianContact,
+      teenUid: record.teenUid,
+      linkedAccountEmail: record.linkedAccountEmail,
+      identityLinkedAt: record.identityLinkedAt,
     );
   }
 
@@ -141,19 +187,35 @@ class CaseRecordModel {
       createdAt: createdAt,
       updatedAt: updatedAt,
       reportStatus: report,
+      subjectKind: CaseSubjectKind.fromFirestore(subjectKind),
+      caseCompleteness: CaseCompleteness.fromFirestore(caseCompleteness),
+      fullName: fullName ?? '',
+      dateOfBirth: dateOfBirth,
+      contactEmail: contactEmail,
+      contactPhone: contactPhone,
+      parentGuardianContact: parentGuardianContact,
+      teenUid: teenUid,
+      linkedAccountEmail: linkedAccountEmail,
+      identityLinkedAt: identityLinkedAt,
     );
   }
 
   static void assertValidForWrite(CaseRecord record) {
-    final errors = <String>[
-      CaseValidation.validateDemoName(record.demoName) ?? '',
-      CaseValidation.validateAge(record.age) ?? '',
-      CaseValidation.validateBarangay(record.barangay) ?? '',
-      CaseValidation.validateCaseStatus(record.caseStatus) ?? '',
-    ].where((e) => e.isNotEmpty).toList();
-    if (errors.isNotEmpty) {
-      throw FormatException(errors.join(' '));
+    final error = CaseValidation.validateForWrite(record);
+    if (error != null) {
+      throw FormatException(error);
     }
+  }
+
+  static int _storedAgeForEntity(CaseRecord record) {
+    if (record.completeness == CaseCompleteness.draft) {
+      final dob = CaseDateOfBirth.parse(record.dateOfBirth);
+      if (dob != null) return CaseDateOfBirth.currentAge(dob);
+      return record.age;
+    }
+    final dob = CaseDateOfBirth.parse(record.dateOfBirth);
+    if (dob != null) return CaseDateOfBirth.currentAge(dob);
+    return record.age;
   }
 
   static DateTime _toDate(dynamic value) {

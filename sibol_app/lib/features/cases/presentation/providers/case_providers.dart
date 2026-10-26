@@ -5,7 +5,12 @@ import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_list_entry.dart';
 import 'package:sibol_app/features/cases/domain/entities/case_record.dart';
 import 'package:sibol_app/features/cases/domain/entities/follow_up_timeline_entry.dart';
+import 'package:sibol_app/features/cases/data/case_registration_api.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
+
+final caseRegistrationApiProvider = Provider<CaseRegistrationApi>((ref) {
+  return CaseRegistrationApi(ref.watch(firebaseFunctionsProvider));
+});
 
 final casesStreamProvider =
     StreamProvider<FirestoreListSnapshot<CaseListEntry>>((ref) {

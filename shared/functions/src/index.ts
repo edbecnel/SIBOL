@@ -36,6 +36,10 @@ import {
   runSubmitTeenAssistanceRequest,
   runResolveAssistanceRequestSubmitter,
 } from "./teen/exportHandlers";
+import {
+  runListRegisteredTeensForCase,
+  runResolveRegisteredTeenForCase,
+} from "./cases/exportHandlers";
 import type { RegisterTeenInput } from "./teen/registerTeenAccount";
 import { runGetReferenceManifest } from "./geo/referenceManifest";
 
@@ -219,6 +223,32 @@ export const regResolveAssistanceRequestSubmitter = onCall(async (request) => {
   const db = admin.firestore();
   try {
     return await runResolveAssistanceRequestSubmitter(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regResolveRegisteredTeenForCase = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runResolveRegisteredTeenForCase(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regListRegisteredTeensForCase = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runListRegisteredTeensForCase(
       db,
       request.auth?.uid,
       (request.data ?? {}) as Record<string, unknown>,

@@ -1,22 +1,62 @@
-# Fictional case and reporting model (provisional)
+# Case and reporting model (provisional)
 
-> **Status:** Draft — Tranche 1  
-> **Source:** Product-owner proposal `Docs/Reference/SIBOL.docx` + PA handover SIBOL-IMP-001  
+> **Status:** Updated for SIBOL-CASE-IDENTITY-001  
 > **Not a clinical standard**
 
 ## Case (`cases/{caseId}`)
 
+### Core (all documents)
+
 | Field | Type | Notes |
 |-------|------|-------|
-| `demoName` | string | Fictional name |
-| `age` | int | 13–19 enforced in app validation |
-| `barangay` | string | Demo site label |
+| `orgId` | string | Organization scope (required by security rules) |
+| `demoName` | string | Display name mirror; kept for backward compatibility |
+| `fullName` | string | Required on extended documents |
+| `age` | int | Stored; prefer DOB-derived age when `dateOfBirth` present |
+| `barangay` | string | Site label |
 | `caseStatus` | string | `active`, `followUpScheduled`, `followUpCompleted`, `closed` |
-| `registeredAt` | timestamp | |
+| `registeredAt` | timestamp | UI label **Case opened** |
 | `nextFollowUpAt` | timestamp? | |
-| `notes` | string | Non-clinical demo notes |
+| `notes` | string | Staff case notes |
 | `createdAt` / `updatedAt` | timestamp | |
-| `reportStatus` | string | Client-visible lifecycle; **MOPH visibility requires server acceptance** |
+| `reportStatus` | string | Client-visible lifecycle |
+
+### Identity extension (SIBOL-CASE-IDENTITY-001)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `subjectKind` | string | `registered` \| `unregistered` |
+| `caseCompleteness` | string | `draft` \| `active` \| `legacyIncomplete` |
+| `dateOfBirth` | string | `YYYY-MM-DD` when captured |
+| `contactEmail` | string? | Contact only (not proof of account for unregistered) |
+| `contactPhone` | string? | |
+| `parentGuardianContact` | string? | |
+| `teenUid` | string? | Required for `registered` active cases |
+| `linkedAccountEmail` | string? | Auth email snapshot from verified linkage |
+| `identityLinkedAt` | timestamp? | When registered linkage was verified |
+
+**Legacy documents** without `caseCompleteness` remain valid (age-only QA/demo records).
+
+**Drafts** may omit DOB and contact; **active** cases require full name, DOB, barangay, and at least one contact method.
+
+**Reporting** excludes `draft` cases from aggregate counts (client-side).
+
+## Teen profile (`users/{teenUid}`) — self-service fields
+
+| Field | Notes |
+|-------|-------|
+| `displayName` | Full name |
+| `dateOfBirth` | `YYYY-MM-DD` |
+| `assignedBarangay` | Barangay label |
+| `contactEmail` / `contactPhone` | At least one required after profile update |
+| `parentGuardianContact` | Optional |
+
+Sign-in email remains Firebase Authentication (separate from `contactEmail`).
+
+## Callable verification (registered case linkage)
+
+- `regListRegisteredTeensForCase` — org-scoped teen picker (case.write).
+- `regResolveRegisteredTeenForCase` — authoritative snapshot before registered case activation (online).
 
 ## Follow-up (`cases/{caseId}/followUps/{followUpId}`)
 
@@ -27,6 +67,8 @@
 | `completedAt` | timestamp? |
 | `status` | `scheduled` \| `completed` \| `cancelled` |
 | `notes` | string |
+| `createdByUid` | string? | Staff recorder |
+| `createdAt` | timestamp? | |
 
 ## Report (`reports/{reportId}`) — Tranche 2
 
