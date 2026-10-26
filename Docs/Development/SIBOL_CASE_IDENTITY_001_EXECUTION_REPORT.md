@@ -3,7 +3,7 @@
 **Handover UUID:** `e1c5f782-3a94-4b61-9f27-6d0e8b413ac5`  
 **Reference baseline:** `8221fcf`  
 **Starting HEAD:** `8221fcf`  
-**Ending HEAD:** _(see Git push below)_  
+**Ending HEAD:** `a7f431c`  
 **Firebase:** `sibol-286d0` (no production deploy)
 
 ## Summary
@@ -81,4 +81,4 @@ Implemented registered and unregistered teen identity for Barangay cases: date-o
 
 ## Commits
 
-_(filled after `git commit` / `git push`)_
+- `a7f431c` — SIBOL-CASE-IDENTITY-001 implementation (pushed to `origin/main`)
