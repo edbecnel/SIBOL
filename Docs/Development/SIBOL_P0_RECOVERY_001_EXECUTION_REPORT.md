@@ -3,7 +3,7 @@
 **Handover UUID:** `a5d1e7c9-2b64-4e80-9c31-f8d72b0654ae`  
 **PA Option C authorization:** Identity backfill + Flutter refresh + device verification  
 **Starting HEAD:** `200ea13`  
-**Ending HEAD:** _(see Git section)_
+**Ending HEAD:** `eff5c92`
 
 ## Root cause
 
@@ -70,7 +70,9 @@ Canonical **Barangay 3 (Poblacion)** / **Barangay 3, Balingasag** preserved in a
 
 ## Git
 
-_(filled after commit/push)_
+- `eff5c92` — `fix(identity): backfill assistance submitter snapshots and refresh UX`
+- Prior recovery: `da728a3`, `200ea13`
+- Pushed: `origin/main`
 
 ## Remaining blockers
 
