@@ -3,7 +3,7 @@
 **Handover UUID:** `8c4e1d73-6b29-4f85-a0d2-91e7c5b3406f`  
 **Interactive acceptance UUID:** `f8b72d14-6c39-4a85-9d01-3e947b20c681`  
 **Starting HEAD:** `5e127dc`  
-**Ending HEAD:** _(see Git section)_
+**Ending HEAD:** `9968a71`
 
 ## Implementation
 
@@ -58,7 +58,8 @@ With Incoming requests loaded online, emulator airplane mode enabled: all three 
 
 ## Git
 
-_(filled after commit/push)_
+- `9968a71` — `feat(barangay): show teen account email on incoming request cards`
+- Pushed: `origin/main`
 
 ## PO acceptance gate
 
