@@ -99,4 +99,11 @@ class AssistanceRequestRepositoryImpl implements AssistanceRequestRepository {
       'orgId': orgId,
     });
   }
+
+  @override
+  Future<void> resolveAssistanceRequestSubmitter(String requestId) async {
+    await _functions.httpsCallable('regResolveAssistanceRequestSubmitter').call({
+      'requestId': requestId,
+    });
+  }
 }

@@ -14,6 +14,8 @@ class AssistanceRequest extends Equatable {
     required this.createdAt,
     this.acknowledgedAt,
     this.acknowledgedByUid,
+    this.submitterDisplayName,
+    this.submitterAccountEmail,
   });
 
   final String requestId;
@@ -26,6 +28,8 @@ class AssistanceRequest extends Equatable {
   final DateTime createdAt;
   final DateTime? acknowledgedAt;
   final String? acknowledgedByUid;
+  final String? submitterDisplayName;
+  final String? submitterAccountEmail;
 
   @override
   List<Object?> get props => [
@@ -39,5 +43,7 @@ class AssistanceRequest extends Equatable {
         createdAt,
         acknowledgedAt,
         acknowledgedByUid,
+        submitterDisplayName,
+        submitterAccountEmail,
       ];
 }

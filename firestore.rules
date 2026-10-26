@@ -223,7 +223,13 @@ service cloud.firestore {
           && request.resource.data.keys().hasAll([
             'teenUid', 'barangay', 'orgId', 'category', 'description', 'status', 'createdAt',
             'acknowledgedAt', 'acknowledgedByUid'
-          ]);
+          ])
+          && (!('submitterDisplayName' in resource.data)
+              || request.resource.data.submitterDisplayName == resource.data.submitterDisplayName)
+          && (!('submitterAccountEmail' in resource.data)
+              || request.resource.data.submitterAccountEmail == resource.data.submitterAccountEmail)
+          && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['submitterDisplayName', 'submitterAccountEmail']);
     }
 
     function caseCoreFieldsValid(data) {

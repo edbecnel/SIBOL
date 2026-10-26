@@ -34,6 +34,7 @@ import {
   runListBarangayDirectory,
   runRegisterTeenAccount,
   runSubmitTeenAssistanceRequest,
+  runResolveAssistanceRequestSubmitter,
 } from "./teen/exportHandlers";
 import type { RegisterTeenInput } from "./teen/registerTeenAccount";
 import { runGetReferenceManifest } from "./geo/referenceManifest";
@@ -205,6 +206,19 @@ export const regAcknowledgeTeenAssistanceRequest = onCall(async (request) => {
   const db = admin.firestore();
   try {
     return await runAcknowledgeTeenAssistanceRequest(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regResolveAssistanceRequestSubmitter = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runResolveAssistanceRequestSubmitter(
       db,
       request.auth?.uid,
       (request.data ?? {}) as Record<string, unknown>,

@@ -47,11 +47,18 @@ after(async () => {
 describe("teen assistance submission idempotency", () => {
   it("creates assistance request with idempotency key", async () => {
     const key = `assist-${Date.now()}`;
-    const result = await runSubmitTeenAssistanceRequest(db, teenUid, {
-      idempotencyKey: key,
-      category: "generalSupport",
-      description: "Fictional assistance request for idempotency test.",
-    });
+    const result = await runSubmitTeenAssistanceRequest(
+      db,
+      teenUid,
+      {
+        idempotencyKey: key,
+        category: "generalSupport",
+        description: "Fictional assistance request for idempotency test.",
+      },
+      {
+        getAccountEmail: async () => "teen.submit@sibol.local",
+      },
+    );
     assert.ok(result.requestId);
     const snap = await db
       .collection("teenAssistanceRequests")
@@ -59,6 +66,8 @@ describe("teen assistance submission idempotency", () => {
       .get();
     assert.equal(snap.exists, true);
     assert.equal(snap.data()?.teenUid, teenUid);
+    assert.equal(snap.data()?.submitterDisplayName, "Teen");
+    assert.equal(snap.data()?.submitterAccountEmail, "teen.submit@sibol.local");
   });
 
   it("replays same idempotency key without duplicate document", async () => {

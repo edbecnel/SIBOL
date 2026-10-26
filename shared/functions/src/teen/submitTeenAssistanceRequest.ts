@@ -1,6 +1,11 @@
 import { Firestore, Timestamp } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
 import { assertAuthenticated, AuthzError } from "../authz/assert";
 import { isValidOrgId } from "../authz/identifiers";
+import {
+  GetAccountEmailFn,
+  resolveSubmitterIdentityFromAuthoritativeSources,
+} from "./submitterIdentity";
 import {
   claimUserIdempotency,
   completeUserIdempotencyInTransaction,
@@ -32,10 +37,20 @@ export type SubmitTeenAssistanceInput = {
   description?: string;
 };
 
+async function defaultGetAccountEmail(uid: string): Promise<string | undefined> {
+  try {
+    const authUser = await getAuth().getUser(uid);
+    return authUser.email;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function runSubmitTeenAssistanceRequest(
   db: Firestore,
   authUid: string | undefined,
   data: SubmitTeenAssistanceInput,
+  deps?: { getAccountEmail?: GetAccountEmailFn },
 ) {
   const uid = assertAuthenticated(authUid);
   const idempotencyKey = assertNonEmptyString(data.idempotencyKey, "idempotencyKey");
@@ -92,6 +107,13 @@ export async function runSubmitTeenAssistanceRequest(
     return idemClaim.response;
   }
 
+  const getAccountEmail = deps?.getAccountEmail ?? defaultGetAccountEmail;
+  const submitterIdentity = await resolveSubmitterIdentityFromAuthoritativeSources(
+    db,
+    uid,
+    getAccountEmail,
+  );
+
   const now = Timestamp.now();
   const requestRef = db.collection(ASSISTANCE).doc();
   const requestId = requestRef.id;
@@ -116,6 +138,7 @@ export async function runSubmitTeenAssistanceRequest(
       status: "submitted",
       createdAt: now,
       submissionIdempotencyKey: idempotencyKey,
+      ...submitterIdentity,
     });
 
     const payload = {

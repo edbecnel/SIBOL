@@ -10,10 +10,12 @@ import 'package:sibol_app/features/auth/presentation/providers/auth_providers.da
 import 'package:sibol_app/features/teenager/domain/assistance_request_status.dart';
 import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/org/presentation/widgets/organization_directory_display.dart';
+import 'package:sibol_app/features/teenager/domain/assistance_request_submitter_identity.dart';
 import 'package:sibol_app/features/teenager/presentation/providers/barangay_assistance_providers.dart';
 import 'package:sibol_app/features/offline/domain/pending_operation.dart';
 import 'package:sibol_app/features/offline/presentation/offline_providers.dart';
 import 'package:sibol_app/features/teenager/presentation/widgets/teen_non_emergency_notice.dart';
+import 'dart:async';
 import 'dart:math';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
@@ -37,6 +39,32 @@ class _BarangayIncomingRequestDetailScreenState
     extends ConsumerState<BarangayIncomingRequestDetailScreen> {
   bool _acknowledging = false;
   String? _actionError;
+  bool _submitterRefreshScheduled = false;
+  bool _submitterRefreshInFlight = false;
+
+  void _scheduleSubmitterIdentityRefresh() {
+    if (_submitterRefreshScheduled || _submitterRefreshInFlight) return;
+    _submitterRefreshScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_refreshSubmitterIdentityIfOnline());
+    });
+  }
+
+  Future<void> _refreshSubmitterIdentityIfOnline() async {
+    if (_submitterRefreshInFlight) return;
+    final sync = ref.read(offlineSyncServiceProvider);
+    if (!await sync.hasConnectivity()) return;
+    _submitterRefreshInFlight = true;
+    try {
+      await ref
+          .read(assistanceRequestRepositoryProvider)
+          .resolveAssistanceRequestSubmitter(widget.requestId);
+    } catch (_) {
+      // Preserve cached snapshot on transient failure.
+    } finally {
+      _submitterRefreshInFlight = false;
+    }
+  }
 
   Future<void> _acknowledge() async {
     final uid = ref.read(authStateChangesProvider).value?.uid;
@@ -140,6 +168,7 @@ class _BarangayIncomingRequestDetailScreenState
                     request.status == AssistanceRequestStatus.submitted;
                 final isAcknowledged =
                     request.status == AssistanceRequestStatus.acknowledged;
+                _scheduleSubmitterIdentityRefresh();
                 return ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
@@ -163,6 +192,18 @@ class _BarangayIncomingRequestDetailScreenState
                     _DetailRow(
                       label: 'Status',
                       value: request.status.label,
+                    ),
+                    _DetailRow(
+                      label: AssistanceRequestSubmitterIdentityLabels.submittedBy,
+                      value: assistanceSubmitterDisplayLabel(
+                        request.submitterDisplayName,
+                      ),
+                    ),
+                    _DetailRow(
+                      label: AssistanceRequestSubmitterIdentityLabels.accountEmail,
+                      value: assistanceSubmitterEmailLabel(
+                        request.submitterAccountEmail,
+                      ),
                     ),
                     OrganizationIdentityDetailRows(orgId: request.orgId),
                     if (request.acknowledgedAt != null) ...[

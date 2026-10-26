@@ -15,6 +15,8 @@ class AssistanceRequestModel {
     required this.createdAt,
     this.acknowledgedAt,
     this.acknowledgedByUid,
+    this.submitterDisplayName,
+    this.submitterAccountEmail,
   });
 
   final String requestId;
@@ -27,6 +29,8 @@ class AssistanceRequestModel {
   final DateTime createdAt;
   final DateTime? acknowledgedAt;
   final String? acknowledgedByUid;
+  final String? submitterDisplayName;
+  final String? submitterAccountEmail;
 
   factory AssistanceRequestModel.fromFirestore(
     String id,
@@ -45,6 +49,8 @@ class AssistanceRequestModel {
           ? null
           : _toDate(data['acknowledgedAt']),
       acknowledgedByUid: data['acknowledgedByUid'] as String?,
+      submitterDisplayName: data['submitterDisplayName'] as String?,
+      submitterAccountEmail: data['submitterAccountEmail'] as String?,
     );
   }
 
@@ -77,6 +83,8 @@ class AssistanceRequestModel {
       createdAt: createdAt,
       acknowledgedAt: acknowledgedAt,
       acknowledgedByUid: acknowledgedByUid,
+      submitterDisplayName: submitterDisplayName,
+      submitterAccountEmail: submitterAccountEmail,
     );
   }
 

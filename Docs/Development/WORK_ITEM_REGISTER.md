@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-26 (SIBOL-REG-001 prototype closure)  
+> **Last updated:** 2026-10-26 (SIBOL-P0-ID-001 implementation)  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -39,6 +39,7 @@
 | SIBOL-OFFLINE-QA-CLOSE-001 | Offline QA closure + prototype baseline tag | **Closed** @ tag `sibol-prototype-2026-10-26-offline-qa` | [OFFLINE QA execution](SIBOL_OFFLINE_QA_001_EXECUTION_REPORT.md) |
 | SIBOL-OFFLINE-REQ-001 | Cancel pending offline submission (draft) | **Deferred — NOT APPROVED** | [Deferred enhancement](SIBOL_OFFLINE_REQ_001_DEFERRED_ENHANCEMENT.md) |
 | SIBOL-REG-001-CLOSE | Direct staff provisioning + REG-FIX (prototype functional closure) | **Closed** — PA functional acceptance `b4e81c62-…`; docs @ closure commit on `main` | [Prototype closure](SIBOL_REG_001_PROTOTYPE_CLOSURE_EXECUTION_REPORT.md), [Direct provisioning report](SIBOL_REG_001_DIRECT_PROVISIONING_EXECUTION_REPORT.md) |
+| SIBOL-P0-ID-001 | Barangay assistance request submitter identity (offline snapshot + online refresh) | **Implemented** — manual QA pending PA | [Execution report](SIBOL_P0_ID_001_EXECUTION_REPORT.md), [Identity contract](../../shared/docs/TEEN_ASSISTANCE_IDENTITY_CONTRACT.md) |
 
 ## Prototype development boundary
 

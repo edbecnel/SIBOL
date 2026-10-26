@@ -21,4 +21,7 @@ abstract class AssistanceRequestRepository {
     required String orgId,
     required String idempotencyKey,
   });
+
+  /// Refreshes submitter identity snapshot on the server when authorized.
+  Future<void> resolveAssistanceRequestSubmitter(String requestId);
 }

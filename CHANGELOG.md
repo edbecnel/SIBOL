@@ -4,6 +4,10 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- SIBOL-P0-ID-001: Barangay assistance request detail shows teenager **Submitted by** and **Account email** from server-maintained snapshot fields; online refresh via `regResolveAssistanceRequestSubmitter` for legacy requests (`e9b73c14-5d62-4a81-9f20-c638b2d70451`).
+
 ### Accepted
 
 - SIBOL-REG-001 **prototype functional closure** (`b4e81c62-7d39-4a50-9f26-c3a108e75d92`): PA acceptance of manual QA (staff provisioning, password reset, mandatory change UX) @ `19bfc20`; mandatory-password **backend** enforcement **deferred** for production — see [SIBOL_REG_001_PROTOTYPE_CLOSURE_EXECUTION_REPORT.md](Docs/Development/SIBOL_REG_001_PROTOTYPE_CLOSURE_EXECUTION_REPORT.md) and [SIBOL_REG_001_MANDATORY_PASSWORD_SECURITY_INVESTIGATION.md](Docs/Development/SIBOL_REG_001_MANDATORY_PASSWORD_SECURITY_INVESTIGATION.md). **Not** production deployment authorization.

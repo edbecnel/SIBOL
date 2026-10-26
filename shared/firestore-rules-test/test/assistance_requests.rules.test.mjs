@@ -233,4 +233,37 @@ describe("teenAssistanceRequests rules", () => {
       db.collection("teenAssistanceRequests").doc("req-1").get(),
     );
   });
+
+  it("denies barangay forging submitter identity on acknowledge", async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().collection("teenAssistanceRequests").doc("req-forge-id").set(
+        validRequest({
+          submitterDisplayName: "Cached Teen",
+          submitterAccountEmail: "real@sibol.local",
+        }),
+      );
+    });
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    const now = new Date();
+    await assertFails(
+      db.collection("teenAssistanceRequests").doc("req-forge-id").update({
+        status: "acknowledged",
+        acknowledgedAt: now,
+        acknowledgedByUid: barangayUid,
+        submitterDisplayName: "Forged Name",
+      }),
+    );
+  });
+
+  it("denies teen client create even with forged identity fields", async () => {
+    const db = testEnv.authenticatedContext(teenUid).firestore();
+    await assertFails(
+      db.collection("teenAssistanceRequests").doc("req-forged-identity").set(
+        validRequest({
+          submitterDisplayName: "Forged",
+          submitterAccountEmail: "fake@sibol.local",
+        }),
+      ),
+    );
+  });
 });
