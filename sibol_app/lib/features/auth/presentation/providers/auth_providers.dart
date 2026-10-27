@@ -81,18 +81,9 @@ class AuthController extends Notifier<AsyncValue<void>> {
     return ref.read(authRepositoryProvider).reloadCurrentUser();
   }
 
+  /// Does not update [state]; used from the signed-out password-reset screen only.
   Future<void> sendPasswordResetEmail(String email) async {
-    state = const AsyncLoading();
-    try {
-      await ref.read(authRepositoryProvider).sendPasswordResetEmail(email);
-      state = const AsyncData(null);
-    } on AppException catch (e, st) {
-      state = AsyncError(e.toFailure(), st);
-      rethrow;
-    } catch (e, st) {
-      state = AsyncError(e, st);
-      rethrow;
-    }
+    await ref.read(authRepositoryProvider).sendPasswordResetEmail(email);
   }
 
   Future<void> signOut() async {

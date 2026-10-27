@@ -91,6 +91,7 @@ void main() {
     );
 
     expect(find.text('Sign in'), findsOneWidget);
+    expect(find.text('Forgot password?'), findsOneWidget);
     expect(find.byType(TextField), findsNWidgets(2));
     expect(find.textContaining('fictional'), findsWidgets);
   });

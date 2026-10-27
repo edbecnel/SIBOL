@@ -124,6 +124,8 @@ String? resolveAppRedirect({
     return Routes.changePassword;
   }
 
+  if (onPasswordReset) return null;
+
   final home = homeForProfile(profile);
   if (onLogin || onSplash || onWelcome || onAccountNotProvisioned) return home;
 
