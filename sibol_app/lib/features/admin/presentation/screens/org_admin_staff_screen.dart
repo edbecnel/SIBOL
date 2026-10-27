@@ -21,6 +21,7 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
   String? _error;
   List<Map<String, dynamic>> _memberships = [];
   OrganizationType? _organizationType;
+  String _organizationName = '';
 
   @override
   void initState() {
@@ -34,10 +35,22 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
       _error = null;
     });
     try {
-      final directory =
-          await ref.read(adminApiProvider).listMemberships(widget.orgId);
+      final api = ref.read(adminApiProvider);
+      if (ref.read(isCentralAdminProvider)) {
+        final orgs = await api.listOrganizations();
+        for (final org in orgs) {
+          if (org['orgId'] == widget.orgId) {
+            _organizationName = (org['name'] as String?)?.trim() ?? '';
+            break;
+          }
+        }
+      }
+      final directory = await api.listMemberships(widget.orgId);
       _memberships = directory.memberships;
       _organizationType = directory.organizationType;
+      if (_organizationName.isEmpty) {
+        _organizationName = widget.orgId;
+      }
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -401,9 +414,14 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
       );
     }
 
+    final staffTitle = _organizationName.isNotEmpty &&
+            _organizationName != widget.orgId
+        ? 'Staff — $_organizationName'
+        : 'Staff management';
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Staff management'),
+        title: Text(staffTitle),
         actions: [
           IconButton(onPressed: _load, icon: const Icon(Icons.refresh)),
         ],

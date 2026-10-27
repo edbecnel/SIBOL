@@ -21,6 +21,7 @@ class _CentralAdminOrgDetailScreenState
   String? _error;
   List<Map<String, dynamic>> _memberships = [];
   String _status = 'active';
+  String _organizationName = '';
 
   @override
   void initState() {
@@ -35,6 +36,17 @@ class _CentralAdminOrgDetailScreenState
     });
     try {
       final api = ref.read(adminApiProvider);
+      final orgs = await api.listOrganizations();
+      for (final org in orgs) {
+        if (org['orgId'] == widget.orgId) {
+          _organizationName = (org['name'] as String?)?.trim() ?? '';
+          _status = (org['status'] as String?) ?? _status;
+          break;
+        }
+      }
+      if (_organizationName.isEmpty) {
+        _organizationName = widget.orgId;
+      }
       final directory = await api.listMemberships(widget.orgId);
       _memberships = directory.memberships;
     } catch (e) {
@@ -108,7 +120,7 @@ class _CentralAdminOrgDetailScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.orgId)),
+      appBar: AppBar(title: Text(_organizationName)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null

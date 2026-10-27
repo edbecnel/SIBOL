@@ -18,7 +18,7 @@ Live Firebase is far behind the current app and emulator stack. A **full emulato
 | Firestore `users` | (in export; not parsed here) | 3 |
 | `cases` | — | 6 |
 | `teenAssistanceRequests` | — | 5 |
-| Barangay label | Mixed (PSGC-style in QA) | `Barangay Tres, Balingasag` (legacy) |
+| Barangay label | Mixed (PSGC-style in QA) | `Barangay 3, Balingasag` (legacy routing label) |
 | Cloud Functions deployed | Full repo set when emulators run | **1** (`createCoordinationReferral`) |
 | Firestore rules (repo) | `firestore.rules` @ HEAD (~24k) | Live rules **not** equivalent to repo (CLI fetch ≠ repo size) |
 
@@ -138,7 +138,7 @@ Script: `shared/delivery/scripts/provision-central-admin-live.mjs`
 ## Tooling added
 
 - `shared/delivery/` — `npm run dry-run`, `inventory-export`, `compare-functions`, `apply-demo-orgs-live.mjs`
-- Mapping alias `Barangay Tres, Balingasag` → `barangay03`
+- Mapping aliases `Barangay 3, Balingasag` / legacy `Barangay Tres, Balingasag` → `barangay03` (display name: **Barangay 3 (Poblacion)**)
 - This report and Frecy install guide
 
 ### Central staff screen + Barangay org admin restore (2026-10-27, handover `c7f42a91-…`)
