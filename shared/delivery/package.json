@@ -1,0 +1,14 @@
+{
+  "name": "sibol-delivery",
+  "private": true,
+  "type": "module",
+  "description": "SIBOL-DELIVERY-001 live migration prep (dry-run default; no live writes)",
+  "scripts": {
+    "dry-run": "node scripts/delivery-dry-run.mjs",
+    "inventory-export": "node scripts/inventory-emulator-export.mjs",
+    "compare-functions": "node scripts/compare-functions.mjs"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}
