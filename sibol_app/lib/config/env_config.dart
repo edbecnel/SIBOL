@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Environment selector via `--dart-define=ENVIRONMENT=development|staging|production`.
 abstract final class EnvConfig {
   static const String environment = String.fromEnvironment(
@@ -8,22 +10,18 @@ abstract final class EnvConfig {
   static bool get isDevelopment => environment == 'development';
 
   /// Explicit override via `--dart-define=USE_FIREBASE_EMULATORS=true|false`.
-  /// When unset, development builds use local emulators; staging/production do not.
+  /// When unset, debug/profile development builds use local emulators;
+  /// release builds never default to emulators (live Firebase).
   static const String _useFirebaseEmulatorsDefine = String.fromEnvironment(
     'USE_FIREBASE_EMULATORS',
     defaultValue: '',
   );
 
-  static bool get useEmulators {
-    switch (_useFirebaseEmulatorsDefine) {
-      case 'true':
-        return true;
-      case 'false':
-        return false;
-      default:
-        return isDevelopment;
-    }
-  }
+  static bool get useEmulators => resolveUseFirebaseEmulators(
+        useFirebaseEmulatorsDefine: _useFirebaseEmulatorsDefine,
+        environment: environment,
+        releaseMode: kReleaseMode,
+      );
 
   /// When `true`, Firestore allows barangay registry reads for missing docs
   /// (rules in repo; deploy pending). When `false` (default), the app maps
@@ -32,4 +30,23 @@ abstract final class EnvConfig {
         'SIBOL_COORD_REGISTRY_RULES_V2',
         defaultValue: false,
       );
+}
+
+/// Pure resolver for [EnvConfig.useEmulators] (unit-tested).
+bool resolveUseFirebaseEmulators({
+  required String useFirebaseEmulatorsDefine,
+  required String environment,
+  required bool releaseMode,
+}) {
+  switch (useFirebaseEmulatorsDefine) {
+    case 'true':
+      return true;
+    case 'false':
+      return false;
+    default:
+      if (releaseMode) {
+        return false;
+      }
+      return environment == 'development';
+  }
 }
