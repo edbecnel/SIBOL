@@ -438,8 +438,9 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isCentral = ref.watch(isCentralAdminProvider);
     final managed = ref.watch(orgAdminManagedOrgIdsProvider);
-    if (!managed.contains(widget.orgId)) {
+    if (!isCentral && !managed.contains(widget.orgId)) {
       return Scaffold(
         appBar: AppBar(title: const Text('Staff management')),
         body: const Center(

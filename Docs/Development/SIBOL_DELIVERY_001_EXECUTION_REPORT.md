@@ -140,3 +140,27 @@ Script: `shared/delivery/scripts/provision-central-admin-live.mjs`
 - `shared/delivery/` — `npm run dry-run`, `inventory-export`, `compare-functions`, `apply-demo-orgs-live.mjs`
 - Mapping alias `Barangay Tres, Balingasag` → `barangay03`
 - This report and Frecy install guide
+
+### Central staff screen + Barangay org admin restore (2026-10-27, handover `c7f42a91-…`)
+
+| Item | Status |
+|------|--------|
+| Flutter `OrgAdminStaffScreen` gate | Central Admin may open staff UI: `isCentral \|\| managed.contains(orgId)` |
+| Regression test | `account_memberships_provider_test.dart` — central admin without org membership |
+| Live `barangay.org.admin@sibol.local` | **Not provisioned** — dry-run only (see below) |
+| `regResetStaffMemberPassword` | Already on live rev `regresetstaffmemberpassword-00002-qal` (no redeploy in this handover) |
+| Live password reset UAT | **Not executed** — requires separate PO authorization |
+
+**Dry-run (live read + plan):** `node shared/delivery/scripts/provision-barangay-org-admin-live.mjs --dry-run`
+
+| Field | Dry-run result |
+|-------|----------------|
+| `organizationExists` | `true` (`barangay03`) |
+| `existingAuthUid` | `null` (account absent in live Auth) |
+| Planned actions | Create Auth user, Firestore profile (`barangay`, active), org-admin membership (`org.manage_members`, `org.manage_roles`), `primaryOrgId: barangay03` |
+| Blueprint | Matches `EMULATOR_DEMO_USER_BLUEPRINTS.barangay_org_admin` (new live UID; no emulator UID copy) |
+| Password env | `SIBOL_EMULATOR_PASSWORD_BARANGAY_ORG_ADMIN` (available locally; never logged) |
+
+**Execute (blocked pending PO):** `node shared/delivery/scripts/provision-barangay-org-admin-live.mjs --execute --confirm-project=sibol-286d0`
+
+**PO approval for live provisioning:** Reply **APPROVE LIVE BARANGAY ORG ADMIN PROVISION** to run execute above. Password reset UAT remains **APPROVE LIVE PASSWORD RESET UAT** separately.

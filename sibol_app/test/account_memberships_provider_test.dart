@@ -103,6 +103,38 @@ void main() {
     container.dispose();
   });
 
+  test('central administrator has admin access without org-admin membership',
+      () async {
+    const centralUid = 'wibfqrFWxTR614NVBYpkGJkp3Lh1';
+    final container = ProviderContainer(
+      overrides: [
+        authStateChangesProvider.overrideWith(
+          (ref) => Stream.value(
+            AuthUser(uid: centralUid, email: 'central.admin@sibol.local'),
+          ),
+        ),
+        userProfileProvider.overrideWith(
+          (ref) => Stream.value(
+            UserProfile(
+              uid: centralUid,
+              role: SibolRole.barangay,
+              displayName: 'Central',
+              active: true,
+              createdAt: DateTime(2026),
+              isCentralAdmin: true,
+            ),
+          ),
+        ),
+      ],
+    );
+    container.listen(userProfileProvider, (_, __) {});
+    await pumpEventQueue(times: 5);
+    expect(container.read(isCentralAdminProvider), isTrue);
+    expect(container.read(orgAdminManagedOrgIdsProvider), isEmpty);
+    expect(container.read(canAccessAdministrationProvider), isTrue);
+    container.dispose();
+  });
+
   test('missing primaryOrgId yields empty memberships without repository call', () async {
     final repo = _FakeOrgRepository({});
     final container = ProviderContainer(
