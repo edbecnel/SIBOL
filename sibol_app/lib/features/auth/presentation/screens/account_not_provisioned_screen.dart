@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/auth/presentation/sign_out_pending_guard.dart';
+import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_intent_providers.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 
 /// Signed-in Firebase user without a server `users/{uid}` profile (staff must be provisioned).
@@ -22,10 +23,20 @@ class AccountNotProvisionedScreen extends ConsumerWidget {
           children: [
             const Text(
               'Your sign-in was recognized, but no SIBOL user profile is available yet. '
-              'Barangay, hospital, and administrator accounts are created through '
-              'authorized invitation or provisioning—not Teen self-registration.',
+              'If you were registering as a Teen, continue registration below. '
+              'Staff and administrator accounts are created through authorized provisioning.',
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            AppButton.primary(
+              label: 'Continue Teen registration',
+              onPressed: () async {
+                await ref
+                    .read(teenRegistrationIntentProvider.notifier)
+                    .markInProgress();
+                if (context.mounted) context.go(Routes.teenRegister);
+              },
+            ),
+            const SizedBox(height: 12),
             AppButton.primary(
               label: authOp.isLoading ? 'Signing out…' : 'Sign out',
               onPressed: authOp.isLoading

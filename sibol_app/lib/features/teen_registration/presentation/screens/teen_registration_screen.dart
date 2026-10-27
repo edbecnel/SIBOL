@@ -156,6 +156,7 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
         context.go(Routes.teenRegisterComplete);
       }
     } catch (e) {
+      await ref.read(teenRegistrationIntentProvider.notifier).markInProgress();
       setState(() => _error = userErrorMessage(e));
     } finally {
       if (mounted) setState(() => _submitting = false);

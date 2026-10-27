@@ -136,6 +136,40 @@ void main() {
       );
     });
 
+    test('authenticated missing profile on login → account not provisioned', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.login,
+          authAsync: const AsyncData(user),
+          profileAsync: const AsyncData(null),
+        ),
+        Routes.accountNotProvisioned,
+      );
+    });
+
+    test('teen intent on login with missing profile → teen register', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.login,
+          authAsync: const AsyncData(user),
+          profileAsync: const AsyncData(null),
+          teenSelfRegistrationInProgress: true,
+        ),
+        Routes.teenRegister,
+      );
+    });
+
+    test('profile loading on login → stay', () {
+      expect(
+        resolveAppRedirect(
+          location: Routes.login,
+          authAsync: const AsyncData(user),
+          profileAsync: const AsyncLoading(),
+        ),
+        isNull,
+      );
+    });
+
     test('staff without intent on splash → account not provisioned', () {
       expect(
         resolveAppRedirect(

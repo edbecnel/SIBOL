@@ -83,7 +83,8 @@ String? resolveAppRedirect({
     if (onSplash ||
         onAccountNotProvisioned ||
         onTeenRegister ||
-        onPasswordReset) {
+        onPasswordReset ||
+        onLogin) {
       return null;
     }
     return Routes.splash;
@@ -98,9 +99,18 @@ String? resolveAppRedirect({
   if (profile == null) {
     if (onTeenRegister || onPasswordReset) return null;
     if (teenSelfRegistrationInProgress) {
-      if (onSplash || onAccountNotProvisioned) return Routes.teenRegister;
+      if (onSplash ||
+          onAccountNotProvisioned ||
+          onLogin ||
+          onWelcome) {
+        return Routes.teenRegister;
+      }
     }
-    if (onLogin || onWelcome || onAccountNotProvisioned) return null;
+    if (onAccountNotProvisioned) return null;
+    if (onWelcome) {
+      return user != null ? Routes.accountNotProvisioned : null;
+    }
+    if (onLogin || onSplash) return Routes.accountNotProvisioned;
     return Routes.accountNotProvisioned;
   }
 
