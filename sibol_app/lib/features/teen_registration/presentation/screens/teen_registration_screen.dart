@@ -12,6 +12,7 @@ import 'package:sibol_app/features/teen_registration/domain/teen_onboarding_poli
 import 'package:sibol_app/features/teen_registration/domain/teen_registration_validation.dart';
 import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_intent_providers.dart';
 import 'package:sibol_app/features/teen_registration/presentation/providers/teen_registration_providers.dart';
+import 'package:sibol_app/shared/input/iso_date_digits_input_formatter.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 import 'package:sibol_app/shared/widgets/app_text_field.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
@@ -227,8 +228,9 @@ class _TeenRegistrationScreenState extends ConsumerState<TeenRegistrationScreen>
                     AppTextField(
                       controller: _dobController,
                       label: 'Date of birth (YYYY-MM-DD)',
-                      keyboardType: TextInputType.datetime,
+                      keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
+                      inputFormatters: const [IsoDateDigitsInputFormatter()],
                     ),
                     if (ageLabel != null) ...[
                       const SizedBox(height: 4),

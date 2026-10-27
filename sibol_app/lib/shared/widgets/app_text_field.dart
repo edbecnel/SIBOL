@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AppTextField extends StatefulWidget {
   const AppTextField({
@@ -13,6 +14,7 @@ class AppTextField extends StatefulWidget {
     this.maxLines = 1,
     this.minLines,
     this.enabled = true,
+    this.inputFormatters,
   });
 
   final TextEditingController controller;
@@ -29,6 +31,7 @@ class AppTextField extends StatefulWidget {
   final int maxLines;
   final int? minLines;
   final bool enabled;
+  final List<TextInputFormatter>? inputFormatters;
 
   bool get _usesPasswordToggle => isPassword || obscureText;
 
@@ -61,6 +64,7 @@ class _AppTextFieldState extends State<AppTextField> {
       enabled: widget.enabled,
       obscureText: passwordField ? _obscured : false,
       keyboardType: widget.keyboardType,
+      inputFormatters: widget.inputFormatters,
       textInputAction: widget.textInputAction,
       onSubmitted: widget.onSubmitted,
       maxLines: widget.maxLines,
