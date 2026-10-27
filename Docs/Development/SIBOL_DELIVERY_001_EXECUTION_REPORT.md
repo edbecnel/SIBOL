@@ -183,3 +183,21 @@ Script: `shared/delivery/scripts/provision-central-admin-live.mjs`
 | Physical dialog QA | Engineering cannot complete authenticated staff-screen path without PO credentials; S9-sized emulator tests + APK install are pre-PO acceptance evidence |
 
 **Follow-up (`8f3c72a1` PO blank rectangle):** Centered `Dialog` still failed on Galaxy S9 when focusing password fields (empty card). Replaced with **`showModalBottomSheet`** (`isScrollControlled: true`) + explicit `onSurface` text colors; 12 widget tests at 360×740.
+
+### MOPH Organization Administrator provisioning (2026-10-27, handover `d6a9f23e-…`)
+
+| Item | Result |
+|------|--------|
+| PO authorization | **APPROVE LIVE MOPH ORG ADMIN PROVISION** (dedicated `moph.org.admin@sibol.local` only) |
+| Pre-audit | Read-only handover `a9e72b46-…` — Auth account absent; `hospital01` active; no org admin membership; `moph.demo@sibol.local` unchanged |
+| Dry-run | `node shared/delivery/scripts/provision-moph-org-admin-live.mjs --dry-run` — project `sibol-286d0`, org `hospital01` (hospital/active), planned create Auth + profile + org-admin caps; password env present (not logged) |
+| Live execute | `node shared/delivery/scripts/provision-moph-org-admin-live.mjs --execute --confirm-project=sibol-286d0` |
+| Live Auth UID | `9TDH1xqBnNOYQfnq7Vj0iuRYcYE3` |
+| Membership ID | `mbr_hospital01__9TDH1xqBnNOYQfnq7Vj0iuRYcYE3` |
+| Profile | `role: moph`, `active: true`, `primaryOrgId: hospital01`, display name **Demo MOPH Org Administrator** |
+| Org-admin capabilities | `org.manage_members`, `org.manage_roles` (blueprint `moph_org_admin`; membership doc uses capabilities per emulator seed schema) |
+| Non-regression | `moph.demo@sibol.local` — `coordination.hospital` only; `hospital01` active; Barangay org admin/staff unchanged |
+| Focused tests | `node --test shared/delivery/test/provision-moph-org-admin-live.test.mjs` — 5 pass |
+| Live password reset / MOPH UAT | **Not authorized** by this handover — PO verification via mobile app is next |
+
+**Not in scope:** password reset, APK rebuild, Functions deploy, modifying `moph.demo@sibol.local`.

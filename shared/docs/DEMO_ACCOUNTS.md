@@ -8,10 +8,19 @@ All accounts use **fictional** identities. Passwords are supplied locally via en
 | Role | Email | Password source |
 |------|-------|-----------------|
 | Teen | `teen.demo@sibol.local` | `SIBOL_DEMO_PASSWORD_TEEN` |
-| Barangay | `barangay.demo@sibol.local` | `SIBOL_DEMO_PASSWORD_BARANGAY` |
-| MOPH | `moph.demo@sibol.local` | `SIBOL_DEMO_PASSWORD_MOPH` |
+| Barangay (coordination staff) | `barangay.demo@sibol.local` | `SIBOL_DEMO_PASSWORD_BARANGAY` |
+| MOPH (coordination staff) | `moph.demo@sibol.local` | `SIBOL_DEMO_PASSWORD_MOPH` |
 
-Canonical role values written to `users/{uid}`: `teen`, `barangay`, `moph`.
+### Organization administrators (live + emulator)
+
+These accounts are **not** ordinary coordination staff. They hold `org.manage_members` and `org.manage_roles` on their demo organization via `organizationMemberships`.
+
+| Organization | Email | Password source (local env) | Live provisioning script |
+|--------------|-------|------------------------------|---------------------------|
+| `barangay03` — Barangay 3 (Poblacion) | `barangay.org.admin@sibol.local` | `SIBOL_EMULATOR_PASSWORD_BARANGAY_ORG_ADMIN` | `shared/delivery/scripts/provision-barangay-org-admin-live.mjs` |
+| `hospital01` — Misamis Oriental Provincial Hospital | `moph.org.admin@sibol.local` | `SIBOL_EMULATOR_PASSWORD_MOPH_ORG_ADMIN` | `shared/delivery/scripts/provision-moph-org-admin-live.mjs` |
+
+Canonical role values written to `users/{uid}`: `teen`, `barangay`, `moph` (org admins use `barangay` or `moph` respectively, not a separate profile role string).
 
 ## Owner setup
 
