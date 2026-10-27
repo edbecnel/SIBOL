@@ -7,12 +7,41 @@ import {
   LEGACY_TEEN_ORG_ALLOWLIST,
 } from "../geo/demoFlags";
 import { DEMO_PSGC_BARANGAY_TO_ORG } from "../geo/demoPsgcShim";
+import { pinnedOrgIdForBarangayPsgc } from "../geo/prototypePinnedBarangayPsgc";
 import { DEMO_BARANGAY_ORG_ID } from "../reg/constants";
 
 const IDENTITY_KEYS = "organizationIdentityKeys";
 
 export function syntheticDemoBarangayKey(orgId: string): string {
   return `synthetic:demo:${orgId}`;
+}
+
+async function assertActiveBarangayOrgForPsgc(
+  db: Firestore,
+  orgId: string,
+  psgcBarangayCode: string,
+): Promise<string> {
+  const orgSnap = await db.collection("organizations").doc(orgId).get();
+  if (!orgSnap.exists) {
+    throw new AuthzError("Organization record missing.", "failed-precondition");
+  }
+  const org = orgSnap.data()!;
+  if (org.type !== "barangay") {
+    throw new AuthzError("Invalid organization type.", "failed-precondition");
+  }
+  if (org.orgId !== orgId) {
+    throw new AuthzError("Organization id mismatch.", "failed-precondition");
+  }
+  if (org.psgcBarangayCode && org.psgcBarangayCode !== psgcBarangayCode) {
+    throw new AuthzError("Organization geographic identity mismatch.", "failed-precondition");
+  }
+  if (org.status !== "active") {
+    throw new AuthzError(
+      "Selected Barangay is not active for assistance routing.",
+      "failed-precondition",
+    );
+  }
+  return orgId;
 }
 
 export async function resolveBarangayOrgIdFromPsgc(
@@ -43,35 +72,21 @@ export async function resolveBarangayOrgIdFromPsgc(
 
   const identityKey = barangayIdentityKey(selection.psgcBarangayCode);
   const keySnap = await db.collection(IDENTITY_KEYS).doc(identityKey).get();
-  if (!keySnap.exists) {
-    throw new AuthzError("Selected Barangay is not registered in SIBOL yet.", "not-found");
+  if (keySnap.exists) {
+    const keyData = keySnap.data()!;
+    if (keyData.identityKind === "synthetic_demo" && !allowDemoIdentity()) {
+      throw new AuthzError("Selected Barangay is not available.", "permission-denied");
+    }
+    const orgId = keyData.orgId as string;
+    return assertActiveBarangayOrgForPsgc(db, orgId, selection.psgcBarangayCode);
   }
-  const keyData = keySnap.data()!;
-  if (keyData.identityKind === "synthetic_demo" && !allowDemoIdentity()) {
-    throw new AuthzError("Selected Barangay is not available.", "permission-denied");
+
+  const pinnedOrgId = pinnedOrgIdForBarangayPsgc(selection.psgcBarangayCode);
+  if (pinnedOrgId) {
+    return assertActiveBarangayOrgForPsgc(db, pinnedOrgId, selection.psgcBarangayCode);
   }
-  const orgId = keyData.orgId as string;
-  const orgSnap = await db.collection("organizations").doc(orgId).get();
-  if (!orgSnap.exists) {
-    throw new AuthzError("Organization record missing.", "failed-precondition");
-  }
-  const org = orgSnap.data()!;
-  if (org.type !== "barangay") {
-    throw new AuthzError("Invalid organization type.", "failed-precondition");
-  }
-  if (org.orgId !== orgId) {
-    throw new AuthzError("Organization id mismatch.", "failed-precondition");
-  }
-  if (org.psgcBarangayCode && org.psgcBarangayCode !== selection.psgcBarangayCode) {
-    throw new AuthzError("Organization geographic identity mismatch.", "failed-precondition");
-  }
-  if (org.status !== "active") {
-    throw new AuthzError(
-      "Selected Barangay is not active for assistance routing.",
-      "failed-precondition",
-    );
-  }
-  return orgId;
+
+  throw new AuthzError("Selected Barangay is not registered in SIBOL yet.", "not-found");
 }
 
 export async function resolveLegacyTeenOrgId(
