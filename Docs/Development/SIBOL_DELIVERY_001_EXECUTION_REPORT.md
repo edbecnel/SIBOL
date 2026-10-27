@@ -181,3 +181,5 @@ Script: `shared/delivery/scripts/provision-central-admin-live.mjs`
 | Root cause | `Dialog` lacked explicit width/`insetPadding`; inner `AnimatedPadding` + `ConstrainedBox(maxHeight)` collapsed or clipped content on narrow Android viewports; tests used default 800×800 and did not assert `RenderBox` sizes under `AppTheme` + `showDialog` at S9 360×740 |
 | Fix | Explicit `SizedBox(width: min(400, screen−32))`, `Dialog.insetPadding`, keyboard inset on route wrapper only, `Wrap` for actions; 12 widget tests with layout assertions |
 | Physical dialog QA | Engineering cannot complete authenticated staff-screen path without PO credentials; S9-sized emulator tests + APK install are pre-PO acceptance evidence |
+
+**Follow-up (`8f3c72a1` PO blank rectangle):** Centered `Dialog` still failed on Galaxy S9 when focusing password fields (empty card). Replaced with **`showModalBottomSheet`** (`isScrollControlled: true`) + explicit `onSurface` text colors; 12 widget tests at 360×740.

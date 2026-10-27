@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:sibol_app/shared/widgets/app_text_field.dart';
 
@@ -11,20 +9,24 @@ class StaffPasswordResetFormResult {
 }
 
 /// Keyboard-safe password entry for administrative staff password reset.
+///
+/// Uses a modal bottom sheet (not [Dialog]) so Android keyboard insets do not
+/// collapse the form on narrow devices (e.g. Galaxy S9).
 Future<StaffPasswordResetFormResult?> showStaffPasswordResetFormDialog({
   required BuildContext context,
   required String displayName,
   required String email,
 }) {
-  return showDialog<StaffPasswordResetFormResult>(
+  return showModalBottomSheet<StaffPasswordResetFormResult>(
     context: context,
-    barrierDismissible: false,
-    builder: (dialogContext) {
-      final keyboardInset = MediaQuery.viewInsetsOf(dialogContext).bottom;
-      return AnimatedPadding(
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        padding: EdgeInsets.only(bottom: keyboardInset),
+    isScrollControlled: true,
+    isDismissible: false,
+    enableDrag: false,
+    useSafeArea: true,
+    builder: (sheetContext) {
+      final bottomInset = MediaQuery.viewInsetsOf(sheetContext).bottom;
+      return Padding(
+        padding: EdgeInsets.only(bottom: bottomInset),
         child: StaffPasswordResetFormDialog(
           displayName: displayName,
           email: email,
@@ -82,73 +84,74 @@ class _StaffPasswordResetFormDialogState
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final dialogWidth = math.min(400.0, screenWidth - 32);
+    final theme = Theme.of(context);
+    final onSurface = theme.colorScheme.onSurface;
 
-    return Dialog(
-      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      child: SizedBox(
-        width: dialogWidth,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+    return Material(
+      color: theme.colorScheme.surface,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Reset password',
+              style: theme.textTheme.titleLarge?.copyWith(color: onSurface),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Staff member: ${widget.displayName}',
+              style: TextStyle(color: onSurface),
+            ),
+            Text(
+              'Email: ${widget.email}',
+              style: TextStyle(color: onSurface),
+            ),
+            const SizedBox(height: 16),
+            AppTextField(
+              key: const Key('staff-reset-temporary-password'),
+              controller: _passwordController,
+              label: 'Temporary password',
+              isPassword: true,
+              textInputAction: TextInputAction.next,
+              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+            ),
+            const SizedBox(height: 12),
+            AppTextField(
+              key: const Key('staff-reset-confirm-password'),
+              controller: _confirmController,
+              label: 'Confirm temporary password',
+              isPassword: true,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _submit(),
+            ),
+            if (_validationMessage != null) ...[
+              const SizedBox(height: 8),
               Text(
-                'Reset password',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 12),
-              Text('Staff member: ${widget.displayName}'),
-              Text('Email: ${widget.email}'),
-              const SizedBox(height: 16),
-              AppTextField(
-                key: const Key('staff-reset-temporary-password'),
-                controller: _passwordController,
-                label: 'Temporary password',
-                isPassword: true,
-                textInputAction: TextInputAction.next,
-                onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-              ),
-              const SizedBox(height: 12),
-              AppTextField(
-                key: const Key('staff-reset-confirm-password'),
-                controller: _confirmController,
-                label: 'Confirm temporary password',
-                isPassword: true,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) => _submit(),
-              ),
-              if (_validationMessage != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  _validationMessage!,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 20),
-              Wrap(
-                alignment: WrapAlignment.end,
-                spacing: 8,
-                runSpacing: 4,
-                children: [
-                  TextButton(
-                    key: const Key('staff-reset-cancel'),
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
-                  ),
-                  TextButton(
-                    key: const Key('staff-reset-continue'),
-                    onPressed: _submit,
-                    child: const Text('Continue'),
-                  ),
-                ],
+                _validationMessage!,
+                style: TextStyle(color: theme.colorScheme.error),
               ),
             ],
-          ),
+            const SizedBox(height: 20),
+            Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                TextButton(
+                  key: const Key('staff-reset-cancel'),
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  key: const Key('staff-reset-continue'),
+                  onPressed: _submit,
+                  child: const Text('Continue'),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
