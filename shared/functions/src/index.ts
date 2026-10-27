@@ -26,6 +26,8 @@ import {
   runUpdateMembershipCapabilities,
   runProvisionStaffMember,
   runResetStaffMemberPassword,
+  runListTeensForBarangayOrgAdminRecovery,
+  runResetTeenPasswordByBarangayOrgAdmin,
   runAcknowledgeMandatoryPasswordChange,
 } from "./admin/exportHandlers";
 import { runCreateCoordinationReferral } from "./coordination/createCoordinationReferral";
@@ -165,6 +167,16 @@ export const regProvisionStaffMember = adminCallable((db, uid, _email, data) =>
 
 export const regResetStaffMemberPassword = adminCallable((db, uid, _email, data) =>
   runResetStaffMemberPassword(db, admin.auth(), uid, data),
+);
+
+export const regListTeensForBarangayOrgAdminRecovery = adminCallable(
+  (db, uid, _email, data) =>
+    runListTeensForBarangayOrgAdminRecovery(db, admin.auth(), uid, data),
+);
+
+export const regResetTeenPasswordByBarangayOrgAdmin = adminCallable(
+  (db, uid, _email, data) =>
+    runResetTeenPasswordByBarangayOrgAdmin(db, admin.auth(), uid, data),
 );
 
 export const regAcknowledgeMandatoryPasswordChange = adminCallable((db, uid) =>

@@ -1,6 +1,30 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:sibol_app/features/org/domain/entities/organization.dart';
 
+class TeenRecoveryListEntry {
+  TeenRecoveryListEntry({
+    required this.teenUid,
+    required this.displayName,
+    required this.signInEmail,
+  });
+
+  final String teenUid;
+  final String displayName;
+  final String signInEmail;
+}
+
+class TeenRecoveryListResult {
+  TeenRecoveryListResult({
+    required this.managedBarangayOrgId,
+    required this.organizationName,
+    required this.teens,
+  });
+
+  final String managedBarangayOrgId;
+  final String? organizationName;
+  final List<TeenRecoveryListEntry> teens;
+}
+
 class OrganizationStaffDirectory {
   OrganizationStaffDirectory({
     required this.organizationType,
@@ -133,6 +157,43 @@ class AdminApi {
     await _functions.httpsCallable('regResetStaffMemberPassword').call({
       'orgId': orgId,
       'targetAccountUid': targetAccountUid,
+      'newPassword': newPassword,
+    });
+  }
+
+  Future<TeenRecoveryListResult> listTeensForBarangayOrgAdminRecovery({
+    required String managedBarangayOrgId,
+  }) async {
+    final result = await _functions
+        .httpsCallable('regListTeensForBarangayOrgAdminRecovery')
+        .call({
+      'managedBarangayOrgId': managedBarangayOrgId,
+    });
+    final data = Map<String, dynamic>.from(result.data as Map);
+    final list = data['teens'] as List<dynamic>? ?? [];
+    return TeenRecoveryListResult(
+      managedBarangayOrgId: data['managedBarangayOrgId'] as String? ?? '',
+      organizationName: data['organizationName'] as String?,
+      teens: list
+          .map(
+            (e) => TeenRecoveryListEntry(
+              teenUid: (e as Map)['teenUid'] as String? ?? '',
+              displayName: (e as Map)['displayName'] as String? ?? 'Teen',
+              signInEmail: (e as Map)['signInEmail'] as String? ?? '',
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  Future<void> resetTeenPasswordByBarangayOrgAdmin({
+    required String managedBarangayOrgId,
+    required String targetTeenUid,
+    required String newPassword,
+  }) async {
+    await _functions.httpsCallable('regResetTeenPasswordByBarangayOrgAdmin').call({
+      'managedBarangayOrgId': managedBarangayOrgId,
+      'targetTeenUid': targetTeenUid,
       'newPassword': newPassword,
     });
   }

@@ -20,4 +20,6 @@ export {
 } from "./operations";
 export { runProvisionStaffMember } from "./provisionStaffMember";
 export { runResetStaffMemberPassword } from "./resetStaffMemberPassword";
+export { runListTeensForBarangayOrgAdminRecovery } from "./listTeensForBarangayOrgAdminRecovery";
+export { runResetTeenPasswordByBarangayOrgAdmin } from "./resetTeenPasswordByBarangayOrgAdmin";
 export { runAcknowledgeMandatoryPasswordChange } from "./acknowledgeMandatoryPasswordChange";

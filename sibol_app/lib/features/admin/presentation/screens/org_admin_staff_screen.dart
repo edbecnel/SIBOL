@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sibol_app/core/constants/route_constants.dart';
+import 'package:sibol_app/features/org/domain/entities/organization.dart';
 import 'package:sibol_app/features/admin/domain/org_staff_capability_options.dart';
 import 'package:sibol_app/features/admin/presentation/providers/admin_providers.dart';
 import 'package:sibol_app/features/org/domain/entities/organization.dart';
@@ -435,13 +438,32 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _error != null
               ? Center(child: Text(_error!))
-              : _memberships.isEmpty
-                  ? const Center(
-                      child: Text('No staff memberships yet. Use Add staff to create an account.'),
-                    )
-                  : ListView.builder(
-                      itemCount: _memberships.length,
-                      itemBuilder: (context, index) {
+              : ListView(
+                  children: [
+                    if (_organizationType == OrganizationType.barangay) ...[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                        child: OutlinedButton.icon(
+                          onPressed: () => context.push(
+                            Routes.orgAdminTeenRecovery(widget.orgId),
+                          ),
+                          icon: const Icon(Icons.lock_reset),
+                          label: const Text('Teen account recovery'),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (_memberships.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Center(
+                          child: Text(
+                            'No staff memberships yet. Use Add staff to create an account.',
+                          ),
+                        ),
+                      )
+                    else
+                      ...List.generate(_memberships.length, (index) {
                         final m = _memberships[index];
                         final membershipId = m['membershipId'] as String? ?? '';
                         final status = m['status'] as String? ?? '';
@@ -490,8 +512,9 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
                                         )
                                       : null,
                         );
-                      },
-                    ),
+                      }),
+                  ],
+                ),
     );
   }
 }

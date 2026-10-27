@@ -78,6 +78,9 @@ abstract final class Routes {
 
   static String orgAdminStaff(String orgId) => '/admin/org/$orgId/staff';
 
+  static String orgAdminTeenRecovery(String orgId) =>
+      '/admin/org/$orgId/teen-recovery';
+
   static String orgAdminInvitations(String orgId) =>
       '/admin/org/$orgId/staff/invitations';
 

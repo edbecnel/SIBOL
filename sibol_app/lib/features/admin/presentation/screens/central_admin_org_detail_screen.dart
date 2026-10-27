@@ -22,6 +22,7 @@ class _CentralAdminOrgDetailScreenState
   List<Map<String, dynamic>> _memberships = [];
   String _status = 'active';
   String _organizationName = '';
+  String _organizationType = 'barangay';
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _CentralAdminOrgDetailScreenState
         if (org['orgId'] == widget.orgId) {
           _organizationName = (org['name'] as String?)?.trim() ?? '';
           _status = (org['status'] as String?) ?? _status;
+          _organizationType = (org['type'] as String?) ?? _organizationType;
           break;
         }
       }
@@ -144,6 +146,15 @@ class _CentralAdminOrgDetailScreenState
                       ),
                       child: const Text('Manage staff'),
                     ),
+                    if (_organizationType == 'barangay') ...[
+                      const SizedBox(height: 8),
+                      OutlinedButton(
+                        onPressed: () => context.push(
+                          Routes.orgAdminTeenRecovery(widget.orgId),
+                        ),
+                        child: const Text('Teen account recovery'),
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     const Text('Memberships', style: TextStyle(fontWeight: FontWeight.bold)),
                     if (_memberships.isEmpty)

@@ -42,6 +42,7 @@ import 'package:sibol_app/features/admin/presentation/screens/create_organizatio
 import 'package:sibol_app/features/admin/presentation/screens/my_invitations_screen.dart';
 import 'package:sibol_app/features/admin/presentation/screens/org_admin_invitations_screen.dart';
 import 'package:sibol_app/features/admin/presentation/screens/org_admin_staff_screen.dart';
+import 'package:sibol_app/features/admin/presentation/screens/org_admin_teen_recovery_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -268,6 +269,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             },
           ),
         ],
+      ),
+      GoRoute(
+        path: '/admin/org/:orgId/teen-recovery',
+        builder: (context, state) {
+          final orgId = state.pathParameters['orgId']!;
+          return OrgAdminTeenRecoveryScreen(orgId: orgId);
+        },
       ),
       GoRoute(
         path: Routes.myInvitations,
