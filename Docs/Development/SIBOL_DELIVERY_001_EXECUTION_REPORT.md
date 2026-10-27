@@ -116,6 +116,18 @@ Deploy note: Firebase CLI exited non-zero on **artifact cleanup policy** prompt 
 
 Full UI walkthrough on Frecy device: **pending PO** (APK already built for live Firebase).
 
+### Central Administrator completion (2026-10-27, handover `b7e19a42-…`)
+
+| Item | Result |
+|------|--------|
+| Live Auth `central.admin@sibol.local` | **Created** (new UID; password from `SIBOL_EMULATOR_PASSWORD_CENTRAL` via script, not logged) |
+| Firestore profile | `role: barangay`, `active: true`, `isCentralAdmin: true` |
+| Admin Functions deployed | 9 callables (no `bootstrapCentralAdminForEmulator`) |
+| Flutter | **Manage staff** on Central Admin org detail → `OrgAdminStaffScreen` |
+| APK | Rebuilt for live Firebase; installed on Galaxy S9 (`install -r`) |
+
+Script: `shared/delivery/scripts/provision-central-admin-live.mjs`
+
 ## Remaining limitations
 
 1. **`submitReport`** callable still returns Tranche 2 disabled; aggregate report flow uses client Firestore paths.

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/admin/presentation/providers/admin_providers.dart';
 import 'package:sibol_app/shared/widgets/app_text_field.dart';
 
@@ -122,6 +124,13 @@ class _CentralAdminOrgDetailScreenState
                     OutlinedButton(
                       onPressed: _toggleStatus,
                       child: Text('Toggle organization status ($_status)'),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton(
+                      onPressed: () => context.push(
+                        Routes.orgAdminStaff(widget.orgId),
+                      ),
+                      child: const Text('Manage staff'),
                     ),
                     const SizedBox(height: 24),
                     const Text('Memberships', style: TextStyle(fontWeight: FontWeight.bold)),
