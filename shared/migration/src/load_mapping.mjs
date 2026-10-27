@@ -14,12 +14,6 @@ export function loadOrgMapping(mappingPath) {
   const barangayByLabel = new Map(barangayEntries);
   const hospitalByName = new Map(Object.entries(raw.hospital ?? {}));
 
-  const barangayOrgIds = barangayEntries.map(([, id]) => id);
-  const uniqueOrgIds = new Set(barangayOrgIds);
-  if (uniqueOrgIds.size !== barangayOrgIds.length) {
-    throw new Error("duplicate orgId across barangayLabels is not allowed");
-  }
-
   for (const [, orgId] of barangayByLabel) {
     if (!isValidOrgId(orgId)) {
       throw new Error(`invalid orgId in barangayLabels: ${orgId}`);

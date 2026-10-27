@@ -3,7 +3,7 @@
 **Handover UUID:** `f3a718c2-6d49-4e05-b832-9c74d0a1e956`  
 **Git HEAD (prep):** `8adb841`  
 **Firebase:** `sibol-286d0`  
-**Status:** **STOPPED AT APPROVAL GATE** — no live writes, deploys, or Auth changes performed
+**Status:** **LIVE DEPLOY COMPLETE** (2026-10-27, PO `APPROVE FINAL DEPLOY`)
 
 ## Summary
 
@@ -89,15 +89,42 @@ Reply **APPROVE LIVE DELIVERY** only if all of the following are acceptable:
 
 **Not included unless you ask:** deleting live data, importing QA cases, iOS build, Play Store publish, weakening security rules.
 
-## Remaining blockers
+## Live execution (2026-10-27)
 
-1. **PO approval** for backup + deploy + data steps above.
-2. **GCS backup bucket** name/IAM for `gcloud firestore export`.
-3. **Demo passwords** in password manager for provisioning dry-run/live seed (env vars — not sent to engineering in chat).
-4. **Live backend deploy** required before Frecy’s full walkthrough (teen registration, assistance, case identity callables).
-5. **Release keystore** optional; current APK uses debug signing (fine for academic sideload).
+| Step | Result |
+|------|--------|
+| Backup bucket | **Created** `gs://sibol-286d0-delivery-backups` (`asia-southeast1`) |
+| Firestore export | **OK** `gs://sibol-286d0-delivery-backups/pre-delivery-20261027T023121Z/` |
+| Firestore rules | **Deployed** from repo |
+| Firestore indexes | **Deployed** from `firestore.indexes.json` |
+| Cloud Functions | **11 deployed** (demo-minimal set); `healthCheck` → `{"ok":true}` |
+| Demo orgs/memberships | **Created** `barangay03`, `hospital01`, 2 memberships, `organizationDirectory` |
+| Auth / demo-case bodies | **Unchanged** (no password resets; cases not overwritten) |
+| `orgId` backfill | **17 documents** additive `orgId` only (6 cases incl. non-demo `t40YTI3e…`, assistance, reports, coordination) |
+| QA import | **Not performed** |
+
+Deploy note: Firebase CLI exited non-zero on **artifact cleanup policy** prompt only; all listed functions reported success.
+
+## Post-deploy verification
+
+| Check | Result |
+|-------|--------|
+| `healthCheck` (live HTTPS) | PASS |
+| `cases/demo-case-001`.orgId | `barangay03` |
+| `organizations/barangay03` | exists |
+| `organizationMemberships` | 2 active |
+
+Full UI walkthrough on Frecy device: **pending PO** (APK already built for live Firebase).
+
+## Remaining limitations
+
+1. **`submitReport`** callable still returns Tranche 2 disabled; aggregate report flow uses client Firestore paths.
+2. **Release APK** uses debug signing (`build.gradle.kts`).
+3. **Functions artifact cleanup policy** not set (minor storage cost; run `firebase functions:artifacts:setpolicy` if desired).
+4. **Admin/staff callables** not deployed (out of demo-minimal scope).
 
 ## Tooling added
 
-- `shared/delivery/` — `npm run dry-run`, `inventory-export`, `compare-functions`
+- `shared/delivery/` — `npm run dry-run`, `inventory-export`, `compare-functions`, `apply-demo-orgs-live.mjs`
+- Mapping alias `Barangay Tres, Balingasag` → `barangay03`
 - This report and Frecy install guide

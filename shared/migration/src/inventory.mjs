@@ -17,7 +17,9 @@ export async function collectInventory(db) {
     if (!snapshot[key]) snapshot[key] = [];
     const snap = await db.collection(name).get();
     for (const doc of snap.docs) {
-      snapshot[key].push({ id: doc.id, data: doc.data() });
+      const row = { id: doc.id, data: doc.data() };
+      if (key === "users") row.uid = doc.id;
+      snapshot[key].push(row);
     }
   }
 

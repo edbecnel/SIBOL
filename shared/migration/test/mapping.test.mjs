@@ -16,19 +16,20 @@ describe("M1 mapping validation", () => {
     assert.throws(() => loadOrgMapping(path), /invalid orgId/);
   });
 
-  it("rejects duplicate orgId across barangay labels", () => {
+  it("allows multiple legacy labels to map to the same orgId", () => {
     const dir = mkdtempSync(join(tmpdir(), "sibol-map-"));
-    const path = join(dir, "dup.json");
+    const path = join(dir, "alias.json");
     const org = "barangay03";
     writeFileSync(
       path,
       JSON.stringify({
         barangayLabels: {
-          "A": org,
-          "B": org,
+          "Barangay 3, Balingasag": org,
+          "Barangay Tres, Balingasag": org,
         },
       }),
     );
-    assert.throws(() => loadOrgMapping(path), /duplicate orgId/);
+    const mapping = loadOrgMapping(path);
+    assert.equal(mapping.barangayByLabel.get("Barangay Tres, Balingasag"), org);
   });
 });
