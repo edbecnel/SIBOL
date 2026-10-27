@@ -17,6 +17,7 @@ class BarangayHomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final canManageOrg = ref.watch(orgAdminManagedOrgIdsProvider).isNotEmpty;
+    final canTeenRecovery = ref.watch(canAccessBarangayTeenRecoveryProvider);
     final canReadCases = ref.watch(barangayCanReadCasesProvider);
     final canWriteCases = ref.watch(barangayCanWriteCasesProvider);
     final canAssistance = ref.watch(barangayCanAccessAssistanceInboxProvider);
@@ -69,6 +70,16 @@ class BarangayHomeScreen extends ConsumerWidget {
                           icon: const Icon(Icons.groups_outlined),
                           label: const Text('Staff management'),
                         ),
+                        if (canTeenRecovery) ...[
+                          const SizedBox(height: 8),
+                          OutlinedButton.icon(
+                            onPressed: () => context.push(
+                              Routes.orgAdminTeenRecovery(orgAdminOrgIds.first),
+                            ),
+                            icon: const Icon(Icons.lock_reset),
+                            label: const Text('Teen account recovery'),
+                          ),
+                        ],
                       ],
                     ),
                   ),

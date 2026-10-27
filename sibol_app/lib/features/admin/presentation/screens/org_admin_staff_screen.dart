@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
-import 'package:sibol_app/features/org/domain/entities/organization.dart';
 import 'package:sibol_app/features/admin/domain/org_staff_capability_options.dart';
 import 'package:sibol_app/features/admin/presentation/providers/admin_providers.dart';
 import 'package:sibol_app/features/org/domain/entities/organization.dart';
+import 'package:sibol_app/features/org/presentation/providers/org_context_providers.dart';
 import 'package:sibol_app/features/admin/presentation/widgets/staff_password_reset_dialog.dart';
 import 'package:sibol_app/shared/widgets/app_text_field.dart';
 import 'package:sibol_app/shared/widgets/persistent_success_dialog.dart';
@@ -50,7 +50,10 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
       }
       final directory = await api.listMemberships(widget.orgId);
       _memberships = directory.memberships;
-      _organizationType = directory.organizationType;
+      final orgDoc = await ref
+          .read(organizationRepositoryProvider)
+          .fetchOrganization(widget.orgId);
+      _organizationType = orgDoc?.type ?? directory.organizationType;
       if (_organizationName.isEmpty) {
         _organizationName = widget.orgId;
       }

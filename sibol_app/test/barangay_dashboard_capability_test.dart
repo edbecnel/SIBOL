@@ -87,6 +87,7 @@ void main() {
     expect(find.textContaining('Bad state'), findsNothing);
     expect(find.text('Organization administration'), findsOneWidget);
     expect(find.text('Staff management'), findsOneWidget);
+    expect(find.text('Teen account recovery'), findsOneWidget);
     expect(find.textContaining('Operational case access is not assigned'), findsOneWidget);
     expect(find.widgetWithIcon(FloatingActionButton, Icons.add), findsNothing);
     final incoming = find.widgetWithText(OutlinedButton, 'Incoming requests');
@@ -109,6 +110,7 @@ void main() {
     );
 
     expect(find.text('Organization administration'), findsNothing);
+    expect(find.text('Teen account recovery'), findsNothing);
     expect(find.textContaining('No demonstration cases yet'), findsOneWidget);
     expect(find.widgetWithIcon(FloatingActionButton, Icons.add), findsOneWidget);
     final incoming = find.widgetWithText(OutlinedButton, 'Incoming requests');

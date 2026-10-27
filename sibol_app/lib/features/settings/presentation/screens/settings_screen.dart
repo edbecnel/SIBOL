@@ -18,6 +18,7 @@ class SettingsScreen extends ConsumerWidget {
     final authUser = ref.watch(authStateChangesProvider).value;
     final isCentral = ref.watch(isCentralAdminProvider);
     final orgAdminOrgIds = ref.watch(orgAdminManagedOrgIdsProvider);
+    final canTeenRecovery = ref.watch(canAccessBarangayTeenRecoveryProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
@@ -43,6 +44,15 @@ class SettingsScreen extends ConsumerWidget {
                 label: 'Staff management',
                 onPressed: () =>
                     context.push(Routes.orgAdminStaff(orgAdminOrgIds.first)),
+              ),
+            ],
+            if (canTeenRecovery) ...[
+              const SizedBox(height: 12),
+              AppButton.primary(
+                label: 'Teen account recovery',
+                onPressed: () => context.push(
+                  Routes.orgAdminTeenRecovery(orgAdminOrgIds.first),
+                ),
               ),
             ],
             if (profile?.role == SibolRole.teen) ...[

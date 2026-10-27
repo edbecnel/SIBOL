@@ -32,3 +32,9 @@ final canAccessAdministrationProvider = Provider<bool>((ref) {
   if (ref.watch(isCentralAdminProvider)) return true;
   return ref.watch(orgAdminManagedOrgIdsProvider).isNotEmpty;
 });
+
+/// Barangay org administrators (not hospital org admins on the MOPH home).
+final canAccessBarangayTeenRecoveryProvider = Provider<bool>((ref) {
+  if (ref.watch(isCentralAdminProvider)) return false;
+  return ref.watch(orgAdminManagedOrgIdsProvider).isNotEmpty;
+});

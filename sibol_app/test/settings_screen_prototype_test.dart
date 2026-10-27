@@ -94,6 +94,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Staff management'), findsOneWidget);
+    expect(find.text('Teen account recovery'), findsOneWidget);
     expect(find.text('Pending invitations'), findsNothing);
   });
 }
