@@ -39,22 +39,24 @@ Files:
 
 `teen.registration.barangay03.psgc.test.mjs` + `teen.registration.test.mjs` on Firestore emulator: **17/17 pass** (demo flags **off**).
 
-## Deployment status — **BLOCKED pending authorization**
+## Deployment status — **LIVE** (PO-approved)
 
-**Required:** deploy Cloud Function **`regRegisterTeenAccount`** to `sibol-286d0` (includes updated `resolveBarangayOrg`).
-
-```bash
-firebase deploy --only functions:regRegisterTeenAccount --project sibol-286d0
-```
+| Item | Detail |
+|------|--------|
+| Function | `regRegisterTeenAccount` |
+| Project | `sibol-286d0` |
+| Region | `us-central1` |
+| Deployed | 2026-10-27 (authorized deploy after commit `420108b`) |
+| Outcome | Successful update (cleanup-policy CLI warning only) |
 
 **No Flutter/APK change** required for this defect.
 
-**Alternative (live data, not executed):** create `organizationIdentityKeys/barangay:PSGC:1004302022` pointing to `barangay03` (canonical long-term); would also require authorized Firestore write.
+**Alternative (not executed):** `organizationIdentityKeys/barangay:PSGC:1004302022` — optional canonical follow-up.
 
 ## PO orphan Auth account
 
-Unchanged: Auth user without `users/{uid}` remains; after deploy, **Continue Teen registration** (P0 auth fix) + Barangay 3 selection should complete profile.
+Auth user without `users/{uid}` remains; **Continue Teen registration** + Barangay 3 (`1004302022`) should now resolve to `barangay03` and create the profile.
 
 ## Classification
 
-**BLOCKED** until `regRegisterTeenAccount` live deploy (or authorized identity-key provisioning) is approved and executed.
+**PARTIAL** — Live function deployed; PO should complete registration on device and confirm success screen / teen home.
