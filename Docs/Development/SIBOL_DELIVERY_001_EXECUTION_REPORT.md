@@ -164,3 +164,12 @@ Script: `shared/delivery/scripts/provision-central-admin-live.mjs`
 **Execute (blocked pending PO):** `node shared/delivery/scripts/provision-barangay-org-admin-live.mjs --execute --confirm-project=sibol-286d0`
 
 **PO approval for live provisioning:** Reply **APPROVE LIVE BARANGAY ORG ADMIN PROVISION** to run execute above. Password reset UAT remains **APPROVE LIVE PASSWORD RESET UAT** separately.
+
+### Password reset dialog keyboard fix (2026-10-27, handover `5e2c9a74-…`)
+
+| Item | Detail |
+|------|--------|
+| Root cause | `AlertDialog` fixed `actions` row overlapped password fields when Android keyboard opened; taps on confirm field hit **Continue** → `Navigator.pop(true)` |
+| Fix | `StaffPasswordResetFormDialog` — `Dialog` + `SingleChildScrollView` + `viewInsets` padding, `barrierDismissible: false`, inline actions, in-dialog validation |
+| Tests | `test/staff_password_reset_dialog_test.dart` (7 cases) |
+| Live reset UAT | Still pending PO **APPROVE LIVE PASSWORD RESET UAT** |

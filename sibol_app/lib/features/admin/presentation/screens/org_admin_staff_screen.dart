@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/features/admin/domain/org_staff_capability_options.dart';
 import 'package:sibol_app/features/admin/presentation/providers/admin_providers.dart';
 import 'package:sibol_app/features/org/domain/entities/organization.dart';
+import 'package:sibol_app/features/admin/presentation/widgets/staff_password_reset_dialog.dart';
 import 'package:sibol_app/shared/widgets/app_text_field.dart';
 import 'package:sibol_app/shared/widgets/persistent_success_dialog.dart';
 
@@ -232,62 +233,13 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
     final displayName = _staffTitle(membership);
     final email = (membership['email'] as String?)?.trim() ?? accountUid;
 
-    final passwordController = TextEditingController();
-    final confirmController = TextEditingController();
-    var submitting = false;
-
-    final proceed = await showDialog<bool>(
+    final formResult = await showStaffPasswordResetFormDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setLocal) => AlertDialog(
-          title: const Text('Reset password'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Staff member: $displayName'),
-              Text('Email: $email'),
-              const SizedBox(height: 12),
-              AppTextField(
-                controller: passwordController,
-                label: 'Temporary password',
-                isPassword: true,
-              ),
-              const SizedBox(height: 8),
-              AppTextField(
-                controller: confirmController,
-                label: 'Confirm temporary password',
-                isPassword: true,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: submitting ? null : () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: submitting
-                  ? null
-                  : () => Navigator.pop(context, true),
-              child: const Text('Continue'),
-            ),
-          ],
-        ),
-      ),
+      displayName: displayName,
+      email: email,
     );
-    if (proceed != true) return;
-
-    final password = passwordController.text;
-    final confirm = confirmController.text;
-    if (password.length < 8) {
-      _showMessage('Temporary password must be at least 8 characters.');
-      return;
-    }
-    if (password != confirm) {
-      _showMessage('Passwords do not match.');
-      return;
-    }
+    if (formResult == null) return;
+    final password = formResult.password;
 
     final confirmed = await showDialog<bool>(
       context: context,
