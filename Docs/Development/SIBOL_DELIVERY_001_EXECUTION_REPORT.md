@@ -173,3 +173,11 @@ Script: `shared/delivery/scripts/provision-central-admin-live.mjs`
 | Fix | `StaffPasswordResetFormDialog` — `Dialog` + `SingleChildScrollView` + `viewInsets` padding, `barrierDismissible: false`, inline actions, in-dialog validation |
 | Tests | `test/staff_password_reset_dialog_test.dart` (7 cases) |
 | Live reset UAT | Still pending PO **APPROVE LIVE PASSWORD RESET UAT** |
+
+### Password reset dialog blank regression (2026-10-27, handover `8f3c72a1-…`)
+
+| Item | Detail |
+|------|--------|
+| Root cause | `Dialog` lacked explicit width/`insetPadding`; inner `AnimatedPadding` + `ConstrainedBox(maxHeight)` collapsed or clipped content on narrow Android viewports; tests used default 800×800 and did not assert `RenderBox` sizes under `AppTheme` + `showDialog` at S9 360×740 |
+| Fix | Explicit `SizedBox(width: min(400, screen−32))`, `Dialog.insetPadding`, keyboard inset on route wrapper only, `Wrap` for actions; 12 widget tests with layout assertions |
+| Physical dialog QA | Engineering cannot complete authenticated staff-screen path without PO credentials; S9-sized emulator tests + APK install are pre-PO acceptance evidence |
