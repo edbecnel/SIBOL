@@ -49,6 +49,27 @@ function assertNonEmptyString(value: unknown, field: string): string {
   return value.trim();
 }
 
+export const ORGANIZATION_NAME_MIN_LENGTH = 2;
+export const ORGANIZATION_NAME_MAX_LENGTH = 200;
+
+export function normalizeOrganizationName(raw: string): string {
+  return raw.replace(/\s+/g, " ").trim();
+}
+
+export function assertOrganizationName(value: unknown, field = "name"): string {
+  if (typeof value !== "string") {
+    throw new AuthzError(`${field} is required.`, "invalid-argument");
+  }
+  const name = normalizeOrganizationName(value);
+  if (name.length < ORGANIZATION_NAME_MIN_LENGTH) {
+    throw new AuthzError(`${field} is required.`, "invalid-argument");
+  }
+  if (name.length > ORGANIZATION_NAME_MAX_LENGTH) {
+    throw new AuthzError(`${field} is too long.`, "invalid-argument");
+  }
+  return name;
+}
+
 export async function runBootstrapCentralAdminForEmulator(
   db: Firestore,
   authUid: string | undefined,
@@ -93,11 +114,26 @@ export async function runCreateOrganization(
   if (type !== "barangay" && type !== "hospital") {
     throw new AuthzError("type must be barangay or hospital.", "invalid-argument");
   }
-  const name = assertNonEmptyString(data.name, "name");
+  const name = assertOrganizationName(data.name);
   const initialOrgAdminEmail = assertNonEmptyString(
     data.initialOrgAdminEmail,
     "initialOrgAdminEmail",
   );
+  if (type === "hospital") {
+    const duplicate = await db
+      .collection("organizations")
+      .where("type", "==", "hospital")
+      .where("status", "==", "active")
+      .where("name", "==", name)
+      .limit(1)
+      .get();
+    if (!duplicate.empty) {
+      throw new AuthzError(
+        "An active hospital organization with this name already exists.",
+        "already-exists",
+      );
+    }
+  }
   const legacyBarangayLabel =
     typeof data.legacyBarangayLabel === "string"
       ? data.legacyBarangayLabel.trim()
