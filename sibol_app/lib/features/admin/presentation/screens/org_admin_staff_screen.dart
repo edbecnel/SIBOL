@@ -217,6 +217,9 @@ class _OrgAdminStaffScreenState extends ConsumerState<OrgAdminStaffScreen> {
 
   bool _canResetPassword(Map<String, dynamic> membership) {
     if (membership['status'] != 'active') return false;
+    if (ref.read(isCentralAdminProvider)) {
+      return true;
+    }
     final caps = (membership['capabilities'] as List?)?.cast<String>() ?? [];
     final isAdmin = caps.contains('org.manage_members') &&
         caps.contains('org.manage_roles');

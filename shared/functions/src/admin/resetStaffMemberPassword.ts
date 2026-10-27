@@ -36,6 +36,7 @@ async function assertTargetEligibleForPasswordReset(
   db: Firestore,
   orgId: string,
   targetUid: string,
+  actorIsCentralAdmin: boolean,
 ): Promise<void> {
   const targetAccount = await loadAccount(db, targetUid);
   if (targetAccount.isCentralAdmin === true) {
@@ -52,23 +53,25 @@ async function assertTargetEligibleForPasswordReset(
       "failed-precondition",
     );
   }
-  if (isOrgAdministrator(membership)) {
-    throw new AuthzError(
-      "Organization administrator accounts cannot be reset through this workflow.",
-      "permission-denied",
-    );
-  }
 
-  const allMemberships = await db
-    .collection("organizationMemberships")
-    .where("accountUid", "==", targetUid)
-    .get();
-  for (const doc of allMemberships.docs) {
-    if (isOrgAdministrator(doc.data())) {
+  if (!actorIsCentralAdmin) {
+    if (isOrgAdministrator(membership)) {
       throw new AuthzError(
-        "Accounts with organization administration privileges cannot be reset through this workflow.",
+        "Organization administrator accounts cannot be reset by another organization administrator.",
         "permission-denied",
       );
+    }
+    const allMemberships = await db
+      .collection("organizationMemberships")
+      .where("accountUid", "==", targetUid)
+      .get();
+    for (const doc of allMemberships.docs) {
+      if (isOrgAdministrator(doc.data())) {
+        throw new AuthzError(
+          "Accounts with organization administration privileges cannot be reset by an organization administrator.",
+          "permission-denied",
+        );
+      }
     }
   }
 }
@@ -101,7 +104,12 @@ export async function runResetStaffMemberPassword(
     );
   }
 
-  await assertTargetEligibleForPasswordReset(db, orgId, targetAccountUid);
+  await assertTargetEligibleForPasswordReset(
+    db,
+    orgId,
+    targetAccountUid,
+    manage.central,
+  );
 
   await auth.updateUser(targetAccountUid, {
     password: newPassword as string,
