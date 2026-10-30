@@ -1,6 +1,6 @@
 # SIBOL work-item register
 
-> **Last updated:** 2026-10-26 (SIBOL-P0-IDENTITY-CARD-001)  
+> **Last updated:** 2026-10-30 (SIBOL-RELEASE-BASELINE-001)  
 > **Procedure:** [WORK_ITEM_DOCUMENTATION_PROCEDURE.md](WORK_ITEM_DOCUMENTATION_PROCEDURE.md)
 
 | ID | Title | Status | Primary record |
@@ -24,6 +24,7 @@
 | SIBOL-DEMO-004 | Barangay-to-MOPH aggregate reporting (demo) | **MOPH live verification Pass (MVR-0005)** | [SIBOL_DEMO_004_EXECUTION_REPORT.md](SIBOL_DEMO_004_EXECUTION_REPORT.md) |
 | SIBOL-DEMO-005 | Barangay submission receipt and report history | **Operator Pass (MVR-0006); post-submit nav untested** | [SIBOL_DEMO_005_EXECUTION_REPORT.md](SIBOL_DEMO_005_EXECUTION_REPORT.md) |
 | SIBOL-REL-005 | EDF documentation — v0.5.0 demo milestone | **Published** (handover `0f3e8b29-…`) | [SIBOL_REL_005_EXECUTION_REPORT.md](SIBOL_REL_005_EXECUTION_REPORT.md), [SIBOL_v0.5.0_RELEASE_MILESTONE.md](SIBOL_v0.5.0_RELEASE_MILESTONE.md) |
+| SIBOL-RELEASE-BASELINE-001 | Last known-good demo source baseline (pre–CASE-LIFECYCLE) | **Complete — shared tag not applied** (handover `a6c2d871-…`) | [SIBOL_RELEASE_BASELINE_001_EXECUTION_REPORT.md](SIBOL_RELEASE_BASELINE_001_EXECUTION_REPORT.md) |
 | SIBOL-CASE-COORD-001 | Individual teen case coordination (Barangay–MOPH) | **Increment B + B-HISTORY accepted**; registry rules v2 **deployed** 2026-10-24; **Increment C not started** | [Registry v2 deploy report](SIBOL_CASE_COORD_001_REGISTRY_RULES_V2_DEPLOY_EXECUTION_REPORT.md), [operator closure](SIBOL_CASE_COORD_001_REGISTRY_RULES_V2_OPERATOR_CLOSURE.md) |
 | SIBOL-REG-001 | User registration and organization authorization | **Closed (academic prototype)** @ `19bfc20`; functional QA accepted; **production security deferred** | [Prototype closure](SIBOL_REG_001_PROTOTYPE_CLOSURE_EXECUTION_REPORT.md), [REG-C report](SIBOL_REG_001_REG_C_EXECUTION_REPORT.md), [REG-B report](SIBOL_REG_001_REG_B_EXECUTION_REPORT.md), [Security investigation](SIBOL_REG_001_MANDATORY_PASSWORD_SECURITY_INVESTIGATION.md) |
 | SIBOL-INT-001 | End-to-end prototype integration (emulator) | **IN PROGRESS** — canonical emulators + demonstration seed **VERIFIED** (SEED-001); operator mobile scenarios A–F pending | [SEED-001 report](SIBOL_INT_001_SEED_001_EXECUTION_REPORT.md), [EMULATOR-001 report](SIBOL_INT_001_EMULATOR_001_EXECUTION_REPORT.md), [runbook](../Operations/SIBOL-INT-001-Emulator-Demonstration-Runbook.md), [MVR-INT-001](../Verification/Records/MVR-INT-001-End-to-End-Verification-Matrix.md) |
