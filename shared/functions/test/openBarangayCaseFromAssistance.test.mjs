@@ -17,6 +17,7 @@ const teenUid = "teenCaseOpenUid1234567890123";
 const barangayUid = "barangayCaseOpenUid12345678901";
 const assistanceId = "assist-open-case-001";
 const assistanceReplayId = "assist-open-case-replay";
+const assistanceConcurrentId = "assist-open-case-concurrent";
 
 let db;
 
@@ -50,6 +51,10 @@ before(async () => {
     .set(membershipDoc(orgId, barangayUid, ["case.write", "case.read"]));
   await seedAcknowledgedAssistance(db, assistanceId, { teenUid, barangayUid });
   await seedAcknowledgedAssistance(db, assistanceReplayId, {
+    teenUid,
+    barangayUid,
+  });
+  await seedAcknowledgedAssistance(db, assistanceConcurrentId, {
     teenUid,
     barangayUid,
   });
@@ -101,5 +106,23 @@ describe("openBarangayCaseFromAssistance", () => {
     });
     assert.equal(second.caseId, first.caseId);
     assert.equal(second.idempotent, true);
+  });
+
+  it("concurrent open attempts resolve to one case", async () => {
+    const key = `concurrent-${Date.now()}`;
+    const results = await Promise.all(
+      Array.from({ length: 5 }, () =>
+        runOpenBarangayCaseFromAssistance(db, barangayUid, {
+          assistanceRequestId: assistanceConcurrentId,
+          idempotencyKey: key,
+        }),
+      ),
+    );
+    const caseIds = new Set(results.map((r) => r.caseId));
+    assert.equal(caseIds.size, 1);
+    const binding = (
+      await db.collection("assistanceCaseBindings").doc(assistanceConcurrentId).get()
+    ).data();
+    assert.equal(binding?.caseId, results[0].caseId);
   });
 });

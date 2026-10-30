@@ -20,7 +20,7 @@ if (process.env.FIREBASE_PROJECT_ID === "sibol-286d0") {
 }
 
 const command =
-  "node --test --test-concurrency=1 test/openBarangayCaseFromAssistance.test.mjs test/transitionBarangayCaseStatus.test.mjs";
+  "node --test --test-concurrency=1 test/openBarangayCaseFromAssistance.test.mjs test/transitionBarangayCaseStatus.test.mjs test/case_lifecycle_flow.test.mjs";
 
 const result = spawnSync(
   `firebase emulators:exec --config "${config}" --only firestore,auth --project demo-sibol-coord-fn "${command}"`,
