@@ -11,7 +11,7 @@ const { Timestamp: smokeTimestamp } = require("firebase-admin/firestore");
 
 export { smokeTimestamp };
 
-const projectId = "sibol-286d0";
+const projectId = "demo-sibol-emulator";
 
 export function getSmokeDb() {
   if (!admin.apps.length) {

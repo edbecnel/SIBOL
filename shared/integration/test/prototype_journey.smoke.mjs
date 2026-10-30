@@ -32,7 +32,7 @@ import {
   EMULATOR_DEMO_ASSISTANCE_INBOX_ID,
 } from "../../provisioning/src/emulator_demo_constants.mjs";
 
-const projectId = "sibol-286d0";
+const projectId = "demo-sibol-emulator";
 let uidByKey;
 let barangayStaffUid;
 let mophStaffUid;

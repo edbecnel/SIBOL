@@ -3,8 +3,8 @@ import {
   DEMO_HOSPITAL_ORG_ID,
 } from "../../reg/src/org_id.mjs";
 
-/** Coordinator-approved demonstration Firebase project (confirm flag must match). */
-export const EXPECTED_DEMO_PROJECT_ID = "sibol-286d0";
+/** Coordinator-approved **local emulator** Firebase project (confirm flag must match). */
+export const EXPECTED_DEMO_PROJECT_ID = "demo-sibol-emulator";
 
 export { DEMO_BARANGAY_ORG_ID, DEMO_HOSPITAL_ORG_ID };
 

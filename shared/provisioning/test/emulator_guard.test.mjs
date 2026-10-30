@@ -116,4 +116,15 @@ describe("assertEmulatorEnvironment", () => {
       },
     );
   });
+
+  it("rejects production project id sibol-286d0", async () => {
+    await withEnv(
+      { ...validEnv, FIREBASE_PROJECT_ID: "sibol-286d0" },
+      async () => {
+        const result = await assertEmulatorEnvironment({ confirmFlag: true });
+        assert.equal(result.ok, false);
+        assert.match(result.message, /sibol-286d0/);
+      },
+    );
+  });
 });

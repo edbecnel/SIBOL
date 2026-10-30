@@ -13,7 +13,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, "../../..");
 
 const EXPECTED_EMULATOR_HOST = "127.0.0.1:8195";
-const EXPECTED_PROJECT_ID = "sibol-286d0";
+const EXPECTED_PROJECT_ID = "demo-sibol-emulator";
 const ORG_ID = "barangay03";
 const TEEN_DISPLAY_NAME = "QA Teen 03";
 const TARGET_ORG_NAME = "Barangay 3 (Poblacion)";

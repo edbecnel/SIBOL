@@ -13,6 +13,8 @@ if [[ -f "$ROOT/.env.emulator.local" ]]; then
   source "$ROOT/.env.emulator.local"
   set +a
 fi
+# shellcheck disable=SC1091
+source "$ROOT/shared/scripts/enforce-canonical-emulator-env.sh"
 firebase emulators:start \
   --project "${FIREBASE_PROJECT_ID}" \
   --only auth,firestore,functions \

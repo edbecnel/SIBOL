@@ -5,7 +5,7 @@
 import { initializeApp, deleteApp, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-const PROJECT = "sibol-286d0";
+const PROJECT = "demo-sibol-emulator";
 const host = process.env.FIRESTORE_EMULATOR_HOST ?? "127.0.0.1:8195";
 
 if (!process.env.FIRESTORE_EMULATOR_HOST) {

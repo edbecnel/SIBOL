@@ -17,7 +17,7 @@ fi
 for port in "${SIBOL_CANONICAL_FIRESTORE_PORT}" "${SIBOL_CANONICAL_AUTH_PORT}" "${SIBOL_CANONICAL_FUNCTIONS_PORT}"; do
   if ! nc -z 127.0.0.1 "$port" 2>/dev/null; then
     echo "WARN: Nothing listening on 127.0.0.1:${port}. Start emulators from repo root:"
-    echo "  firebase emulators:start --project sibol-286d0 --only auth,firestore,functions"
+    echo "  firebase emulators:start --project demo-sibol-emulator --only auth,firestore,functions"
     MISSING=1
   else
     echo "OK: port ${port} open"

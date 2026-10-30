@@ -10,7 +10,7 @@ import {
 
 describe("canonical emulator ports", () => {
   it("matches firebase.json local development profile", () => {
-    assert.equal(EMULATOR_PROJECT_ID, "sibol-286d0");
+    assert.equal(EMULATOR_PROJECT_ID, "demo-sibol-emulator");
     assert.equal(EMULATOR_AUTH_PORT, 9099);
     assert.equal(EMULATOR_FIRESTORE_PORT, 8195);
     assert.equal(EMULATOR_FUNCTIONS_PORT, 5001);

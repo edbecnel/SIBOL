@@ -13,7 +13,7 @@ import { getFirestore } from "firebase-admin/firestore";
 
 const EXPECTED_EMULATOR_HOST = "127.0.0.1:8195";
 const EXPECTED_AUTH_HOST = "127.0.0.1:9099";
-const EXPECTED_PROJECT_ID = "sibol-286d0";
+const EXPECTED_PROJECT_ID = "demo-sibol-emulator";
 const COLLECTION = "teenAssistanceRequests";
 
 function abort(message) {

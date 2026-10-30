@@ -28,7 +28,7 @@ const firestoreHost = `127.0.0.1:${ports.firestore}`;
 const authHost = `127.0.0.1:${ports.auth}`;
 
 const result = spawnSync(
-  `firebase emulators:exec --config "${config}" --only auth,firestore --project sibol-286d0 "${command}"`,
+  `firebase emulators:exec --config "${config}" --only auth,firestore --project demo-sibol-emulator "${command}"`,
   {
     cwd: functionsDir,
     stdio: "inherit",
@@ -37,7 +37,7 @@ const result = spawnSync(
       NODE_PATH: resolve(functionsDir, "node_modules"),
       FIRESTORE_EMULATOR_HOST: firestoreHost,
       FIREBASE_AUTH_EMULATOR_HOST: authHost,
-      FIREBASE_PROJECT_ID: "sibol-286d0",
+      FIREBASE_PROJECT_ID: "demo-sibol-emulator",
       SIBOL_EMULATOR_PASSWORD_TEEN: "int-smoke-teen-only-local",
       SIBOL_EMULATOR_PASSWORD_BARANGAY_STAFF: "int-smoke-bns-only-local",
       SIBOL_EMULATOR_PASSWORD_MOPH_STAFF: "int-smoke-moph-only-local",

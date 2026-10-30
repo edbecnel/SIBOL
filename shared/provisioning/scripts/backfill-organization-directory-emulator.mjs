@@ -12,7 +12,10 @@ import {
   upsertDemoOrganizationDirectoryEntries,
 } from "../src/sync_organization_directory.mjs";
 
-const projectId = process.env.GCLOUD_PROJECT ?? process.env.FIREBASE_PROJECT ?? "sibol-286d0";
+const projectId =
+  process.env.GCLOUD_PROJECT ??
+  process.env.FIREBASE_PROJECT ??
+  "demo-sibol-emulator";
 
 initializeApp({ projectId });
 const db = getFirestore();

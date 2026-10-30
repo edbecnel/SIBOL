@@ -115,6 +115,13 @@ export async function assertEmulatorEnvironment(options = {}) {
     );
   }
 
+  const PRODUCTION_PROJECT_ID = "sibol-286d0";
+  if (projectId === PRODUCTION_PROJECT_ID) {
+    errors.push(
+      `FIREBASE_PROJECT_ID must not be production ${PRODUCTION_PROJECT_ID} during emulator operations. Use ${EMULATOR_PROJECT_ID}.`,
+    );
+  }
+
   if (process.env.GOOGLE_CLOUD_PROJECT && process.env.GOOGLE_CLOUD_PROJECT !== projectId) {
     errors.push("GOOGLE_CLOUD_PROJECT disagrees with FIREBASE_PROJECT_ID.");
   }
@@ -133,7 +140,7 @@ export async function assertEmulatorEnvironment(options = {}) {
     if (!fsOk) {
       errors.push(
         `Firestore emulator not reachable at ${firestore.host}:${firestore.port}. ` +
-          "Start: firebase emulators:start --project sibol-286d0 --only auth,firestore,functions",
+          `Start: firebase emulators:start --project ${EMULATOR_PROJECT_ID} --only auth,firestore,functions`,
       );
     }
     if (!authOk) {

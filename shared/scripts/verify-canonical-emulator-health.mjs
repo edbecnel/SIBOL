@@ -7,10 +7,19 @@ import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const AUTH_PORT = 9099;
-const FIRESTORE_PORT = 8195;
-const FUNCTIONS_PORT = 5001;
-const PROJECT = "sibol-286d0";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const canonical = JSON.parse(
+  readFileSync(join(__dirname, "../emulator/canonical_ports.json"), "utf8"),
+);
+
+const AUTH_PORT = canonical.auth.port;
+const FIRESTORE_PORT = canonical.firestore.port;
+const FUNCTIONS_PORT = canonical.functions.port;
+const PROJECT = canonical.projectId;
 const REGION = "us-central1";
 
 const REQUIRED_CALLABLES = [

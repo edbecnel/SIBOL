@@ -10,7 +10,7 @@ import { initializeApp } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 
 const EXPECTED_EMULATOR_HOST = "127.0.0.1:8195";
-const EXPECTED_PROJECT_ID = "sibol-286d0";
+const EXPECTED_PROJECT_ID = "demo-sibol-emulator";
 const OBSOLETE_SITE = "Barangay Tres, Balingasag";
 const CANONICAL_SITE = "Barangay 3, Balingasag";
 const OBSOLETE_ORG_NAME = "Barangay Tres";

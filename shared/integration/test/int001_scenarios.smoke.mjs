@@ -22,7 +22,7 @@ import {
   DEMO_BARANGAY_ORG_ID,
 } from "../../provisioning/src/emulator_demo_constants.mjs";
 
-const projectId = "sibol-286d0";
+const projectId = "demo-sibol-emulator";
 let centralUid;
 let barangayOrgAdminUid;
 let teenUid;
