@@ -4,6 +4,7 @@ import 'package:sibol_app/features/coordination/presentation/providers/coordinat
 import 'package:sibol_app/features/coordination/presentation/widgets/coordination_thread_detail_body.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
+import 'package:sibol_app/features/moph/presentation/widgets/moph_coordination_status_panel.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
 
 class MophCoordinationDetailScreen extends ConsumerWidget {
@@ -36,9 +37,16 @@ class MophCoordinationDetailScreen extends ConsumerWidget {
                 return eventsAsync.when(
                   loading: () => const AppLoadingIndicator(),
                   error: (e, _) => AppErrorWidget(message: e.toString()),
-                  data: (events) => CoordinationThreadDetailBody(
-                    thread: thread,
-                    events: events,
+                  data: (events) => ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      MophCoordinationStatusPanel(thread: thread),
+                      const SizedBox(height: 16),
+                      CoordinationThreadDetailBody(
+                        thread: thread,
+                        events: events,
+                      ),
+                    ],
                   ),
                 );
               },

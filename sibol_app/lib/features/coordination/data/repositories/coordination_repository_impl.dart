@@ -44,8 +44,9 @@ class CoordinationRepositoryImpl implements CoordinationRepository {
   }
 
   @override
-  Stream<List<CoordinationThread>> watchOpenThreadsForMoph() {
+  Stream<List<CoordinationThread>> watchOpenThreadsForMoph(String hospitalOrgId) {
     return _threads
+        .where('targetHospitalOrgId', isEqualTo: hospitalOrgId)
         .where('phase', whereIn: _openPhases)
         .orderBy('lastStaffEventAt', descending: true)
         .snapshots()
@@ -124,5 +125,26 @@ class CoordinationRepositoryImpl implements CoordinationRepository {
           .doc(assistanceRequestId)
           .snapshots(),
     );
+  }
+
+  @override
+  Stream<CoordinationThread?> watchThreadForAssistanceRequest(
+    String assistanceRequestId,
+  ) {
+    return _firestore
+        .collection(FirestorePaths.barangayCoordinationRegistry)
+        .doc(assistanceRequestId)
+        .snapshots()
+        .asyncMap((registrySnap) async {
+      if (!registrySnap.exists) return null;
+      final threadId = registrySnap.data()?['threadId'] as String?;
+      if (threadId == null || threadId.isEmpty) return null;
+      final threadSnap = await _threads.doc(threadId).get();
+      if (!threadSnap.exists || threadSnap.data() == null) return null;
+      return CoordinationThreadModel.fromFirestore(
+        threadSnap.id,
+        threadSnap.data()!,
+      ).toEntity();
+    });
   }
 }

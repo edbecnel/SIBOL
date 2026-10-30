@@ -17,6 +17,7 @@ class AssistanceRequestModel {
     this.acknowledgedByUid,
     this.submitterDisplayName,
     this.submitterAccountEmail,
+    this.caseId,
   });
 
   final String requestId;
@@ -31,6 +32,7 @@ class AssistanceRequestModel {
   final String? acknowledgedByUid;
   final String? submitterDisplayName;
   final String? submitterAccountEmail;
+  final String? caseId;
 
   factory AssistanceRequestModel.fromFirestore(
     String id,
@@ -51,6 +53,7 @@ class AssistanceRequestModel {
       acknowledgedByUid: data['acknowledgedByUid'] as String?,
       submitterDisplayName: data['submitterDisplayName'] as String?,
       submitterAccountEmail: data['submitterAccountEmail'] as String?,
+      caseId: data['caseId'] as String?,
     );
   }
 
@@ -85,6 +88,7 @@ class AssistanceRequestModel {
       acknowledgedByUid: acknowledgedByUid,
       submitterDisplayName: submitterDisplayName,
       submitterAccountEmail: submitterAccountEmail,
+      caseId: caseId,
     );
   }
 

@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/app.dart';
 import 'package:sibol_app/config/emulator_config.dart';
 import 'package:sibol_app/config/emulator_hosts.dart';
+import 'package:sibol_app/config/emulator_firebase_options.dart';
 import 'package:sibol_app/config/env_config.dart';
 import 'package:sibol_app/config/firebase_options.dart';
 
@@ -25,7 +26,9 @@ Future<void> mainCommon() async {
   }
 
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: EnvConfig.useEmulators
+        ? EmulatorFirebaseOptions.currentPlatform
+        : DefaultFirebaseOptions.currentPlatform,
   );
 
   if (EnvConfig.useEmulators) {

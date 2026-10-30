@@ -33,12 +33,15 @@ BarangayReportAggregateCounts computeBarangayReportAggregate({
   var followUpCompleted = 0;
   var closed = 0;
   for (final caseRecord in scoped) {
-    switch (caseRecord.caseStatus) {
+    switch (caseRecord.caseStatus.lifecycleCanonical) {
+      case CaseStatus.open:
       case CaseStatus.active:
         active++;
+      case CaseStatus.inProgress:
       case CaseStatus.followUpScheduled:
         followUpScheduled++;
       case CaseStatus.followUpCompleted:
+      case CaseStatus.resolved:
         followUpCompleted++;
       case CaseStatus.closed:
         closed++;

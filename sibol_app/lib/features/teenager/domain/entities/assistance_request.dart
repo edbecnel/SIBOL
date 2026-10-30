@@ -16,6 +16,7 @@ class AssistanceRequest extends Equatable {
     this.acknowledgedByUid,
     this.submitterDisplayName,
     this.submitterAccountEmail,
+    this.caseId,
   });
 
   final String requestId;
@@ -30,6 +31,9 @@ class AssistanceRequest extends Equatable {
   final String? acknowledgedByUid;
   final String? submitterDisplayName;
   final String? submitterAccountEmail;
+  final String? caseId;
+
+  bool get hasLinkedCase => caseId != null && caseId!.trim().isNotEmpty;
 
   @override
   List<Object?> get props => [
@@ -45,5 +49,6 @@ class AssistanceRequest extends Equatable {
         acknowledgedByUid,
         submitterDisplayName,
         submitterAccountEmail,
+        caseId,
       ];
 }

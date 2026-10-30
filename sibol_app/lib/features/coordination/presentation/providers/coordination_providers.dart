@@ -25,10 +25,11 @@ Stream<List<CoordinationThread>> _mophCoordinationThreadsStream(Ref ref) {
   if (profileAsync.isLoading || membershipsAsync.isLoading) {
     return const Stream<List<CoordinationThread>>.empty();
   }
-  if (ref.watch(mophHospitalOrgIdProvider) == null) {
+  final orgId = ref.watch(mophHospitalOrgIdProvider);
+  if (orgId == null) {
     return Stream.value(const []);
   }
-  return ref.watch(coordinationRepositoryProvider).watchOpenThreadsForMoph();
+  return ref.watch(coordinationRepositoryProvider).watchOpenThreadsForMoph(orgId);
 }
 
 final mophCoordinationThreadsProvider =

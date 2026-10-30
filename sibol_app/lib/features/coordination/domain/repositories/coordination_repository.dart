@@ -17,7 +17,7 @@ abstract class CoordinationRepository {
     required String barangayReferralSummary,
   });
 
-  Stream<List<CoordinationThread>> watchOpenThreadsForMoph();
+  Stream<List<CoordinationThread>> watchOpenThreadsForMoph(String hospitalOrgId);
 
   Stream<List<CoordinationThread>> watchSubmittedReferralsForOrg(String orgId);
 
@@ -28,4 +28,8 @@ abstract class CoordinationRepository {
   Stream<List<CoordinationStaffEvent>> watchStaffEventsForThread(String threadId);
 
   Stream<bool> watchReferralExistsForAssistanceRequest(String assistanceRequestId);
+
+  Stream<CoordinationThread?> watchThreadForAssistanceRequest(
+    String assistanceRequestId,
+  );
 }

@@ -31,6 +31,11 @@ class CoordinationThreadDetailBody extends ConsumerWidget {
         OrganizationIdentityDetailRows(orgId: thread.orgId),
         _Row(label: 'Category', value: thread.category.label),
         _Row(label: 'Phase', value: thread.phase.label),
+        if (thread.coordinationStatus != null)
+          _Row(
+            label: 'Hospital status',
+            value: thread.coordinationStatus!.label,
+          ),
         _Row(
           label: 'Referred',
           value: dateFmt.format(thread.createdAt),

@@ -38,8 +38,14 @@ class FakeCoordinationRepository implements CoordinationRepository {
       throw UnimplementedError();
 
   @override
-  Stream<List<CoordinationThread>> watchOpenThreadsForMoph() =>
+  Stream<List<CoordinationThread>> watchOpenThreadsForMoph(String hospitalOrgId) =>
       Stream.value(const []);
+
+  @override
+  Stream<CoordinationThread?> watchThreadForAssistanceRequest(
+    String assistanceRequestId,
+  ) =>
+      Stream.value(null);
 
   @override
   Stream<CoordinationThread?> watchThreadForMoph(String threadId) =>

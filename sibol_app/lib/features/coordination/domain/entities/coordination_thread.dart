@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:sibol_app/features/coordination/domain/coordination_phase.dart';
+import 'package:sibol_app/features/coordination/domain/coordination_status.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_category.dart';
 
 class CoordinationThread extends Equatable {
@@ -11,6 +12,8 @@ class CoordinationThread extends Equatable {
     required this.category,
     required this.barangayReferralSummary,
     required this.phase,
+    this.coordinationStatus,
+    this.targetHospitalOrgId,
     required this.createdAt,
     required this.updatedAt,
     required this.lastStaffEventAt,
@@ -24,6 +27,8 @@ class CoordinationThread extends Equatable {
   final AssistanceRequestCategory category;
   final String barangayReferralSummary;
   final CoordinationPhase phase;
+  final CoordinationStatus? coordinationStatus;
+  final String? targetHospitalOrgId;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime lastStaffEventAt;
@@ -38,6 +43,8 @@ class CoordinationThread extends Equatable {
         category,
         barangayReferralSummary,
         phase,
+        coordinationStatus,
+        targetHospitalOrgId,
         createdAt,
         updatedAt,
         lastStaffEventAt,

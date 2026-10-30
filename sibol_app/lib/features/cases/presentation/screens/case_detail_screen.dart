@@ -13,6 +13,7 @@ import 'package:sibol_app/features/cases/presentation/widgets/add_follow_up_dial
 import 'package:sibol_app/features/cases/presentation/widgets/case_firestore_sync_notice.dart';
 import 'package:sibol_app/features/cases/domain/case_identity_presentation.dart';
 import 'package:sibol_app/features/cases/domain/case_subject_kind.dart';
+import 'package:sibol_app/features/cases/presentation/widgets/case_lifecycle_panel.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/case_follow_up_timeline.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
@@ -225,6 +226,7 @@ class CaseDetailBody extends StatelessWidget {
           label: 'Case status',
           value: CasePresentationLabels.lifecycleStatus(record.caseStatus),
         ),
+        CaseLifecyclePanel(record: record),
         _DetailTile(
           label: 'Aggregate report',
           value: CasePresentationLabels.aggregateReportInclusion(

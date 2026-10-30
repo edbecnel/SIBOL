@@ -1,8 +1,11 @@
 enum CaseStatus {
+  open('open'),
+  inProgress('inProgress'),
+  resolved('resolved'),
+  closed('closed'),
   active('active'),
   followUpScheduled('followUpScheduled'),
-  followUpCompleted('followUpCompleted'),
-  closed('closed');
+  followUpCompleted('followUpCompleted');
 
   const CaseStatus(this.firestoreValue);
 
@@ -15,4 +18,23 @@ enum CaseStatus {
     }
     return null;
   }
+
+  /// Canonical lifecycle label for assistance-linked cases.
+  CaseStatus get lifecycleCanonical {
+    switch (this) {
+      case CaseStatus.active:
+        return CaseStatus.open;
+      case CaseStatus.followUpScheduled:
+      case CaseStatus.followUpCompleted:
+        return CaseStatus.inProgress;
+      default:
+        return this;
+    }
+  }
+
+  bool get isAssistanceLifecycleManaged =>
+      this == open ||
+      this == inProgress ||
+      this == resolved ||
+      this == closed;
 }

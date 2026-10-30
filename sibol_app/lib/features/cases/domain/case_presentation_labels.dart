@@ -4,15 +4,21 @@ import 'package:sibol_app/features/reporting/domain/report_status.dart';
 /// User-facing case labels (no raw Firestore enum values).
 abstract final class CasePresentationLabels {
   static String lifecycleStatus(CaseStatus status) {
-    switch (status) {
+    switch (status.lifecycleCanonical) {
+      case CaseStatus.open:
+        return 'Open case';
+      case CaseStatus.inProgress:
+        return 'In progress';
+      case CaseStatus.resolved:
+        return 'Resolved';
+      case CaseStatus.closed:
+        return 'Closed case';
       case CaseStatus.active:
         return 'Active case';
       case CaseStatus.followUpScheduled:
         return 'Follow-up scheduled';
       case CaseStatus.followUpCompleted:
         return 'Follow-up completed';
-      case CaseStatus.closed:
-        return 'Closed case';
     }
   }
 

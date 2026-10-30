@@ -31,6 +31,8 @@ class CaseRecord extends Equatable {
     this.linkedAccountEmail,
     this.identityLinkedAt,
     this.teenProfileSyncedAt,
+    this.assistanceRequestId,
+    this.assignedCoordinatorUid,
   });
 
   final String caseId;
@@ -60,6 +62,11 @@ class CaseRecord extends Equatable {
   final String? linkedAccountEmail;
   final DateTime? identityLinkedAt;
   final DateTime? teenProfileSyncedAt;
+  final String? assistanceRequestId;
+  final String? assignedCoordinatorUid;
+
+  bool get isAssistanceLinkedCase =>
+      assistanceRequestId != null && assistanceRequestId!.trim().isNotEmpty;
 
   String get displayFullName {
     final name = fullName.trim();
@@ -138,5 +145,7 @@ class CaseRecord extends Equatable {
         linkedAccountEmail,
         identityLinkedAt,
         teenProfileSyncedAt,
+        assistanceRequestId,
+        assignedCoordinatorUid,
       ];
 }
