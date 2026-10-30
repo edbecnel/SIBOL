@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
+import 'package:sibol_app/features/cases/presentation/widgets/barangay_open_case_from_assistance_action.dart';
 import 'package:sibol_app/features/coordination/presentation/providers/coordination_providers.dart';
 import 'package:sibol_app/features/coordination/presentation/widgets/barangay_moph_referral_action.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
@@ -318,6 +319,10 @@ class _BarangayIncomingRequestDetailScreenState
                         Routes.barangayCoordinationReferral(widget.requestId),
                       ),
                     ),
+                    if (isAcknowledged) ...[
+                      const SizedBox(height: 24),
+                      BarangayOpenCaseFromAssistanceAction(request: request),
+                    ],
                   ],
                 );
               },

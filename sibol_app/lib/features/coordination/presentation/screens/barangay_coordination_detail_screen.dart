@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/features/coordination/presentation/providers/coordination_providers.dart';
+import 'package:sibol_app/features/coordination/presentation/widgets/barangay_coordination_response_panel.dart';
 import 'package:sibol_app/features/coordination/presentation/widgets/coordination_thread_detail_body.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
@@ -41,9 +42,16 @@ class BarangayCoordinationDetailScreen extends ConsumerWidget {
                 return eventsAsync.when(
                   loading: () => const AppLoadingIndicator(),
                   error: (e, _) => AppErrorWidget(message: e.toString()),
-                  data: (events) => CoordinationThreadDetailBody(
-                    thread: thread,
-                    events: events,
+                  data: (events) => ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      BarangayCoordinationResponsePanel(thread: thread),
+                      const SizedBox(height: 16),
+                      CoordinationThreadDetailBody(
+                        thread: thread,
+                        events: events,
+                      ),
+                    ],
                   ),
                 );
               },
