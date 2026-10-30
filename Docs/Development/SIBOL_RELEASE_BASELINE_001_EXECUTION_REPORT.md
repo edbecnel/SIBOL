@@ -1,10 +1,10 @@
 # SIBOL-RELEASE-BASELINE-001 — Last known-good demonstration source baseline
 
-**Handover UUID:** `a6c2d871-5e49-4f03-b714-9c80e2d653ab`  
+**Handover UUIDs:** `a6c2d871-5e49-4f03-b714-9c80e2d653ab` (investigation); `e47c6a21-8f39-4d05-a7b2-6c90d13e5f84` (final tagging)  
 **Work item:** SIBOL-RELEASE-BASELINE-001  
 **Date:** 2026-10-30  
 **Branch:** `main`  
-**Classification:** **COMPLETE — SHARED TAG NOT APPLIED** (platform revision divergence; see §6)
+**Classification:** **COMPLETE** — pre-enhancement source tag applied; unified demo known-good tag not applied (see §5.3, §6)
 
 ## 1. Authorization and scope
 
@@ -45,7 +45,8 @@
 | `v0.5.0` | `ba7c1338c8d17e5f65177188077d54d7afa15e99` | Immutable demo milestone tag ([SIBOL_v0.5.0_RELEASE_MILESTONE.md](SIBOL_v0.5.0_RELEASE_MILESTONE.md)) |
 | `sibol-demo-003-working-baseline` | `c06fd2bb12c050850761eaccae8f6054c5c8314a` | Pre–DEMO-004 restore point |
 | `sibol-prototype-2026-10-26-offline-qa` | (see `git show`) | Offline QA preservation |
-| `SIBOL-DEMO-2026-10-29-KNOWN-GOOD` | — | **Does not exist** locally or on `origin` (checked 2026-10-30) |
+| `SIBOL-PRE-ENHANCEMENT-2026-10-29` | `c916b0f90c047c740fde74c27fcf1db64281ffe9` | Annotated source baseline before 2026-10-30 CASE-LIFECYCLE work (§6.1) |
+| `SIBOL-DEMO-2026-10-29-KNOWN-GOOD` | — | **Not created** — intentionally deferred (install/certification scope; §6) |
 
 ## 4. Production-connected build metadata (@ `c916b0f`)
 
@@ -94,21 +95,52 @@ No credentials, keystore passwords, or team identifiers are recorded here.
 
 Per handover §3: **do not apply** a single shared tag when Android and iOS **release revisions** differ in available evidence.
 
-## 6. Tag decision
+## 6. Tag decision and verification
+
+### 6.1 Authorized pre-enhancement source tag (PA `e47c6a21-…`)
+
+| Item | Value |
+|------|--------|
+| **Tag name** | `SIBOL-PRE-ENHANCEMENT-2026-10-29` |
+| **Type** | Annotated (not lightweight) |
+| **Target commit** | `c916b0f90c047c740fde74c27fcf1db64281ffe9` |
+| **Points at** | `main` tip immediately before 2026-10-30 CASE-LIFECYCLE / isolation commits (§2.1) |
+| **Certifies** | **Repository source baseline only** — PA explicitly does **not** certify that all three demonstration phones were built from this commit |
+| **Does not capture** | Live Firebase backend state; installed APK/IPA provenance on undocumented handsets |
+
+**Pre-create checks (2026-10-30):**
+
+| Check | Result |
+|-------|--------|
+| Target commit exists | **Pass** — `c916b0f…`, subject AUTH-006, timestamp 2026-10-27 18:26 +0800 |
+| Matches investigation baseline | **Pass** — same SHA as §2.1 |
+| Tag absent locally before create | **Pass** |
+| Tag absent on `origin` before push | **Pass** |
+| Tag not placed on current `HEAD` (`61b8050`) | **Pass** — tag on historical commit only |
+
+**Local verification (after create):**
+
+```text
+git rev-parse SIBOL-PRE-ENHANCEMENT-2026-10-29^{}
+→ c916b0f90c047c740fde74c27fcf1db64281ffe9
+```
+
+**Remote verification (after `git push origin refs/tags/SIBOL-PRE-ENHANCEMENT-2026-10-29`):**
+
+```text
+git ls-remote --tags origin refs/tags/SIBOL-PRE-ENHANCEMENT-2026-10-29^{}
+→ c916b0f90c047c740fde74c27fcf1db64281ffe9
+```
+
+Annotated tag object on `origin`: `f5c514ae127739f97ba7f97b19cf36f818be4dbc` (peels to `c916b0f`).
+
+### 6.2 Unified demo known-good tag (not applied)
 
 | Item | Outcome |
 |------|---------|
-| Proposed tag | `SIBOL-DEMO-2026-10-29-KNOWN-GOOD` |
-| Proposed target | `c916b0f90c047c740fde74c27fcf1db64281ffe9` |
-| **Created** | **No** |
-| **Pushed** | **No** |
-| **Reason** | Documented **Android** last production release install aligns with **`c916b0f`**; documented **iOS** last physical release install aligns with **`ba7c133`**. Cannot honestly label one commit as the shared known-good revision for both platforms. |
-
-**PA direction requested:**
-
-1. Confirm whether the three student demonstration phones are **Android-only**, **iOS-inclusive**, or a defined subset (device models / serials).
-2. If Android-only fleet: authorize a tag at **`c916b0f`** (same name or `…-ANDROID-…`).
-3. If iOS remains in scope: authorize separate iOS baseline tag at **`ba7c133`** or authorize PO reinstall from **`c916b0f`** with a new EDF install record before a unified tag.
+| Tag | `SIBOL-DEMO-2026-10-29-KNOWN-GOOD` |
+| **Created / pushed** | **No** — per PA restriction; not overwritten if it existed |
+| **Reason (investigation)** | Documented **Android** last production release install aligns with **`c916b0f`**; documented **iOS** last physical release install aligns with **`ba7c133`** (§5.3). That tag name implied install certification; PA chose **`SIBOL-PRE-ENHANCEMENT-2026-10-29`** for source-only preservation instead. |
 
 ## 7. Compiled release artifacts (local machine, not git)
 
@@ -130,7 +162,7 @@ APK artifacts are gitignored; reproduction requires checkout of target commit an
 
 | Concern | This work item |
 |---------|----------------|
-| **Source preservation** | Identifies **`c916b0f`** as pre–CASE-LIFECYCLE-001 `main` tip; recommends PA-chosen Git tag(s) after device scope clarified |
+| **Source preservation** | Git annotated tag **`SIBOL-PRE-ENHANCEMENT-2026-10-29`** → **`c916b0f`** on `origin` (§6.1) |
 | **Firebase / data recovery** | **Out of scope** — no Firebase reads, exports, deploys, or backups performed or authorized |
 
 ## 10. Safety confirmation

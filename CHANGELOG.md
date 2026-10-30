@@ -6,7 +6,7 @@ All notable changes to this repository are documented here.
 
 ### Added
 
-- SIBOL-RELEASE-BASELINE-001: pre–CASE-LIFECYCLE-001 source baseline investigation (`c916b0f` verified on `main`); shared demo tag deferred pending Android/iOS install evidence (`a6c2d871-5e49-4f03-b714-9c80e2d653ab`).
+- SIBOL-RELEASE-BASELINE-001: annotated tag `SIBOL-PRE-ENHANCEMENT-2026-10-29` → `c916b0f` (pre–CASE-LIFECYCLE source baseline; source-only, not phone-install certification) (`e47c6a21-8f39-4d05-a7b2-6c90d13e5f84`).
 
 - SIBOL-P0-ID-001: Barangay assistance request detail shows teenager **Submitted by** and **Account email** from server-maintained snapshot fields; online refresh via `regResolveAssistanceRequestSubmitter` for legacy requests (`e9b73c14-5d62-4a81-9f20-c638b2d70451`).
 
