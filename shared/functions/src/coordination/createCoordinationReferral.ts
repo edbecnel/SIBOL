@@ -7,6 +7,10 @@ import {
   SUMMARY_MIN,
   TEEN_PROGRESS,
 } from "./constants";
+import {
+  CoordinationStatus,
+  TARGET_HOSPITAL_ORG_ID,
+} from "./coordinationStatus";
 import { CAPABILITIES } from "../authz/capabilities";
 import {
   assertActiveAccount,
@@ -197,6 +201,8 @@ export async function runCreateCoordinationReferral(
       category,
       barangayReferralSummary,
       phase: "referred",
+      coordinationStatus: CoordinationStatus.submitted,
+      targetHospitalOrgId: TARGET_HOSPITAL_ORG_ID,
       createdAt: now,
       updatedAt: now,
       lastStaffEventAt: now,

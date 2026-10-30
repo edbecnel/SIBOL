@@ -90,7 +90,10 @@ service cloud.firestore {
     }
 
     function isValidCaseStatus(status) {
-      return status in ['active', 'followUpScheduled', 'followUpCompleted', 'closed'];
+      return status in [
+        'active', 'followUpScheduled', 'followUpCompleted', 'closed',
+        'open', 'inProgress', 'resolved'
+      ];
     }
 
     function isValidClientReportStatus(status) {
@@ -103,8 +106,45 @@ service cloud.firestore {
         'nextFollowUpAt', 'notes', 'createdAt', 'updatedAt', 'reportStatus',
         'subjectKind', 'caseCompleteness', 'fullName', 'dateOfBirth',
         'contactEmail', 'contactPhone', 'parentGuardianContact',
-        'teenUid', 'linkedAccountEmail', 'identityLinkedAt', 'teenProfileSyncedAt'
+        'teenUid', 'linkedAccountEmail', 'identityLinkedAt', 'teenProfileSyncedAt',
+        'assistanceRequestId', 'openedByUid', 'openedAt', 'assignedCoordinatorUid',
+        'resolutionSummary', 'resolvedAt', 'resolvedByUid',
+        'closureReason', 'closureNotes', 'closedAt', 'closedByUid', 'reopenReason'
       ];
+    }
+
+    function caseHasAssistanceLink(data) {
+      return 'assistanceRequestId' in data
+          && data.assistanceRequestId is string
+          && data.assistanceRequestId.size() >= 1;
+    }
+
+    function caseLifecycleFieldsUnchanged() {
+      return request.resource.data.caseStatus == resource.data.caseStatus
+          && (!('assistanceRequestId' in resource.data)
+              || request.resource.data.assistanceRequestId == resource.data.assistanceRequestId)
+          && (!('openedByUid' in resource.data)
+              || request.resource.data.openedByUid == resource.data.openedByUid)
+          && (!('openedAt' in resource.data)
+              || request.resource.data.openedAt == resource.data.openedAt)
+          && (!('assignedCoordinatorUid' in resource.data)
+              || request.resource.data.assignedCoordinatorUid == resource.data.assignedCoordinatorUid)
+          && (!('resolutionSummary' in resource.data)
+              || request.resource.data.resolutionSummary == resource.data.resolutionSummary)
+          && (!('resolvedAt' in resource.data)
+              || request.resource.data.resolvedAt == resource.data.resolvedAt)
+          && (!('resolvedByUid' in resource.data)
+              || request.resource.data.resolvedByUid == resource.data.resolvedByUid)
+          && (!('closureReason' in resource.data)
+              || request.resource.data.closureReason == resource.data.closureReason)
+          && (!('closureNotes' in resource.data)
+              || request.resource.data.closureNotes == resource.data.closureNotes)
+          && (!('closedAt' in resource.data)
+              || request.resource.data.closedAt == resource.data.closedAt)
+          && (!('closedByUid' in resource.data)
+              || request.resource.data.closedByUid == resource.data.closedByUid)
+          && (!('reopenReason' in resource.data)
+              || request.resource.data.reopenReason == resource.data.reopenReason);
     }
 
     function caseIsLegacyDocument(data) {
@@ -264,20 +304,21 @@ service cloud.firestore {
           : null;
     }
 
-    // Pilot: single demonstration hospital org when profile primaryOrgId is absent.
-    function mophPilotHospitalOrgId() {
-      return 'hospital01';
-    }
-
+    // MOPH coordination: hospital-scoped via profile primaryOrgId (no pilot exception).
     function mophHospitalCoordinationGranted() {
       return isMoph()
-          && (
-            (
-              mophPrimaryOrgIdForCapability() != null
-              && capabilityGranted(mophPrimaryOrgIdForCapability(), 'coordination.hospital')
-            )
-            || capabilityGranted(mophPilotHospitalOrgId(), 'coordination.hospital')
-          );
+          && mophPrimaryOrgIdForCapability() != null
+          && capabilityGranted(mophPrimaryOrgIdForCapability(), 'coordination.hospital');
+    }
+
+    function coordinationThreadHasTargetHospital(data) {
+      return data.keys().hasAll(['targetHospitalOrgId'])
+          && isValidOrgId(data.targetHospitalOrgId);
+    }
+
+    function mophMatchesThreadHospital(data) {
+      return mophPrimaryOrgIdForCapability() != null
+          && data.targetHospitalOrgId == mophPrimaryOrgIdForCapability();
     }
 
     function isValidAssistanceCategory(category) {
@@ -453,13 +494,27 @@ service cloud.firestore {
               .hasOnly(['displayName']);
     }
 
+    match /caseOpenIdempotency/{idempotencyId} {
+      allow read, write: if false;
+    }
+
+    match /assistanceCaseBindings/{assistanceRequestId} {
+      allow read: if isActiveUser()
+          && resource.data.keys().hasAll(['orgId', 'caseId'])
+          && isValidOrgId(resource.data.orgId)
+          && canReadCaseOrg(resource.data.orgId);
+
+      allow create, update, delete: if false;
+    }
+
     match /cases/{caseId} {
       allow read: if documentHasOrgId(resource.data)
           && canReadCaseOrg(resource.data.orgId);
 
       allow create: if canWriteCaseOrg(request.resource.data.orgId)
           && caseCoreFieldsValid(request.resource.data)
-          && request.resource.data.reportStatus == 'notSubmitted';
+          && request.resource.data.reportStatus == 'notSubmitted'
+          && !caseHasAssistanceLink(request.resource.data);
 
       allow update: if canWriteCaseOrg(resource.data.orgId)
           && caseCoreFieldsValid(request.resource.data)
@@ -467,7 +522,8 @@ service cloud.firestore {
           && caseTeenUidImmutable()
           && caseSubjectKindImmutable()
           && request.resource.data.createdAt == resource.data.createdAt
-          && request.resource.data.reportStatus == resource.data.reportStatus;
+          && request.resource.data.reportStatus == resource.data.reportStatus
+          && (!caseHasAssistanceLink(resource.data) || caseLifecycleFieldsUnchanged());
 
       allow delete: if false;
 
@@ -477,6 +533,12 @@ service cloud.firestore {
         allow create, update: if canWriteCaseOrg(parentCaseOrgId(caseId));
 
         allow delete: if false;
+      }
+
+      match /lifecycleEvents/{eventId} {
+        allow read: if canReadCaseOrg(parentCaseOrgId(caseId));
+
+        allow create, update, delete: if false;
       }
     }
 
@@ -587,7 +649,9 @@ service cloud.firestore {
 
     function mophCanReadCoordinationThreadId(threadId) {
       return mophHospitalCoordinationGranted()
-          && coordinationThreadHasReadablePhase(threadId);
+          && coordinationThreadHasReadablePhase(threadId)
+          && coordinationThreadHasTargetHospital(coordinationThreadDoc(threadId))
+          && mophMatchesThreadHospital(coordinationThreadDoc(threadId));
     }
 
     function barangayCanReadCoordinationThread() {
@@ -599,7 +663,9 @@ service cloud.firestore {
       return userRole() == 'moph'
           && mophHospitalCoordinationGranted()
           && resource.data.keys().hasAll(['phase'])
-          && isValidCoordinationPhase(resource.data.phase);
+          && isValidCoordinationPhase(resource.data.phase)
+          && coordinationThreadHasTargetHospital(resource.data)
+          && mophMatchesThreadHospital(resource.data);
     }
 
     function barangayRoleCanReadCoordinationThread() {

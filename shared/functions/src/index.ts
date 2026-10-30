@@ -31,6 +31,15 @@ import {
   runAcknowledgeMandatoryPasswordChange,
 } from "./admin/exportHandlers";
 import { runCreateCoordinationReferral } from "./coordination/createCoordinationReferral";
+import { runBarangayRespondToMophInformationRequest } from "./coordination/barangayRespondToMophInformationRequest";
+import { runUpdateMophCoordinationStatus } from "./coordination/updateMophCoordinationStatus";
+import {
+  runOpenBarangayCaseFromAssistance,
+  runTransitionBarangayCaseStatus,
+  runListRegisteredTeensForCase,
+  runResolveRegisteredTeenForCase,
+  runSyncRegisteredTeenCasesFromProfile,
+} from "./cases/exportHandlers";
 import {
   runAcknowledgeTeenAssistanceRequest,
   runListBarangayDirectory,
@@ -38,11 +47,6 @@ import {
   runSubmitTeenAssistanceRequest,
   runResolveAssistanceRequestSubmitter,
 } from "./teen/exportHandlers";
-import {
-  runListRegisteredTeensForCase,
-  runResolveRegisteredTeenForCase,
-  runSyncRegisteredTeenCasesFromProfile,
-} from "./cases/exportHandlers";
 import type { RegisterTeenInput } from "./teen/registerTeenAccount";
 import { runGetReferenceManifest } from "./geo/referenceManifest";
 
@@ -275,6 +279,58 @@ export const regSyncRegisteredTeenCasesFromProfile = onCall(async (request) => {
   const db = admin.firestore();
   try {
     return await runSyncRegisteredTeenCasesFromProfile(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regOpenBarangayCaseFromAssistance = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runOpenBarangayCaseFromAssistance(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regTransitionBarangayCaseStatus = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runTransitionBarangayCaseStatus(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regUpdateMophCoordinationStatus = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runUpdateMophCoordinationStatus(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regBarangayRespondToMophInformationRequest = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runBarangayRespondToMophInformationRequest(
       db,
       request.auth?.uid,
       (request.data ?? {}) as Record<string, unknown>,

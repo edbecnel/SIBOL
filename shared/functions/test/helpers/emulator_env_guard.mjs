@@ -34,9 +34,13 @@ export function assertFunctionsIntegrationEmulatorEnv() {
       `FIREBASE_PROJECT_ID must not be production ${PRODUCTION_PROJECT} during emulator tests.`,
     );
   }
-  if (projectId && projectId !== CANONICAL_EMULATOR_PROJECT) {
+  if (
+    projectId &&
+    projectId !== CANONICAL_EMULATOR_PROJECT &&
+    !projectId.startsWith("demo-sibol-")
+  ) {
     throw new Error(
-      `FIREBASE_PROJECT_ID must be ${CANONICAL_EMULATOR_PROJECT} for SIBOL emulator tests (got ${projectId}).`,
+      `FIREBASE_PROJECT_ID must be ${CANONICAL_EMULATOR_PROJECT} or a demo-sibol-* test project (got ${projectId}).`,
     );
   }
 }

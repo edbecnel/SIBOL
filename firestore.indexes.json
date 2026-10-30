@@ -129,6 +129,15 @@
       ]
     },
     {
+      "collectionGroup": "caseCoordinationThreads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "targetHospitalOrgId", "order": "ASCENDING" },
+        { "fieldPath": "phase", "order": "ASCENDING" },
+        { "fieldPath": "lastStaffEventAt", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "organizationMemberships",
       "queryScope": "COLLECTION",
       "fields": [
@@ -137,11 +146,10 @@
       ]
     },
     {
-      "collectionGroup": "organizationStaffInvitations",
+      "collectionGroup": "organizationMemberships",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "orgId", "order": "ASCENDING" },
-        { "fieldPath": "emailHash", "order": "ASCENDING" },
         { "fieldPath": "status", "order": "ASCENDING" }
       ]
     },
