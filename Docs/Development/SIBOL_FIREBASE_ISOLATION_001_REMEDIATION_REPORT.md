@@ -5,7 +5,7 @@
 **Handover UUID (runtime verification):** `c49d82e1-6a35-4f07-9b21-7e05d83a6c90`  
 **Branch:** `main`  
 **Baseline commit (remediation):** `ee10100`  
-**Classification:** **COMPLETE—VERIFIED** (runtime isolation identity and endpoint gates; operational QA seed and ADC hygiene tracked separately)
+**Classification:** **COMPLETE—VERIFIED** (PA accepted handover `d82a7f31` scope: emulator identity, startup, endpoints, fail-closed project ID; excludes unseeded QA anchors, production audit, untested ADC paths)
 
 ## Original safety finding
 
@@ -107,10 +107,21 @@ Emulators stopped via controlled `pkill` of firebase/emulator processes; ports 9
 
 ### Defects found during runtime (local fixes, not in `ee10100`)
 
-1. **`start-demo-emulators.sh`:** with `set -u`, trailing `"${@}"` errors when no extra args (`@: unbound variable` on macOS bash). Local fix: `${1+"$@"}` (uncommitted alongside this EDF update).
-2. **`verify-canonical-emulator-health.mjs`:** duplicate ESM imports caused `SyntaxError` on Node 24 until deduplicated (uncommitted fix required to run authorized health script).
+1. **`start-demo-emulators.sh`:** with `set -u`, trailing `"${@}"` errors when no extra args (`@: unbound variable` on macOS bash). **Fixed:** `${1+"$@"}` (committed in isolation closeout).
+2. **`verify-canonical-emulator-health.mjs`:** duplicate ESM imports caused `SyntaxError` on Node 24. **Fixed:** deduplicated imports (committed in isolation closeout).
 
-Recommend a small follow-up commit for items 1–2 on `main` (exact-file, no CASE-LIFECYCLE WIP).
+### Verified vs not verified (scope boundary)
+
+| Topic | Status |
+|--------|--------|
+| Canonical project `demo-sibol-emulator` at startup | **Verified** (runtime) |
+| Local ports 9099 / 8195 / 5001 | **Verified** (runtime) |
+| Fail-closed rejection of `sibol-286d0` | **Verified** (static + runtime) |
+| Isolation / INT-001 preflight scripts | **Verified** (runtime) |
+| Functions callable registration on emulator | **Verified** (HTTP probe, local) |
+| QA anchor documents on Firestore emulator | **Not verified** — empty emulator; read-only check failed without seed (**not** an isolation defect) |
+| Production Firebase audit | **Not verified** — out of scope |
+| ADC fallback if emulator env omitted | **Not verified** — warning only; mitigated by guards in scripts/tests |
 
 ## Runtime verification pending (requires PA release of emulator hold)
 
@@ -136,7 +147,21 @@ Uncommitted CASE-LIFECYCLE and unrelated iOS changes were **not** reverted or st
 
 ## PA acceptance status
 
-**Runtime isolation verification complete** — PA review recommended for **COMPLETE—VERIFIED** on SIBOL-FIREBASE-ISOLATION-001 scope. General Firebase safety hold for **CASE-LIFECYCLE-001** remains until PA explicitly releases it.
+**SIBOL-FIREBASE-ISOLATION-001: COMPLETE—VERIFIED** (PA handover `d82a7f31-4c69-45e0-9b13-6f72c5e408ad`). Excludes QA-anchor health on unseeded emulator, independent production audit, and untested ADC paths.
+
+**CASE-LIFECYCLE-001:** Conditional resumption authorized only after isolation closeout commit and runtime gate (same handover).
+
+## Isolation closeout (Phase A)
+
+After PA acceptance, committed script fixes with:
+
+```bash
+./shared/scripts/verify-emulator-isolation-static.sh
+node --check shared/scripts/verify-canonical-emulator-health.mjs
+bash -n shared/scripts/start-demo-emulators.sh
+```
+
+See Git commit message `fix(firebase): isolation closeout startup and health script` on `main`.
 
 ## Recommended next authorization request
 
