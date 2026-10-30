@@ -1,9 +1,11 @@
 # SIBOL-FIREBASE-ISOLATION-001 — Remediation Report
 
 **Work item:** SIBOL-FIREBASE-ISOLATION-001  
-**Handover UUID:** `7b3f91c2-6e48-4d15-a0c7-9f82e5b31460`  
+**Handover UUID (remediation):** `7b3f91c2-6e48-4d15-a0c7-9f82e5b31460`  
+**Handover UUID (runtime verification):** `c49d82e1-6a35-4f07-9b21-7e05d83a6c90`  
 **Branch:** `main`  
-**Classification:** **IMPLEMENTED—ACCEPTANCE PENDING** (runtime emulator gates not executed under current hold)
+**Baseline commit (remediation):** `ee10100`  
+**Classification:** **COMPLETE—VERIFIED** (runtime isolation identity and endpoint gates; operational QA seed and ADC hygiene tracked separately)
 
 ## Original safety finding
 
@@ -58,13 +60,67 @@ Alternate entry:
 ./shared/scripts/validate-local-firebase-isolation.sh --static
 ```
 
+## Runtime verification evidence (2026-10-30)
+
+**Authorization:** PA handover `c49d82e1-6a35-4f07-9b21-7e05d83a6c90` — controlled emulator start and non-destructive checks only. No seed, import, deploy, or CASE-LIFECYCLE tests.
+
+### Preflight (before start)
+
+| Check | Result |
+|--------|--------|
+| Git HEAD at `ee10100` | Pass |
+| CASE-LIFECYCLE / iOS WIP unstaged | Preserved |
+| Canonical project in `canonical_ports.json` | `demo-sibol-emulator` |
+| `.env.emulator.local` `FIREBASE_PROJECT_ID` | `demo-sibol-emulator` (gitignored) |
+| Ports 9099 / 8195 / 5001 free | Pass (after cleanup of stale processes) |
+| `.emulator-data` in workspace | Absent — no import/modify |
+
+### Emulator startup
+
+- **Command:** `bash shared/scripts/start-demo-emulators.sh` (build + canonical env + `.env.emulator.local` + enforce + `firebase emulators:start --project "${FIREBASE_PROJECT_ID}" --only auth,firestore,functions`).
+- **Firebase CLI:** `Detected demo project ID "demo-sibol-emulator", emulated services will use a demo configuration…`
+- **Firestore JVM (ps):** `--project_id demo-sibol-emulator`
+- **Functions URLs:** `http://127.0.0.1:5001/demo-sibol-emulator/us-central1/…`
+- **Endpoints:** Auth `127.0.0.1:9099`, Firestore `127.0.0.1:8195`, Functions `127.0.0.1:5001` — all listening at verification time.
+- **Production deploy:** None (`firebase deploy` not invoked).
+
+**Warning observed (residual risk):** Firebase CLI reported Application Default Credentials present; non-emulated services could use production. All authorized checks set `FIRESTORE_EMULATOR_HOST` / `FIREBASE_AUTH_EMULATOR_HOST` to local canonical ports and `demo-sibol-emulator`; no production Admin SDK calls were made during verification.
+
+### Runtime script results (emulators up)
+
+| Script | Result |
+|--------|--------|
+| `validate-local-firebase-isolation.sh` | **Pass** — `project=demo-sibol-emulator`, local hosts, ports open |
+| `validate-int-001-emulator.sh` | **Pass** — ports + `preflight-emulator-env.mjs --check-reachable` |
+| `enforce-canonical-emulator-env.sh` with `FIREBASE_PROJECT_ID=sibol-286d0` | **Pass (fail-closed)** — rejected before emulator use |
+| `verify-canonical-emulator-health.mjs` | **Partial** — ports and required callables OK; QA anchor sub-step exit 1 on empty emulator (see below) |
+
+**Callable probe (local HTTP POST, empty payload):** `regSubmitTeenAssistanceRequest`, `regAcknowledgeTeenAssistanceRequest`, `createCoordinationReferral` returned expected unauthenticated responses — confirms registration on `demo-sibol-emulator` functions emulator, not production.
+
+**QA anchor sub-step (read-only Firestore GETs):** `verify-canonical-qa-anchors.mjs` reported seeded QA documents **missing** on a fresh emulator (`teenAssistanceRequests/32sQiFj9…` not found). This is a **demo dataset** expectation, not an isolation failure. No writes performed. Full green on this sub-step requires a separately authorized seed/import — **not executed**.
+
+**Excluded (outside authorization):** seeding, snapshot import, integration/case-lifecycle test suites, production backup/export.
+
+### Clean shutdown
+
+Emulators stopped via controlled `pkill` of firebase/emulator processes; ports 9099/8195/5001 confirmed closed. No `--export-on-exit`, no snapshot delete/modify.
+
+### Defects found during runtime (local fixes, not in `ee10100`)
+
+1. **`start-demo-emulators.sh`:** with `set -u`, trailing `"${@}"` errors when no extra args (`@: unbound variable` on macOS bash). Local fix: `${1+"$@"}` (uncommitted alongside this EDF update).
+2. **`verify-canonical-emulator-health.mjs`:** duplicate ESM imports caused `SyntaxError` on Node 24 until deduplicated (uncommitted fix required to run authorized health script).
+
+Recommend a small follow-up commit for items 1–2 on `main` (exact-file, no CASE-LIFECYCLE WIP).
+
 ## Runtime verification pending (requires PA release of emulator hold)
 
-1. Start emulators via `shared/scripts/start-demo-emulators.sh` and confirm process uses `--project demo-sibol-emulator`.
-2. Run `./shared/scripts/validate-local-firebase-isolation.sh` (full gate, ports reachable).
-3. Run `./shared/scripts/validate-int-001-emulator.sh` with emulators up.
-4. Run `node shared/scripts/verify-canonical-emulator-health.mjs`.
-5. Run provisioning preflight with `--check-reachable` after seed workflow (authorized separately).
+~~1–4 below completed under handover `c49d82e1`.~~ Remaining operational items:
+
+1. ~~Start emulators via `shared/scripts/start-demo-emulators.sh`…~~ **Done** (see above).
+2. ~~Run `./shared/scripts/validate-local-firebase-isolation.sh`…~~ **Done**.
+3. ~~Run `./shared/scripts/validate-int-001-emulator.sh`…~~ **Done**.
+4. ~~Run `node shared/scripts/verify-canonical-emulator-health.mjs`.~~ **Done** (QA anchors need seed for exit 0).
+5. Run provisioning preflight after **authorized** seed workflow (not part of isolation verification).
 
 ## `.emulator-data` / snapshot status
 
@@ -80,8 +136,11 @@ Uncommitted CASE-LIFECYCLE and unrelated iOS changes were **not** reverted or st
 
 ## PA acceptance status
 
-**Pending** — awaiting PA review of static evidence and explicit authorization for runtime verification.
+**Runtime isolation verification complete** — PA review recommended for **COMPLETE—VERIFIED** on SIBOL-FIREBASE-ISOLATION-001 scope. General Firebase safety hold for **CASE-LIFECYCLE-001** remains until PA explicitly releases it.
 
 ## Recommended next authorization request
 
-Request **runtime isolation verification** only: emulator start, `validate-local-firebase-isolation.sh`, INT-001 preflight, and (if approved) a single seeded demo smoke—still **no** production deploy and **no** CASE-LIFECYCLE Firebase-connected implementation until hold release.
+1. Accept SIBOL-FIREBASE-ISOLATION-001 (**COMPLETE—VERIFIED**).
+2. Optional: commit startup/health script fixes noted above.
+3. Optional: authorized demo **seed** (separate hold) if full QA anchor health exit 0 is required.
+4. Explicit **CASE-LIFECYCLE-001** hold release before resuming Firebase-connected lifecycle implementation or tests.
