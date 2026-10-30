@@ -33,7 +33,9 @@ Harness: `firebase emulators:exec` on `firebase.emulator-functions-test.json` (p
 
 Preflight in tests: `assertFunctionsIntegrationEmulatorEnv()` — local hosts, rejects `sibol-286d0`, allows `demo-sibol-*` test projects.
 
-**Last run:** 4/4 pass — `openBarangayCaseFromAssistance.test.mjs`, `transitionBarangayCaseStatus.test.mjs`.
+**Last run:** 4/4 pass — `openBarangayCaseFromAssistance.test.mjs`, `transitionBarangayCaseStatus.test.mjs` (after commit `c3d247d`, runner `node shared/functions/scripts/run-case-lifecycle-integration-tests.mjs`).
+
+**Git milestones on `main`:** `9ef6f69` isolation closeout · `c3d247d` functions/rules/tests · `67e8dc9` Flutter lifecycle UI (iOS Podfile/SwiftPM WIP excluded).
 
 ## Blocked / not executed
 
