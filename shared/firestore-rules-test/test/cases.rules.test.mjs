@@ -8,6 +8,7 @@ import {
   assertFails,
   assertSucceeds,
 } from "@firebase/rules-unit-testing";
+import { Timestamp } from "firebase/firestore";
 import {
   ORG_BARANGAY_DEMO,
   ORG_BARANGAY_OTHER,
@@ -489,6 +490,109 @@ describe("cases collection", () => {
           teenUid: "teen-user-1",
         }),
       ),
+    );
+  });
+
+  function assistanceLinkedCase(overrides = {}) {
+    const now = Timestamp.fromDate(new Date("2026-10-20T10:00:00.000Z"));
+    return validCase({
+      caseStatus: "open",
+      assistanceRequestId: "assist-rules-lifecycle-001",
+      openedByUid: barangayUid,
+      openedAt: now,
+      ...overrides,
+    });
+  }
+
+  it("denies client create with assistanceRequestId (server-only link)", async () => {
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertFails(
+      db.collection("cases").doc("case-forged-link").set(assistanceLinkedCase()),
+    );
+  });
+
+  it("denies client update of caseStatus on assistance-linked case", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await context
+        .firestore()
+        .collection("cases")
+        .doc("case-linked-lifecycle")
+        .set(assistanceLinkedCase());
+    });
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    const snap = await db.collection("cases").doc("case-linked-lifecycle").get();
+    const data = snap.data();
+    await assertFails(
+      db.collection("cases").doc("case-linked-lifecycle").update({
+        ...data,
+        caseStatus: "inProgress",
+        updatedAt: new Date(),
+      }),
+    );
+  });
+
+  it("allows notes update when lifecycle fields unchanged on linked case", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await context
+        .firestore()
+        .collection("cases")
+        .doc("case-linked-notes")
+        .set(assistanceLinkedCase({ notes: "Initial fictional notes." }));
+    });
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    const snap = await db.collection("cases").doc("case-linked-notes").get();
+    const data = snap.data();
+    await assertSucceeds(
+      db.collection("cases").doc("case-linked-notes").update({
+        ...data,
+        notes: "Updated fictional notes without lifecycle change.",
+        updatedAt: new Date(),
+      }),
+    );
+  });
+
+  it("denies client create of lifecycleEvents subcollection", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await context
+        .firestore()
+        .collection("cases")
+        .doc("case-linked-events")
+        .set(assistanceLinkedCase());
+    });
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertFails(
+      db
+        .collection("cases")
+        .doc("case-linked-events")
+        .collection("lifecycleEvents")
+        .doc("evt-forged")
+        .set({
+          eventType: "status_changed",
+          createdAt: new Date(),
+        }),
+    );
+  });
+
+  it("allows follow-up create on assistance-linked case", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await context
+        .firestore()
+        .collection("cases")
+        .doc("case-linked-followup")
+        .set(assistanceLinkedCase());
+    });
+    const db = testEnv.authenticatedContext(barangayUid).firestore();
+    await assertSucceeds(
+      db
+        .collection("cases")
+        .doc("case-linked-followup")
+        .collection("followUps")
+        .doc("fu-linked-1")
+        .set({
+          scheduledAt: new Date(),
+          notes: "Fictional follow-up on linked case.",
+          createdAt: new Date(),
+        }),
     );
   });
 });

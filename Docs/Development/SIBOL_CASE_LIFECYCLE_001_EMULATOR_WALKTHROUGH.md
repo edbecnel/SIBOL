@@ -2,13 +2,25 @@
 
 **Purpose:** Manual functional acceptance on local emulators only (no demonstration phones).  
 **Canonical emulators:** `demo-sibol-emulator` on ports 9099 / 8195 / 5001  
-**Status:** **Prepared — not executed in engineering session** (automated server integration covers V1–V5 in MVR).
+**Handover UUID (acceptance tranche):** `e5b74a19-3c86-4f20-a91d-6b728c05e493`
 
 ## Prerequisites
 
 1. `./shared/scripts/start-demo-emulators.sh`
-2. Seed fictional demo users/data per INT-001 runbook **or** use synthetic documents created during development (no production import).
-3. Flutter app with emulators enabled (`EnvConfig.useEmulators`).
+2. Seed fictional demo users/data: `./shared/scripts/seed-emulator-demo.sh` (requires `.env.emulator.local` and running emulators).
+3. Flutter app with emulators enabled (`EnvConfig.useEmulators` / development debug build).
+4. Isolated Android emulator (`Medium_Phone_API_37.0` or equivalent) — **not** a student demonstration phone.
+
+## Automated UI harness (optional)
+
+```bash
+cd sibol_app
+source ../.env.emulator.local
+flutter test integration_test/case_lifecycle_emulator_device_test.dart -d emulator-5554 \
+  --dart-define=SIBOL_DEVICE_TEST_TEEN_PASSWORD="$SIBOL_EMULATOR_PASSWORD_TEEN" \
+  --dart-define=SIBOL_DEVICE_TEST_BARANGAY_PASSWORD="$SIBOL_EMULATOR_PASSWORD_BARANGAY_STAFF" \
+  --dart-define=SIBOL_DEVICE_TEST_MOPH_PASSWORD="$SIBOL_EMULATOR_PASSWORD_MOPH_STAFF"
+```
 
 ## Walkthrough steps
 
@@ -33,6 +45,16 @@
 |------|--------|----------|
 | 13 | With connectivity off, add follow-up on existing case | Queued locally; not blocked by lifecycle panel messaging |
 
+## Acceptance execution log (2026-11-01)
+
+| Item | Environment | Result | Evidence |
+|------|-------------|--------|----------|
+| Operator manual walkthrough (steps 1–13) | Canonical emulators + seeded demo | **NOT EXECUTED** | — |
+| Integration test harness `case_lifecycle_emulator_device_test.dart` | `emulator-5554`, emulators + seed | **FAIL** | Auth sign-in completes; app does not reach role home (`Teenager dashboard` / `Barangay dashboard` not observed within test timeouts). Same failure mode as existing `barangay_incoming_request_cards_device_test.dart` on this workstation. Likely Firestore profile load / redirect to **Account not provisioned** after Auth. |
+| Server-side lifecycle path | `run-case-lifecycle-integration-tests.mjs` | **PASS** | 7/7 (see MVR V1–V5) |
+
+**Blocker for UI closeout:** Device/integration Flutter harness cannot complete sign-in → profile → role home on the isolated Android emulator in this environment. Manual operator walkthrough on the same stack is recommended once device Firestore connectivity is confirmed (Emulator UI shows `users/{uid}` reads after app sign-in).
+
 ## Sign-off
 
-Record operator name, date, emulator project id, and screenshots in PA acceptance record. **Do not** mark complete until this table is executed and reviewed.
+Record operator name, date, emulator project id, and screenshots in PA acceptance record. **Do not** mark COMPLETE—VERIFIED until this table is executed and reviewed on a device session that reaches role home screens.

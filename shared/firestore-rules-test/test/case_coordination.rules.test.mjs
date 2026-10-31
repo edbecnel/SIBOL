@@ -41,6 +41,7 @@ function validThreadHeader(overrides = {}) {
   return {
     barangay: site,
     orgId: ORG_BARANGAY_DEMO,
+    targetHospitalOrgId: ORG_HOSPITAL_DEMO,
     displayRef: "SIBOL-REF-DEMO-001",
     category: "generalSupport",
     barangayReferralSummary:
@@ -57,6 +58,7 @@ function validThreadHeader(overrides = {}) {
 function mophThreadListQuery(db) {
   return db
     .collection("caseCoordinationThreads")
+    .where("targetHospitalOrgId", "==", ORG_HOSPITAL_DEMO)
     .where("phase", "in", ["referred", "awaitingMoph", "awaitingBarangay"])
     .orderBy("lastStaffEventAt", "desc");
 }
@@ -203,7 +205,7 @@ describe("caseCoordinationThreads reads", () => {
     await assertSucceeds(mophThreadListQuery(db).get());
   });
 
-  it("allows MOPH list query without primaryOrgId when hospital01 membership grants coordination", async () => {
+  it("denies MOPH list query without primaryOrgId even when membership grants coordination", async () => {
     const legacyMophUid = "moph-legacy-no-primary";
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const db = context.firestore();
@@ -216,7 +218,7 @@ describe("caseCoordinationThreads reads", () => {
       await seedMembership(db, ORG_HOSPITAL_DEMO, legacyMophUid, CAPS.hospitalCoord);
     });
     const db = testEnv.authenticatedContext(legacyMophUid).firestore();
-    await assertSucceeds(mophThreadListQuery(db).get());
+    await assertFails(mophThreadListQuery(db).get());
   });
 
   it("denies MOPH management-only admin on coordination list query", async () => {

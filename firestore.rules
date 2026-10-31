@@ -56,12 +56,15 @@ service cloud.firestore {
     }
 
     function membershipExistsActive(orgId) {
+      let membershipId = membershipDocIdForOrg(orgId);
+      let membershipPath = /databases/$(database)/documents/organizationMemberships/$(membershipId);
+      let membership = get(membershipPath).data;
       return isSignedIn()
           && isValidOrgId(orgId)
-          && exists(/databases/$(database)/documents/organizationMemberships/$(membershipDocIdForOrg(orgId)))
-          && membershipDataForOrg(orgId).status == 'active'
-          && membershipDataForOrg(orgId).orgId == orgId
-          && membershipDataForOrg(orgId).accountUid == request.auth.uid;
+          && exists(membershipPath)
+          && membership.status == 'active'
+          && membership.orgId == orgId
+          && membership.accountUid == request.auth.uid;
     }
 
     function organizationIsActive(orgId) {
@@ -70,11 +73,19 @@ service cloud.firestore {
     }
 
     function capabilityGranted(orgId, cap) {
-      return membershipExistsActive(orgId)
+      let membershipId = membershipDocIdForOrg(orgId);
+      let membershipPath = /databases/$(database)/documents/organizationMemberships/$(membershipId);
+      let membership = get(membershipPath).data;
+      return isSignedIn()
+          && isValidOrgId(orgId)
+          && exists(membershipPath)
+          && membership.status == 'active'
+          && membership.orgId == orgId
+          && membership.accountUid == request.auth.uid
           && organizationIsActive(orgId)
-          && membershipDataForOrg(orgId).keys().hasAll(['capabilities'])
-          && membershipDataForOrg(orgId).capabilities is list
-          && cap in membershipDataForOrg(orgId).capabilities;
+          && membership.keys().hasAll(['capabilities'])
+          && membership.capabilities is list
+          && cap in membership.capabilities;
     }
 
     function roleUnchanged() {
@@ -648,10 +659,12 @@ service cloud.firestore {
     }
 
     function mophCanReadCoordinationThreadId(threadId) {
+      let thread = coordinationThreadDoc(threadId);
       return mophHospitalCoordinationGranted()
-          && coordinationThreadHasReadablePhase(threadId)
-          && coordinationThreadHasTargetHospital(coordinationThreadDoc(threadId))
-          && mophMatchesThreadHospital(coordinationThreadDoc(threadId));
+          && thread.keys().hasAll(['phase'])
+          && isValidCoordinationPhase(thread.phase)
+          && coordinationThreadHasTargetHospital(thread)
+          && mophMatchesThreadHospital(thread);
     }
 
     function barangayCanReadCoordinationThread() {

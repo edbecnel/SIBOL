@@ -1,7 +1,8 @@
 # SIBOL-CASE-LIFECYCLE-001 — Implementation specification
 
 **Handover UUID:** `4d81b2f0-6e93-45a7-8c21-f59d0b374e62`  
-**Status:** Implemented (emulator scope); functional acceptance requires PA manual walkthrough  
+**Acceptance UUID:** `e5b74a19-3c86-4f20-a91d-6b728c05e493`  
+**Status:** Implemented (emulator scope); **functional acceptance pending** device UI walkthrough  
 **Plan reference:** `case_lifecycle_001_55c207e8.plan.md`  
 **Isolation:** `demo-sibol-emulator` (canonical) / `demo-sibol-coord-fn` (isolated Functions test harness)
 
@@ -56,7 +57,17 @@ Deliver an auditable Barangay case lifecycle bound to acknowledged teen assistan
 | Test runner | `shared/functions/scripts/run-case-lifecycle-integration-tests.mjs` |
 | Verification matrix | [MVR-CASE-LIFECYCLE-001](../Verification/Records/MVR-CASE-LIFECYCLE-001-Verification-Matrix.md) |
 | Emulator walkthrough | [SIBOL_CASE_LIFECYCLE_001_EMULATOR_WALKTHROUGH.md](./SIBOL_CASE_LIFECYCLE_001_EMULATOR_WALKTHROUGH.md) |
+| Device UI harness | `sibol_app/integration_test/case_lifecycle_emulator_device_test.dart` |
 | Implementation log | [SIBOL_CASE_LIFECYCLE_001_IMPLEMENTATION_REPORT.md](./SIBOL_CASE_LIFECYCLE_001_IMPLEMENTATION_REPORT.md) |
+
+## Acceptance status (2026-11-01)
+
+| Criterion | Result |
+|-----------|--------|
+| Functions lifecycle integration (V1–V5) | **Pass** (7/7) |
+| Firestore lifecycle client-write rules (V8) | **Pass** (focused harness) |
+| Flutter device walkthrough (V10) | **Not verified** — device integration test fails before role home; manual operator steps not signed off |
+| Offline follow-up regression (V9) | **Not executed** — blocked on same device session |
 
 ## Out of scope (this work item)
 
