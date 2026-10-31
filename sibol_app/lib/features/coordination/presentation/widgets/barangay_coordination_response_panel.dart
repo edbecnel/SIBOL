@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sibol_app/features/cases/presentation/providers/case_lifecycle_providers.dart';
 import 'package:sibol_app/features/coordination/domain/coordination_status.dart';
 import 'package:sibol_app/features/coordination/domain/entities/coordination_thread.dart';
+import 'package:sibol_app/features/disclosure/domain/disclosure_constants.dart';
 import 'package:sibol_app/shared/widgets/app_button.dart';
 
 class BarangayCoordinationResponsePanel extends ConsumerStatefulWidget {
@@ -36,37 +37,28 @@ class _BarangayCoordinationResponsePanelState
       }
       return;
     }
-    final controller = TextEditingController();
-    final summary = await showDialog<String>(
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Provide information to hospital'),
-        content: TextField(
-          controller: controller,
-          maxLines: 4,
-          decoration: const InputDecoration(
-            labelText: 'Administrative response (10–500 characters)',
-          ),
+        title: const Text('Structured response to hospital'),
+        content: const Text(
+          'Submit an administrative template response without free text.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           FilledButton(
-            onPressed: () {
-              final text = controller.text.trim();
-              if (text.length < 10) return;
-              Navigator.pop(ctx, text);
-            },
-            child: const Text('Submit'),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Submit update'),
           ),
         ],
       ),
     );
-    if (summary == null) return;
+    if (confirmed != true) return;
     setState(() => _busy = true);
     try {
       await ref.read(caseLifecycleApiProvider).respondToMophInformationRequest(
             threadId: widget.thread.threadId,
-            responseSummary: summary,
+            responseTemplateCode: ResponseTemplateCodes.administrativeUpdate,
           );
     } catch (e) {
       if (mounted) {
@@ -88,7 +80,7 @@ class _BarangayCoordinationResponsePanelState
     return Padding(
       padding: const EdgeInsets.only(top: 16),
       child: AppButton.primary(
-        label: 'Provide information to hospital',
+        label: 'Provide structured information to hospital',
         isLoading: _busy,
         onPressed: _busy ? null : _respond,
       ),

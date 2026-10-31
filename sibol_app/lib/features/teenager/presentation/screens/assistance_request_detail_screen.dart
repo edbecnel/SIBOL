@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/features/teenager/presentation/providers/assistance_request_providers.dart';
-import 'package:sibol_app/features/teenager/presentation/widgets/teen_non_emergency_notice.dart';
+import 'package:sibol_app/features/disclosure/presentation/widgets/teen_disclosure_decision_panel.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
@@ -40,6 +40,9 @@ class AssistanceRequestDetailScreen extends ConsumerWidget {
                 return ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    const SizedBox(height: 16),
+                    TeenDisclosureDecisionPanel(assistanceRequestId: requestId),
+                    const SizedBox(height: 16),
                     const TeenNonEmergencyNotice(),
                     const SizedBox(height: 16),
                     _DetailRow(label: 'Reference', value: request.requestId),

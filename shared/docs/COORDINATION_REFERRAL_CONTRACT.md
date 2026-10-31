@@ -14,15 +14,23 @@ Atomically create a minimum-information hospital coordination referral from an *
 - Server loads `users/{uid}` via Admin SDK; requires `active == true` and `role == 'barangay'`.
 - `assignedBarangay` must match the assistance request `barangay`.
 
-## Input
+## Input (structured — SIBOL-CONSENT-REFERRAL-001)
+
+Legacy `barangayReferralSummary` is **rejected** for new submissions.
 
 ```json
 {
   "assistanceRequestId": "string",
-  "barangayReferralSummary": "string (10–2000 chars)",
-  "relatedReportId": "optional string"
+  "disclosureMode": "minimum | authorized",
+  "referralPurposeCode": "string",
+  "coordinationNeedCodes": ["string"],
+  "authorizationId": "optional; required for authorized"
 }
 ```
+
+See [CONTRACT-DISCLOSURE-001-Moph-Authorization.md](CONTRACT-DISCLOSURE-001-Moph-Authorization.md).
+
+## Input (legacy — historical documents only)
 
 ## Preconditions (server-enforced)
 

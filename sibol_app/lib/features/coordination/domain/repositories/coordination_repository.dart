@@ -5,17 +5,34 @@ class CreateCoordinationReferralResult {
   const CreateCoordinationReferralResult({
     required this.threadId,
     required this.displayRef,
+    this.disclosureMode,
   });
 
   final String threadId;
   final String displayRef;
+  final String? disclosureMode;
+}
+
+class StructuredCoordinationReferralInput {
+  const StructuredCoordinationReferralInput({
+    required this.assistanceRequestId,
+    required this.disclosureMode,
+    required this.referralPurposeCode,
+    required this.coordinationNeedCodes,
+    this.authorizationId,
+  });
+
+  final String assistanceRequestId;
+  final String disclosureMode;
+  final String referralPurposeCode;
+  final List<String> coordinationNeedCodes;
+  final String? authorizationId;
 }
 
 abstract class CoordinationRepository {
-  Future<CreateCoordinationReferralResult> createCoordinationReferral({
-    required String assistanceRequestId,
-    required String barangayReferralSummary,
-  });
+  Future<CreateCoordinationReferralResult> createCoordinationReferral(
+    StructuredCoordinationReferralInput input,
+  );
 
   Stream<List<CoordinationThread>> watchOpenThreadsForMoph(String hospitalOrgId);
 

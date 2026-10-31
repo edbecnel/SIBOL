@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/barangay_open_case_from_assistance_action.dart';
 import 'package:sibol_app/features/coordination/presentation/providers/coordination_providers.dart';
+import 'package:sibol_app/features/disclosure/presentation/widgets/barangay_disclosure_request_panel.dart';
 import 'package:sibol_app/features/coordination/presentation/widgets/barangay_moph_referral_action.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
@@ -310,6 +311,12 @@ class _BarangayIncomingRequestDetailScreenState
                         label: 'Acknowledge receipt',
                         isLoading: _acknowledging,
                         onPressed: _acknowledging ? null : _acknowledge,
+                      ),
+                    ],
+                    if (isAcknowledged) ...[
+                      const SizedBox(height: 24),
+                      BarangayDisclosureRequestPanel(
+                        assistanceRequestId: widget.requestId,
                       ),
                     ],
                     BarangayMophReferralAction(

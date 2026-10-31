@@ -6,6 +6,10 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- SIBOL-CONSENT-REFERRAL-001: disclosure authorization callables, structured MOPH referral/response payloads (C1–C3), Flutter in-app authorization UI, ADR-0006, CONTRACT-DISCLOSURE-001 (`d4a8c261-7e35-4d92-9b60-f1c73a80e524`). Emulator verification only; **not** production deploy.
+
+### Added
+
 - SIBOL-RELEASE-BASELINE-001: annotated tag `SIBOL-PRE-ENHANCEMENT-2026-10-29` → `c916b0f` (pre–CASE-LIFECYCLE source baseline; source-only, not phone-install certification) (`e47c6a21-8f39-4d05-a7b2-6c90d13e5f84`).
 
 - SIBOL-P0-ID-001: Barangay assistance request detail shows teenager **Submitted by** and **Account email** from server-maintained snapshot fields; online refresh via `regResolveAssistanceRequestSubmitter` for legacy requests (`e9b73c14-5d62-4a81-9f20-c638b2d70451`).

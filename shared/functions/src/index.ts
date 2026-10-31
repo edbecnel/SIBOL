@@ -48,6 +48,11 @@ import {
   runResolveAssistanceRequestSubmitter,
 } from "./teen/exportHandlers";
 import type { RegisterTeenInput } from "./teen/registerTeenAccount";
+import {
+  runRequestMophDisclosureAuthorization,
+  runRecordTeenDisclosureDecision,
+  runWithdrawDisclosureAuthorization,
+} from "./disclosure/exportHandlers";
 import { runGetReferenceManifest } from "./geo/referenceManifest";
 
 admin.initializeApp();
@@ -240,6 +245,45 @@ export const regResolveAssistanceRequestSubmitter = onCall(async (request) => {
   const db = admin.firestore();
   try {
     return await runResolveAssistanceRequestSubmitter(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regRequestMophDisclosureAuthorization = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runRequestMophDisclosureAuthorization(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regRecordTeenDisclosureDecision = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runRecordTeenDisclosureDecision(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regWithdrawDisclosureAuthorization = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runWithdrawDisclosureAuthorization(
       db,
       request.auth?.uid,
       (request.data ?? {}) as Record<string, unknown>,

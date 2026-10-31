@@ -42,6 +42,8 @@
 | SIBOL-REG-001-CLOSE | Direct staff provisioning + REG-FIX (prototype functional closure) | **Closed** — PA functional acceptance `b4e81c62-…`; docs @ closure commit on `main` | [Prototype closure](SIBOL_REG_001_PROTOTYPE_CLOSURE_EXECUTION_REPORT.md), [Direct provisioning report](SIBOL_REG_001_DIRECT_PROVISIONING_EXECUTION_REPORT.md) |
 | SIBOL-P0-ID-001 | Barangay assistance request submitter identity (offline snapshot + online refresh) | **Implemented** — emulator QA pass | [Execution report](SIBOL_P0_ID_001_EXECUTION_REPORT.md), [Identity contract](../../shared/docs/TEEN_ASSISTANCE_IDENTITY_CONTRACT.md) |
 | SIBOL-P0-IDENTITY-CARD-001 | Incoming Requests card account email | **Engineering complete** — PA/PO acceptance gate | [Execution report](SIBOL_P0_IDENTITY_CARD_001_EXECUTION_REPORT.md) |
+| SIBOL-CASE-LIFECYCLE-001 | Barangay case lifecycle + MOPH coordination callables | **Implemented** — Functions pass; device V10 pending | [Implementation spec](SIBOL_CASE_LIFECYCLE_001_IMPLEMENTATION_SPEC.md), [MVR](../Verification/Records/MVR-CASE-LIFECYCLE-001-Verification-Matrix.md) |
+| SIBOL-CONSENT-REFERRAL-001 | Consent-controlled MOPH disclosure + structured coordination | **IMPLEMENTED — ACCEPTANCE PENDING** | [Plan](SIBOL_CONSENT_REFERRAL_001_PLAN.md), [Report](SIBOL_CONSENT_REFERRAL_001_IMPLEMENTATION_REPORT.md), [MVR](../Verification/Records/MVR-CONSENT-REFERRAL-001-Verification-Matrix.md) |
 
 ## Prototype development boundary
 

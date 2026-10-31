@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { initializeApp, deleteApp, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { runCreateCoordinationReferral } from "../lib/coordination/createCoordinationReferral.js";
+import { minimumStructuredReferral } from "./helpers/structured_referral.mjs";
 import {
   membershipDoc,
   orgId,
@@ -22,8 +23,6 @@ const teenUid = "teenUserUid123456789012345";
 const mophUid = "mophStaffUid1234567890123456";
 const otherBnsUid = "otherBarangayStaffUid12345678901";
 
-const summary =
-  "Fictional barangay summary for authorization regression testing.";
 
 let db;
 
@@ -112,10 +111,7 @@ describe("createCoordinationReferral org authorization", () => {
     await seedAcknowledgedAssistance(db, id, { teenUid, barangayUid });
     await assert.rejects(
       () =>
-        runCreateCoordinationReferral(db, noMemberUid, {
-          assistanceRequestId: id,
-          barangayReferralSummary: summary,
-        }),
+        runCreateCoordinationReferral(db, noMemberUid,           minimumStructuredReferral(id),),
       (err) => err.code === "permission-denied",
     );
   });
@@ -125,10 +121,7 @@ describe("createCoordinationReferral org authorization", () => {
     await seedAcknowledgedAssistance(db, id, { teenUid, barangayUid: suspendedMemberUid });
     await assert.rejects(
       () =>
-        runCreateCoordinationReferral(db, suspendedMemberUid, {
-          assistanceRequestId: id,
-          barangayReferralSummary: summary,
-        }),
+        runCreateCoordinationReferral(db, suspendedMemberUid,           minimumStructuredReferral(id),),
       (err) => err.code === "permission-denied",
     );
   });
@@ -138,10 +131,7 @@ describe("createCoordinationReferral org authorization", () => {
     await seedAcknowledgedAssistance(db, id, { teenUid, barangayUid: wrongCapUid });
     await assert.rejects(
       () =>
-        runCreateCoordinationReferral(db, wrongCapUid, {
-          assistanceRequestId: id,
-          barangayReferralSummary: summary,
-        }),
+        runCreateCoordinationReferral(db, wrongCapUid,           minimumStructuredReferral(id),),
       (err) => err.code === "permission-denied",
     );
   });
@@ -155,10 +145,7 @@ describe("createCoordinationReferral org authorization", () => {
       .set(membershipDoc(orgId, inactiveUid, ["coordination.barangay"]));
     await assert.rejects(
       () =>
-        runCreateCoordinationReferral(db, inactiveUid, {
-          assistanceRequestId: id,
-          barangayReferralSummary: summary,
-        }),
+        runCreateCoordinationReferral(db, inactiveUid,           minimumStructuredReferral(id),),
       (err) => err.code === "permission-denied",
     );
   });
@@ -178,10 +165,7 @@ describe("createCoordinationReferral org authorization", () => {
     });
     await assert.rejects(
       () =>
-        runCreateCoordinationReferral(db, barangayUid, {
-          assistanceRequestId: id,
-          barangayReferralSummary: summary,
-        }),
+        runCreateCoordinationReferral(db, barangayUid,           minimumStructuredReferral(id),),
       (err) => err.code === "failed-precondition",
     );
   });
@@ -195,10 +179,7 @@ describe("createCoordinationReferral org authorization", () => {
     });
     await assert.rejects(
       () =>
-        runCreateCoordinationReferral(db, barangayUid, {
-          assistanceRequestId: id,
-          barangayReferralSummary: summary,
-        }),
+        runCreateCoordinationReferral(db, barangayUid,           minimumStructuredReferral(id),),
       (err) => err.code === "permission-denied",
     );
   });
@@ -217,10 +198,7 @@ describe("createCoordinationReferral org authorization", () => {
       .set(membershipDoc(suspendedOrg, barangayUid, ["coordination.barangay"]));
     await assert.rejects(
       () =>
-        runCreateCoordinationReferral(db, barangayUid, {
-          assistanceRequestId: id,
-          barangayReferralSummary: summary,
-        }),
+        runCreateCoordinationReferral(db, barangayUid,           minimumStructuredReferral(id),),
       (err) => err.code === "permission-denied",
     );
   });
@@ -230,10 +208,7 @@ describe("createCoordinationReferral org authorization", () => {
     await seedAcknowledgedAssistance(db, id, { teenUid, barangayUid });
     await assert.rejects(
       () =>
-        runCreateCoordinationReferral(db, mophUid, {
-          assistanceRequestId: id,
-          barangayReferralSummary: summary,
-        }),
+        runCreateCoordinationReferral(db, mophUid,           minimumStructuredReferral(id),),
       (err) => err.code === "permission-denied",
     );
   });

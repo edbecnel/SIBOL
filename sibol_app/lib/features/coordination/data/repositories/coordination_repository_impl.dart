@@ -27,19 +27,25 @@ class CoordinationRepositoryImpl implements CoordinationRepository {
       _firestore.collection(FirestorePaths.caseCoordinationThreads);
 
   @override
-  Future<CreateCoordinationReferralResult> createCoordinationReferral({
-    required String assistanceRequestId,
-    required String barangayReferralSummary,
-  }) async {
+  Future<CreateCoordinationReferralResult> createCoordinationReferral(
+    StructuredCoordinationReferralInput input,
+  ) async {
     final callable = _functions.httpsCallable('createCoordinationReferral');
-    final result = await callable.call<Map<String, dynamic>>({
-      'assistanceRequestId': assistanceRequestId,
-      'barangayReferralSummary': barangayReferralSummary.trim(),
-    });
+    final payload = <String, dynamic>{
+      'assistanceRequestId': input.assistanceRequestId,
+      'disclosureMode': input.disclosureMode,
+      'referralPurposeCode': input.referralPurposeCode,
+      'coordinationNeedCodes': input.coordinationNeedCodes,
+    };
+    if (input.authorizationId != null) {
+      payload['authorizationId'] = input.authorizationId;
+    }
+    final result = await callable.call<Map<String, dynamic>>(payload);
     final data = result.data;
     return CreateCoordinationReferralResult(
       threadId: data['threadId'] as String,
       displayRef: data['displayRef'] as String,
+      disclosureMode: data['disclosureMode'] as String?,
     );
   }
 

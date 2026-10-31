@@ -125,9 +125,10 @@ describe("SIBOL-INT-001 prototype journey (emulator smoke)", () => {
       getSmokeDb(),
       signedInBarangayUid,
       {
-      assistanceRequestId: requestId,
-      barangayReferralSummary:
-        "Fictional referral summary for MOPH review (smoke test).",
+        assistanceRequestId: requestId,
+        disclosureMode: "minimum",
+        referralPurposeCode: "hospital_coordination",
+        coordinationNeedCodes: ["schedule_coordination"],
       },
     );
     assert.ok(referral.threadId);

@@ -1,5 +1,20 @@
 import type { Firestore } from "firebase-admin/firestore";
 import { HttpsError } from "firebase-functions/v2/https";
+import { writeAuditEvent } from "../admin/audit";
+import {
+  rejectLegacyFreeTextFields,
+  validateCategoryCodes,
+  validateResponseTemplateCode,
+} from "../disclosure/categoryCatalog";
+import {
+  assertAuthorizationActiveForDisclosure,
+  assertCategoriesSubset,
+  parseAuthorizationDoc,
+} from "../disclosure/authorizationLoader";
+import { buildAuthorizedProfileDocument } from "../disclosure/buildAuthorizedProfile";
+import { DISCLOSURE_COLLECTIONS } from "../disclosure/constants";
+import { isIdentifyingDisclosureLegallyActivated } from "../disclosure/disclosurePolicy";
+import { generateInformationResponseDescription } from "../disclosure/referralTemplates";
 import { CAPABILITIES } from "../authz/capabilities";
 import {
   assertActiveAccount,
@@ -13,13 +28,14 @@ import { isValidOrgId, membershipIdFor } from "../authz/identifiers";
 import { COLLECTIONS } from "./constants";
 import {
   CoordinationStatus,
-  MOPH_RESPONSE_MAX,
-  MOPH_RESPONSE_MIN,
   phaseForCoordinationStatus,
 } from "./coordinationStatus";
 
-export type BarangayRespondToMophInformationRequestInput = {
+export type BarangayRespondToMophInformationRequestInput = Record<string, unknown> & {
   threadId?: unknown;
+  responseTemplateCode?: unknown;
+  disclosedCategoryCodes?: unknown;
+  authorizationId?: unknown;
   responseSummary?: unknown;
 };
 
@@ -35,20 +51,6 @@ function validateThreadId(raw: unknown): string {
   return raw.trim();
 }
 
-function validateResponseSummary(raw: unknown): string {
-  if (typeof raw !== "string") {
-    throw new HttpsError("invalid-argument", "responseSummary is required.");
-  }
-  const trimmed = raw.trim();
-  if (trimmed.length < MOPH_RESPONSE_MIN || trimmed.length > MOPH_RESPONSE_MAX) {
-    throw new HttpsError(
-      "invalid-argument",
-      `responseSummary must be ${MOPH_RESPONSE_MIN}–${MOPH_RESPONSE_MAX} characters.`,
-    );
-  }
-  return trimmed;
-}
-
 export async function runBarangayRespondToMophInformationRequest(
   db: Firestore,
   authUid: string | undefined,
@@ -58,13 +60,44 @@ export async function runBarangayRespondToMophInformationRequest(
     throw new HttpsError("unauthenticated", "Sign in required.");
   }
 
+  rejectLegacyFreeTextFields(data as Record<string, unknown>);
+  if ("responseSummary" in data && data.responseSummary != null) {
+    throw new HttpsError(
+      "invalid-argument",
+      "responseSummary is not accepted; use structured response fields.",
+    );
+  }
+
   const threadId = validateThreadId(data.threadId);
-  const responseSummary = validateResponseSummary(data.responseSummary);
+  const responseTemplateCode = validateResponseTemplateCode(
+    data.responseTemplateCode,
+  );
+  const disclosedCategoryCodes =
+    data.disclosedCategoryCodes == null ||
+    (Array.isArray(data.disclosedCategoryCodes) &&
+      data.disclosedCategoryCodes.length === 0)
+      ? []
+      : validateCategoryCodes(data.disclosedCategoryCodes, "disclosedCategoryCodes");
+
+  if (disclosedCategoryCodes.length > 0) {
+    if (!isIdentifyingDisclosureLegallyActivated()) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Identifying disclosure is not legally activated in this environment.",
+      );
+    }
+    if (typeof data.authorizationId !== "string" || !data.authorizationId.trim()) {
+      throw new HttpsError(
+        "invalid-argument",
+        "authorizationId is required when disclosing authorized categories.",
+      );
+    }
+  }
 
   const userRef = db.collection(COLLECTIONS.users).doc(authUid);
   const threadRef = db.collection(COLLECTIONS.caseCoordinationThreads).doc(threadId);
 
-  return db.runTransaction(async (tx) => {
+  const result = await db.runTransaction(async (tx) => {
     const [userSnap, threadSnap] = await Promise.all([
       tx.get(userRef),
       tx.get(threadRef),
@@ -131,10 +164,61 @@ export async function runBarangayRespondToMophInformationRequest(
       );
     }
 
+    const bindingSnap = await tx.get(
+      threadRef.collection("private").doc("binding"),
+    );
+    if (!bindingSnap.exists) {
+      throw new HttpsError("failed-precondition", "Coordination binding missing.");
+    }
+    const teenUid = bindingSnap.data()!.teenUid as string;
+    const assistanceRequestId = bindingSnap.data()!.assistanceRequestId as string;
+
+    let authorizationId: string | undefined;
+    if (disclosedCategoryCodes.length > 0) {
+      authorizationId = (data.authorizationId as string).trim();
+      const authRef = db
+        .collection(DISCLOSURE_COLLECTIONS.disclosureAuthorizations)
+        .doc(authorizationId);
+      const authSnap = await tx.get(authRef);
+      if (!authSnap.exists) {
+        throw new HttpsError("not-found", "Disclosure authorization not found.");
+      }
+      const loaded = parseAuthorizationDoc(authorizationId, authSnap.data()!);
+      assertAuthorizationActiveForDisclosure(
+        loaded,
+        assistanceRequestId,
+        thread.targetHospitalOrgId as string,
+        { linkedThreadId: threadId },
+      );
+      assertCategoriesSubset(disclosedCategoryCodes, loaded.authorizedCategories);
+
+      const teenSnap = await tx.get(db.collection(COLLECTIONS.users).doc(teenUid));
+      const patch = buildAuthorizedProfileDocument(
+        teenUid,
+        teenSnap.data() ?? {},
+        disclosedCategoryCodes,
+        loaded.otherEssentialJustification,
+      );
+      tx.set(
+        threadRef.collection("authorizedDisclosure").doc("profile"),
+        {
+          ...patch,
+          categoryCodes: disclosedCategoryCodes,
+          authorizationId,
+          updatedAt: new Date(),
+        },
+        { merge: true },
+      );
+    }
+
     const now = new Date();
     const nextStatus = CoordinationStatus.informationProvided;
     const phase = phaseForCoordinationStatus(nextStatus);
     const eventRef = threadRef.collection("staffEvents").doc();
+    const body = generateInformationResponseDescription(
+      responseTemplateCode,
+      disclosedCategoryCodes.length > 0,
+    );
 
     tx.update(threadRef, {
       coordinationStatus: nextStatus,
@@ -145,7 +229,10 @@ export async function runBarangayRespondToMophInformationRequest(
 
     tx.set(eventRef, {
       eventType: "barangay_information_response",
-      body: responseSummary,
+      body,
+      responseTemplateCode,
+      disclosedCategoryCodes,
+      structuredResponse: true,
       actorUid: authUid,
       createdAt: now,
       previousStatus: currentStatus,
@@ -154,4 +241,19 @@ export async function runBarangayRespondToMophInformationRequest(
 
     return { threadId, coordinationStatus: nextStatus };
   });
+
+  await writeAuditEvent(db, {
+    actorUid: authUid,
+    operation: "coordination_information_response",
+    outcome: "success",
+    after: {
+      threadId: result.threadId,
+      responseTemplateCode: data.responseTemplateCode,
+      disclosedCategoryCount: Array.isArray(data.disclosedCategoryCodes)
+        ? data.disclosedCategoryCodes.length
+        : 0,
+    },
+  });
+
+  return result;
 }

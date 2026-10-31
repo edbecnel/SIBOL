@@ -31,10 +31,9 @@ class FakeCoordinationRepository implements CoordinationRepository {
   }
 
   @override
-  Future<CreateCoordinationReferralResult> createCoordinationReferral({
-    required String assistanceRequestId,
-    required String barangayReferralSummary,
-  }) async =>
+  Future<CreateCoordinationReferralResult> createCoordinationReferral(
+    StructuredCoordinationReferralInput input,
+  ) async =>
       throw UnimplementedError();
 
   @override

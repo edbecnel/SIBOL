@@ -76,14 +76,21 @@ class CaseLifecycleApi {
 
   Future<String> respondToMophInformationRequest({
     required String threadId,
-    required String responseSummary,
+    required String responseTemplateCode,
+    List<String> disclosedCategoryCodes = const [],
+    String? authorizationId,
   }) async {
     final callable = _functions
         .httpsCallable('regBarangayRespondToMophInformationRequest');
-    final result = await callable.call<Map<String, dynamic>>({
+    final payload = <String, dynamic>{
       'threadId': threadId,
-      'responseSummary': responseSummary,
-    });
+      'responseTemplateCode': responseTemplateCode,
+      'disclosedCategoryCodes': disclosedCategoryCodes,
+    };
+    if (authorizationId != null) {
+      payload['authorizationId'] = authorizationId;
+    }
+    final result = await callable.call<Map<String, dynamic>>(payload);
     return result.data['coordinationStatus'] as String? ?? '';
   }
 }

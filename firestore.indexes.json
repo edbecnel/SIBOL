@@ -186,6 +186,21 @@
       ]
     },
     {
+      "collectionGroup": "disclosureAuthorizations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "assistanceRequestId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "disclosureAuthorizations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "teenUid", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
       "fields": [

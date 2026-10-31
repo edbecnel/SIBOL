@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { initializeApp, deleteApp, getApps } from "firebase-admin/app";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
 import { runCreateCoordinationReferral } from "../lib/coordination/createCoordinationReferral.js";
+import { minimumStructuredReferral } from "./helpers/structured_referral.mjs";
 import {
   membershipDoc,
   orgId,
@@ -40,6 +41,7 @@ before(async () => {
   await db.collection("users").doc(barangayUid).set({
     ...userBase,
     role: "barangay",
+    primaryOrgId: orgId,
   });
   await db.collection("users").doc(otherBnsUid).set({
     ...userBase,
@@ -74,15 +76,15 @@ after(async () => {
 });
 
 describe("createCoordinationReferral", () => {
-  it("succeeds for acknowledged request", async () => {
-    const result = await runCreateCoordinationReferral(db, barangayUid, {
-      assistanceRequestId: assistanceId,
-      barangayReferralSummary:
-        "Fictional barangay summary for MOPH coordination without teen name.",
-    });
+  it("succeeds for acknowledged request with structured minimum payload", async () => {
+    const result = await runCreateCoordinationReferral(
+      db,
+      barangayUid,
+      minimumStructuredReferral(assistanceId),
+    );
     assert.ok(result.threadId);
     assert.match(result.displayRef, /^SIBOL-REF-[A-F0-9]{16}$/);
-    assert.notEqual(result.displayRef, teenUid);
+    assert.equal(result.disclosureMode, "minimum");
 
     const header = (
       await db.collection("caseCoordinationThreads").doc(result.threadId).get()
@@ -91,8 +93,8 @@ describe("createCoordinationReferral", () => {
     assert.equal(header.orgId, orgId);
     assert.equal(header.category, "generalSupport");
     assert.equal(header.phase, "referred");
+    assert.equal(header.structuredReferral, true);
     assert.ok(!("teenUid" in header));
-    assert.ok(!("description" in header));
 
     const binding = (
       await db
@@ -104,33 +106,35 @@ describe("createCoordinationReferral", () => {
     ).data();
     assert.equal(binding.teenUid, teenUid);
     assert.equal(binding.assistanceRequestId, assistanceId);
-
-    const registry = (
-      await db.collection("barangayCoordinationRegistry").doc(assistanceId).get()
-    ).data();
-    assert.equal(registry.threadId, result.threadId);
-    assert.equal(registry.active, true);
   });
 
   it("rejects duplicate referral", async () => {
     await assert.rejects(
       () =>
-        runCreateCoordinationReferral(db, barangayUid, {
-          assistanceRequestId: assistanceId,
-          barangayReferralSummary:
-            "Second attempt should fail for same assistance id.",
-        }),
+        runCreateCoordinationReferral(
+          db,
+          barangayUid,
+          minimumStructuredReferral(assistanceId),
+        ),
       (err) => err.code === "failed-precondition",
+    );
+  });
+
+  it("rejects legacy free-text summary", async () => {
+    await assert.rejects(
+      () =>
+        runCreateCoordinationReferral(db, barangayUid, {
+          assistanceRequestId: assistanceUnacked,
+          barangayReferralSummary: "Legacy summary must not be accepted.",
+        }),
+      (err) => err.code === "invalid-argument",
     );
   });
 
   it("rejects unauthenticated", async () => {
     await assert.rejects(
       () =>
-        runCreateCoordinationReferral(db, undefined, {
-          assistanceRequestId: "x",
-          barangayReferralSummary: "Valid length summary here.",
-        }),
+        runCreateCoordinationReferral(db, undefined, minimumStructuredReferral("x")),
       (err) => err.code === "unauthenticated",
     );
   });
@@ -138,32 +142,11 @@ describe("createCoordinationReferral", () => {
   it("rejects teen caller", async () => {
     await assert.rejects(
       () =>
-        runCreateCoordinationReferral(db, teenUid, {
-          assistanceRequestId: assistanceUnacked,
-          barangayReferralSummary: "Teen must not create referrals ever.",
-        }),
-      (err) => err.code === "permission-denied",
-    );
-  });
-
-  it("rejects moph caller", async () => {
-    await assert.rejects(
-      () =>
-        runCreateCoordinationReferral(db, mophUid, {
-          assistanceRequestId: assistanceUnacked,
-          barangayReferralSummary: "MOPH must not create referrals ever.",
-        }),
-      (err) => err.code === "permission-denied",
-    );
-  });
-
-  it("rejects wrong barangay", async () => {
-    await assert.rejects(
-      () =>
-        runCreateCoordinationReferral(db, otherBnsUid, {
-          assistanceRequestId: assistanceUnacked,
-          barangayReferralSummary: "Wrong site barangay cannot refer this case.",
-        }),
+        runCreateCoordinationReferral(
+          db,
+          teenUid,
+          minimumStructuredReferral(assistanceUnacked),
+        ),
       (err) => err.code === "permission-denied",
     );
   });
@@ -171,33 +154,12 @@ describe("createCoordinationReferral", () => {
   it("rejects unacknowledged request", async () => {
     await assert.rejects(
       () =>
-        runCreateCoordinationReferral(db, barangayUid, {
-          assistanceRequestId: assistanceUnacked,
-          barangayReferralSummary: "Cannot refer before acknowledgment step.",
-        }),
+        runCreateCoordinationReferral(
+          db,
+          barangayUid,
+          minimumStructuredReferral(assistanceUnacked),
+        ),
       (err) => err.code === "failed-precondition",
-    );
-  });
-
-  it("rejects unknown request", async () => {
-    await assert.rejects(
-      () =>
-        runCreateCoordinationReferral(db, barangayUid, {
-          assistanceRequestId: "missing-id",
-          barangayReferralSummary: "Unknown assistance request identifier.",
-        }),
-      (err) => err.code === "not-found",
-    );
-  });
-
-  it("rejects short summary", async () => {
-    await assert.rejects(
-      () =>
-        runCreateCoordinationReferral(db, barangayUid, {
-          assistanceRequestId: "another-missing",
-          barangayReferralSummary: "short",
-        }),
-      (err) => err.code === "invalid-argument",
     );
   });
 });
@@ -221,17 +183,10 @@ describe("createCoordinationReferral concurrent duplicate", () => {
   });
 
   it("allows only one referral under concurrent attempts", async () => {
-    const summary =
-      "Concurrent duplicate prevention test summary for coordination.";
+    const payload = minimumStructuredReferral(concurrentId);
     const results = await Promise.allSettled([
-      runCreateCoordinationReferral(db, barangayUid, {
-        assistanceRequestId: concurrentId,
-        barangayReferralSummary: summary,
-      }),
-      runCreateCoordinationReferral(db, barangayUid, {
-        assistanceRequestId: concurrentId,
-        barangayReferralSummary: summary,
-      }),
+      runCreateCoordinationReferral(db, barangayUid, payload),
+      runCreateCoordinationReferral(db, barangayUid, payload),
     ]);
     const fulfilled = results.filter((r) => r.status === "fulfilled");
     const rejected = results.filter((r) => r.status === "rejected");

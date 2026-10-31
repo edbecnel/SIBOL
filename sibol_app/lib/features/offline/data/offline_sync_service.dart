@@ -6,6 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sibol_app/features/coordination/data/repositories/coordination_repository_impl.dart';
+import 'package:sibol_app/features/coordination/domain/repositories/coordination_repository.dart';
 import 'package:sibol_app/features/reporting/data/repositories/report_repository_impl.dart';
 import 'package:sibol_app/features/reporting/domain/barangay_report_queue_payload.dart';
 import 'package:sibol_app/features/offline/data/offline_sync_error.dart';
@@ -291,9 +292,23 @@ class OfflineSyncService {
   Future<void> _syncBarangayReferral(PendingOperation op) async {
     final repo = CoordinationRepositoryImpl(_firestore, _functions);
     try {
+      final needRaw = op.payload['coordinationNeedCodes'] ?? '';
+      final needCodes = needRaw
+          .split(',')
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
       await repo.createCoordinationReferral(
-        assistanceRequestId: op.payload['assistanceRequestId']!,
-        barangayReferralSummary: op.payload['summary']!,
+        StructuredCoordinationReferralInput(
+          assistanceRequestId: op.payload['assistanceRequestId']!,
+          disclosureMode: op.payload['disclosureMode'] ?? 'minimum',
+          referralPurposeCode:
+              op.payload['referralPurposeCode'] ?? 'hospital_coordination',
+          coordinationNeedCodes: needCodes.isEmpty
+              ? ['schedule_coordination']
+              : needCodes,
+          authorizationId: op.payload['authorizationId'],
+        ),
       );
     } on FirebaseFunctionsException catch (e) {
       final failure = classifySyncFailure(e);

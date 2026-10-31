@@ -17,6 +17,7 @@ import {
   seedBaseOrgs,
   site,
 } from "./helpers/coordination_seed.mjs";
+import { minimumStructuredReferral, structuredInformationResponse } from "./helpers/structured_referral.mjs";
 
 const projectId = "demo-sibol-case-flow-fn";
 const teenUid = "teenFlowUid1234567890123456";
@@ -115,11 +116,11 @@ describe("CASE-LIFECYCLE-001 emulator flow", () => {
       targetStatus: "inProgress",
     });
 
-    const referral = await runCreateCoordinationReferral(db, barangayUid, {
-      assistanceRequestId: assistanceId,
-      barangayReferralSummary:
-        "Fictional summary for hospital coordination without teen identifiers.",
-    });
+    const referral = await runCreateCoordinationReferral(
+      db,
+      barangayUid,
+      minimumStructuredReferral(assistanceId),
+    );
     assert.ok(referral.threadId);
 
     await runUpdateMophCoordinationStatus(db, mophUid, {
@@ -132,11 +133,11 @@ describe("CASE-LIFECYCLE-001 emulator flow", () => {
       note: "Please confirm barangay follow-up schedule.",
     });
 
-    await runBarangayRespondToMophInformationRequest(db, barangayUid, {
-      threadId: referral.threadId,
-      responseSummary:
-        "Fictional administrative response with sufficient detail for MOPH.",
-    });
+    await runBarangayRespondToMophInformationRequest(
+      db,
+      barangayUid,
+      structuredInformationResponse(referral.threadId),
+    );
 
     await runUpdateMophCoordinationStatus(db, mophUid, {
       threadId: referral.threadId,
@@ -177,11 +178,11 @@ describe("CASE-LIFECYCLE-001 emulator flow", () => {
   it("rejects cross-hospital MOPH status update", async () => {
     const assistAuthz = "assist-lifecycle-authz-002";
     await seedAcknowledgedAssistance(db, assistAuthz, { teenUid, barangayUid });
-    const referral = await runCreateCoordinationReferral(db, barangayUid, {
-      assistanceRequestId: assistAuthz,
-      barangayReferralSummary:
-        "Fictional referral for cross-hospital authorization testing.",
-    });
+    const referral = await runCreateCoordinationReferral(
+      db,
+      barangayUid,
+      minimumStructuredReferral(assistAuthz),
+    );
     await assert.rejects(
       () =>
         runUpdateMophCoordinationStatus(db, wrongMophUid, {

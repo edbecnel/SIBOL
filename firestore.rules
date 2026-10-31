@@ -703,6 +703,13 @@ service cloud.firestore {
 
         allow create, update, delete: if false;
       }
+
+      match /authorizedDisclosure/{docId} {
+        allow read: if mophCanReadCoordinationThreadId(threadId)
+            || barangayCanReadCoordinationThreadId(threadId);
+
+        allow create, update, delete: if false;
+      }
     }
 
     function assistanceRequestData(assistanceRequestId) {
@@ -727,6 +734,28 @@ service cloud.firestore {
 
     match /barangayCoordinationRegistry/{assistanceRequestId} {
       allow read: if barangayCanReadCoordinationRegistry(assistanceRequestId);
+
+      allow create, update, delete: if false;
+    }
+
+    function disclosureAuthorizationDoc() {
+      return resource.data;
+    }
+
+    function barangayCanReadDisclosureAuthorization() {
+      return userRole() == 'barangay'
+          && documentHasOrgId(disclosureAuthorizationDoc())
+          && capabilityGranted(disclosureAuthorizationDoc().orgId, 'coordination.barangay');
+    }
+
+    function teenCanReadDisclosureAuthorization() {
+      return isTeen()
+          && disclosureAuthorizationDoc().teenUid == request.auth.uid;
+    }
+
+    match /disclosureAuthorizations/{authorizationId} {
+      allow read: if teenCanReadDisclosureAuthorization()
+          || barangayCanReadDisclosureAuthorization();
 
       allow create, update, delete: if false;
     }

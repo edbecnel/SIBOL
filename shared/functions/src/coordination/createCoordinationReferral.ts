@@ -1,10 +1,22 @@
 import type { Firestore } from "firebase-admin/firestore";
 import { HttpsError } from "firebase-functions/v2/https";
 import { randomBytes } from "node:crypto";
+import { writeAuditEvent } from "../admin/audit";
+import {
+  rejectLegacyFreeTextFields,
+  validateCoordinationNeedCodes,
+  validatePurposeCode,
+} from "../disclosure/categoryCatalog";
+import { buildAuthorizedProfileDocument } from "../disclosure/buildAuthorizedProfile";
+import {
+  assertAuthorizationAvailableForNewReferral,
+  parseAuthorizationDoc,
+} from "../disclosure/authorizationLoader";
+import { DisclosureMode, DISCLOSURE_COLLECTIONS } from "../disclosure/constants";
+import { isIdentifyingDisclosureLegallyActivated } from "../disclosure/disclosurePolicy";
+import { generateReferralSummaryDescription } from "../disclosure/referralTemplates";
 import {
   COLLECTIONS,
-  SUMMARY_MAX,
-  SUMMARY_MIN,
   TEEN_PROGRESS,
 } from "./constants";
 import {
@@ -22,36 +34,25 @@ import {
 } from "../authz/assert";
 import { isValidOrgId, membershipIdFor } from "../authz/identifiers";
 
-export type CreateCoordinationReferralInput = {
+export type CreateCoordinationReferralInput = Record<string, unknown> & {
   assistanceRequestId?: unknown;
+  disclosureMode?: unknown;
+  authorizationId?: unknown;
+  referralPurposeCode?: unknown;
+  coordinationNeedCodes?: unknown;
+  /** @deprecated Rejected for new submissions (C1). */
   barangayReferralSummary?: unknown;
 };
 
 export type CreateCoordinationReferralResult = {
   threadId: string;
   displayRef: string;
+  disclosureMode: string;
 };
 
 function generateDisplayRef(): string {
   const suffix = randomBytes(8).toString("hex").toUpperCase();
   return `SIBOL-REF-${suffix}`;
-}
-
-function validateSummary(raw: unknown): string {
-  if (typeof raw !== "string") {
-    throw new HttpsError(
-      "invalid-argument",
-      "barangayReferralSummary must be a string.",
-    );
-  }
-  const trimmed = raw.trim();
-  if (trimmed.length < SUMMARY_MIN || trimmed.length > SUMMARY_MAX) {
-    throw new HttpsError(
-      "invalid-argument",
-      `barangayReferralSummary must be ${SUMMARY_MIN}–${SUMMARY_MAX} characters.`,
-    );
-  }
-  return trimmed;
 }
 
 function validateAssistanceRequestId(raw: unknown): string {
@@ -64,6 +65,16 @@ function validateAssistanceRequestId(raw: unknown): string {
   return raw.trim();
 }
 
+function validateDisclosureMode(raw: unknown): string {
+  if (raw !== DisclosureMode.minimum && raw !== DisclosureMode.authorized) {
+    throw new HttpsError(
+      "invalid-argument",
+      "disclosureMode must be minimum or authorized.",
+    );
+  }
+  return raw;
+}
+
 export async function runCreateCoordinationReferral(
   db: Firestore,
   authUid: string | undefined,
@@ -73,8 +84,41 @@ export async function runCreateCoordinationReferral(
     throw new HttpsError("unauthenticated", "Sign in required.");
   }
 
+  rejectLegacyFreeTextFields(data as Record<string, unknown>);
+  if ("barangayReferralSummary" in data && data.barangayReferralSummary != null) {
+    throw new HttpsError(
+      "invalid-argument",
+      "barangayReferralSummary is not accepted; use structured referral fields.",
+    );
+  }
+
   const assistanceRequestId = validateAssistanceRequestId(data.assistanceRequestId);
-  const barangayReferralSummary = validateSummary(data.barangayReferralSummary);
+  const disclosureMode = validateDisclosureMode(data.disclosureMode);
+  const referralPurposeCode = validatePurposeCode(data.referralPurposeCode);
+  const coordinationNeedCodes = validateCoordinationNeedCodes(
+    data.coordinationNeedCodes,
+  );
+  const generatedSummary = generateReferralSummaryDescription(
+    referralPurposeCode,
+    coordinationNeedCodes,
+  );
+
+  let authorizationId: string | undefined;
+  if (disclosureMode === DisclosureMode.authorized) {
+    if (!isIdentifyingDisclosureLegallyActivated()) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Identifying disclosure to MOPH is not legally activated in this environment.",
+      );
+    }
+    if (typeof data.authorizationId !== "string" || !data.authorizationId.trim()) {
+      throw new HttpsError(
+        "invalid-argument",
+        "authorizationId is required for authorized disclosure mode.",
+      );
+    }
+    authorizationId = data.authorizationId.trim();
+  }
 
   const userRef = db.collection(COLLECTIONS.users).doc(authUid);
   const assistanceRef = db
@@ -84,7 +128,7 @@ export async function runCreateCoordinationReferral(
     .collection(COLLECTIONS.barangayCoordinationRegistry)
     .doc(assistanceRequestId);
 
-  return db.runTransaction(async (tx) => {
+  const result = await db.runTransaction(async (tx) => {
     const [userSnap, assistanceSnap, registrySnap] = await Promise.all([
       tx.get(userRef),
       tx.get(assistanceRef),
@@ -184,12 +228,49 @@ export async function runCreateCoordinationReferral(
       );
     }
 
+    let authorizationNoticeVersion: string | undefined;
+    let authorizedCategories: string[] = [];
+    let otherEssentialJustification: string | undefined;
+
+    if (disclosureMode === DisclosureMode.authorized && authorizationId) {
+      const authRef = db
+        .collection(DISCLOSURE_COLLECTIONS.disclosureAuthorizations)
+        .doc(authorizationId);
+      const authSnap = await tx.get(authRef);
+      if (!authSnap.exists) {
+        throw new HttpsError("not-found", "Disclosure authorization not found.");
+      }
+      const loaded = parseAuthorizationDoc(authorizationId, authSnap.data()!);
+      assertAuthorizationAvailableForNewReferral(
+        loaded,
+        assistanceRequestId,
+        TARGET_HOSPITAL_ORG_ID,
+      );
+      authorizedCategories = loaded.authorizedCategories;
+      authorizationNoticeVersion = authSnap.data()!.noticeVersion as string | undefined;
+      otherEssentialJustification = loaded.otherEssentialJustification;
+    }
+
+    let authorizedProfile: Record<string, unknown> | undefined;
+    if (disclosureMode === DisclosureMode.authorized && authorizationId) {
+      const teenSnap = await tx.get(db.collection(COLLECTIONS.users).doc(teenUid));
+      if (!teenSnap.exists) {
+        throw new HttpsError(
+          "failed-precondition",
+          "Teen profile not found for authorized disclosure.",
+        );
+      }
+      authorizedProfile = buildAuthorizedProfileDocument(
+        teenUid,
+        teenSnap.data()!,
+        authorizedCategories,
+        otherEssentialJustification,
+      );
+    }
+
     const threadRef = db.collection(COLLECTIONS.caseCoordinationThreads).doc();
     const threadId = threadRef.id;
     const displayRef = generateDisplayRef();
-    if (displayRef === authUid) {
-      throw new HttpsError("internal", "Could not generate display reference.");
-    }
 
     const now = new Date();
     const eventRef = threadRef.collection("staffEvents").doc();
@@ -199,7 +280,15 @@ export async function runCreateCoordinationReferral(
       orgId: assistanceOrgId,
       displayRef,
       category,
-      barangayReferralSummary,
+      barangayReferralSummary: generatedSummary,
+      referralPurposeCode,
+      coordinationNeedCodes,
+      disclosureMode,
+      ...(authorizationId ? { authorizationId } : {}),
+      ...(authorizationNoticeVersion
+        ? { authorizationNoticeVersion }
+        : {}),
+      structuredReferral: true,
       phase: "referred",
       coordinationStatus: CoordinationStatus.submitted,
       targetHospitalOrgId: TARGET_HOSPITAL_ORG_ID,
@@ -216,6 +305,21 @@ export async function runCreateCoordinationReferral(
       createdByUid: authUid,
     });
 
+    if (disclosureMode === DisclosureMode.authorized && authorizationId && authorizedProfile) {
+      tx.set(threadRef.collection("authorizedDisclosure").doc("profile"), {
+        ...authorizedProfile,
+        categoryCodes: authorizedCategories,
+        authorizationId,
+        createdAt: now,
+      });
+      tx.update(
+        db
+          .collection(DISCLOSURE_COLLECTIONS.disclosureAuthorizations)
+          .doc(authorizationId),
+        { referralThreadId: threadId },
+      );
+    }
+
     tx.set(registryRef, {
       threadId,
       barangay: assignedBarangay,
@@ -227,7 +331,7 @@ export async function runCreateCoordinationReferral(
 
     tx.set(eventRef, {
       eventType: "referral_submitted",
-      body: "Barangay submitted a hospital coordination referral for MOPH review.",
+      body: "Barangay submitted a structured hospital coordination referral for MOPH review.",
       actorUid: authUid,
       createdAt: now,
     });
@@ -247,6 +351,22 @@ export async function runCreateCoordinationReferral(
       },
     );
 
-    return { threadId, displayRef };
+    return { threadId, displayRef, disclosureMode };
   });
+
+  await writeAuditEvent(db, {
+    actorUid: authUid,
+    operation: "coordination_referral_created",
+    outcome: "success",
+    after: {
+      threadId: result.threadId,
+      assistanceRequestId,
+      disclosureMode: result.disclosureMode,
+      authorizationId: authorizationId ?? null,
+      referralPurposeCode,
+      coordinationNeedCodes,
+    },
+  });
+
+  return result;
 }

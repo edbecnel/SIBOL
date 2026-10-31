@@ -18,6 +18,14 @@
 
 **Output:** `requestId`, `status`, `orgId`, `idempotent`
 
+## Barangay referral sync
+
+**Callable:** `createCoordinationReferral`
+
+**Payload (queue):** `assistanceRequestId`, `disclosureMode`, `referralPurposeCode`, `coordinationNeedCodes` (comma-separated in offline store), optional `authorizationId`. **No cached identifying values.**
+
+**Output:** `requestId`, `status`, `orgId`
+
 ## Teen assistance sync
 
 **Callable:** `regSubmitTeenAssistanceRequest`
