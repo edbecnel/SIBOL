@@ -16,7 +16,8 @@ class MockFirebaseFunctions extends Mock implements FirebaseFunctions {}
 
 class MockHttpsCallable extends Mock implements HttpsCallable {}
 
-class MockHttpsCallableResult extends Mock implements HttpsCallableResult {}
+class MockHttpsCallableResult extends Mock
+    implements HttpsCallableResult<Map<String, dynamic>> {}
 
 class MockConnectivity extends Mock implements Connectivity {}
 
@@ -28,6 +29,10 @@ void main() {
   late MockFirebaseFunctions functions;
   late MockConnectivity connectivity;
   late OfflineSyncService service;
+
+  setUpAll(() {
+    registerFallbackValue(<String, dynamic>{});
+  });
 
   setUp(() {
     store = MemoryPendingOperationStore();
@@ -137,5 +142,98 @@ void main() {
       () => service.enqueue(pendingAck('user-b')),
       throwsStateError,
     );
+  });
+
+  PendingOperation pendingReferral(String ownerUid) {
+    return PendingOperation(
+      operationId: 'ref-op-1',
+      ownerUid: ownerUid,
+      kind: PendingOperationKind.barangayReferral,
+      state: PendingOperationState.waitingToSubmit,
+      createdAt: DateTime.utc(2026, 3, 1),
+      payload: {
+        'assistanceRequestId': 'assist-1',
+        'disclosureMode': 'minimum',
+        'referralPurposeCode': 'hospital_coordination',
+        'coordinationNeedCodes': 'schedule_coordination',
+      },
+    );
+  }
+
+  test('queued referral payload excludes identifying profile fields', () {
+    final op = pendingReferral('user-a');
+    expect(op.payload.keys, isNot(contains('legalName')));
+    expect(op.payload.keys, isNot(contains('teenProfile')));
+    expect(op.payload.keys, isNot(contains('barangayReferralSummary')));
+  });
+
+  test('structured referral sync calls createCoordinationReferral without free text', () async {
+    final userA = MockUser();
+    when(() => userA.uid).thenReturn('user-a');
+    when(() => auth.currentUser).thenReturn(userA);
+    when(() => connectivity.checkConnectivity())
+        .thenAnswer((_) async => [ConnectivityResult.wifi]);
+
+    final callable = MockHttpsCallable();
+    final result = MockHttpsCallableResult();
+    when(() => functions.httpsCallable('createCoordinationReferral'))
+        .thenReturn(callable);
+    when(() => callable.call<Map<String, dynamic>>(any())).thenAnswer((invocation) async {
+      final args = invocation.positionalArguments.first as Map<String, dynamic>;
+      expect(args.containsKey('barangayReferralSummary'), isFalse);
+      expect(args['disclosureMode'], 'minimum');
+      expect(args['assistanceRequestId'], 'assist-1');
+      return result;
+    });
+    when(() => result.data).thenReturn({
+      'threadId': 'thread-1',
+      'displayRef': 'SIBOL-REF-TEST',
+      'disclosureMode': 'minimum',
+    });
+
+    await store.upsert(pendingReferral('user-a'));
+    await service.syncForUser('user-a');
+
+    final after = await store.loadForUser('user-a');
+    expect(after.single.state, PendingOperationState.submittedConfirmed);
+  });
+
+  test('authorization revalidation failure on referral sync is retryable', () async {
+    final userA = MockUser();
+    when(() => userA.uid).thenReturn('user-a');
+    when(() => auth.currentUser).thenReturn(userA);
+    when(() => connectivity.checkConnectivity())
+        .thenAnswer((_) async => [ConnectivityResult.wifi]);
+
+    final callable = MockHttpsCallable();
+    when(() => functions.httpsCallable('createCoordinationReferral'))
+        .thenReturn(callable);
+    when(() => callable.call<Map<String, dynamic>>(any())).thenThrow(
+      FirebaseFunctionsException(
+        code: 'failed-precondition',
+        message: 'Authorization expired or withdrawn.',
+      ),
+    );
+
+    await store.upsert(
+      PendingOperation(
+        operationId: 'ref-op-auth-expired',
+        ownerUid: 'user-a',
+        kind: PendingOperationKind.barangayReferral,
+        state: PendingOperationState.waitingToSubmit,
+        createdAt: DateTime.utc(2026, 3, 1),
+        payload: {
+          'assistanceRequestId': 'assist-1',
+          'disclosureMode': 'authorized',
+          'referralPurposeCode': 'hospital_coordination',
+          'coordinationNeedCodes': 'schedule_coordination',
+          'authorizationId': 'auth-expired',
+        },
+      ),
+    );
+    await service.syncForUser('user-a');
+
+    final after = await store.loadForUser('user-a');
+    expect(after.single.state, PendingOperationState.failedRetryable);
   });
 }

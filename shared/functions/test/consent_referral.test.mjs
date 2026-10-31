@@ -226,6 +226,113 @@ describe("SIBOL-CONSENT-REFERRAL-001", () => {
     process.env.SIBOL_DISCLOSURE_LEGAL_GATE = prior;
   });
 
+  it("rejects teen approving another teen authorization", async () => {
+    const otherTeen = "otherTeenConsentUid1234567890";
+    const assistId = "assist-consent-other-teen";
+    await db.collection("users").doc(otherTeen).set({
+      role: "teen",
+      displayName: "Other Teen",
+      active: true,
+      assignedBarangay: site,
+      createdAt: Timestamp.now(),
+    });
+    await seedAcknowledgedAssistance(db, assistId, {
+      teenUid: otherTeen,
+      barangayUid,
+    });
+    const req = await runRequestMophDisclosureAuthorization(db, barangayUid, {
+      assistanceRequestId: assistId,
+      purposeCode: "hospital_coordination",
+      requestedCategories: ["legal_name"],
+    });
+    await assert.rejects(
+      () =>
+        runRecordTeenDisclosureDecision(db, teenUid, {
+          authorizationId: req.authorizationId,
+          decision: "approved",
+        }),
+      (err) => err.code === "permission-denied",
+    );
+  });
+
+  it("rejects authorized referral when authorization expired", async () => {
+    const assistId = "assist-consent-expired-1";
+    await seedAcknowledgedAssistance(db, assistId, { teenUid, barangayUid });
+    const req = await runRequestMophDisclosureAuthorization(db, barangayUid, {
+      assistanceRequestId: assistId,
+      purposeCode: "hospital_coordination",
+      requestedCategories: ["legal_name"],
+    });
+    await runRecordTeenDisclosureDecision(db, teenUid, {
+      authorizationId: req.authorizationId,
+      decision: "approved",
+    });
+    await db
+      .collection("disclosureAuthorizations")
+      .doc(req.authorizationId)
+      .update({
+        validUntil: Timestamp.fromDate(new Date(Date.now() - 60_000)),
+      });
+    await assert.rejects(
+      () =>
+        runCreateCoordinationReferral(
+          db,
+          barangayUid,
+          authorizedStructuredReferral(assistId, req.authorizationId),
+        ),
+      (err) => err.code === "failed-precondition",
+    );
+  });
+
+  it("rejects authorized referral when authorization superseded", async () => {
+    const assistId = "assist-consent-superseded-1";
+    await seedAcknowledgedAssistance(db, assistId, { teenUid, barangayUid });
+    const req = await runRequestMophDisclosureAuthorization(db, barangayUid, {
+      assistanceRequestId: assistId,
+      purposeCode: "hospital_coordination",
+      requestedCategories: ["legal_name"],
+    });
+    await runRecordTeenDisclosureDecision(db, teenUid, {
+      authorizationId: req.authorizationId,
+      decision: "approved",
+    });
+    await db
+      .collection("disclosureAuthorizations")
+      .doc(req.authorizationId)
+      .update({ status: "superseded" });
+    await assert.rejects(
+      () =>
+        runCreateCoordinationReferral(
+          db,
+          barangayUid,
+          authorizedStructuredReferral(assistId, req.authorizationId),
+        ),
+      (err) => err.code === "failed-precondition",
+    );
+  });
+
+  it("rejects legacy responseSummary on information response", async () => {
+    const assistId = "assist-consent-resp-legacy";
+    await seedAcknowledgedAssistance(db, assistId, { teenUid, barangayUid });
+    const referral = await runCreateCoordinationReferral(
+      db,
+      barangayUid,
+      minimumStructuredReferral(assistId),
+    );
+    await runUpdateMophCoordinationStatus(db, mophUid, {
+      threadId: referral.threadId,
+      targetStatus: "additionalInformationRequested",
+    });
+    await assert.rejects(
+      () =>
+        runBarangayRespondToMophInformationRequest(db, barangayUid, {
+          threadId: referral.threadId,
+          responseSummary: "Legacy free text must be rejected.",
+        }),
+      (err) => err.code === "invalid-argument",
+    );
+  });
+
   it("withdrawal blocks subsequent authorized disclosure on new referral id", async () => {
     const assistId = "assist-consent-withdraw-1";
     await seedAcknowledgedAssistance(db, assistId, { teenUid, barangayUid });

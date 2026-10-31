@@ -50,7 +50,7 @@ flutter test integration_test/case_lifecycle_emulator_device_test.dart -d emulat
 | Item | Environment | Result | Evidence |
 |------|-------------|--------|----------|
 | Operator manual walkthrough (steps 1–13) | Canonical emulators + seeded demo | **NOT EXECUTED** | — |
-| Integration test harness `case_lifecycle_emulator_device_test.dart` | `emulator-5554`, emulators + seed | **FAIL** | Auth sign-in completes; app does not reach role home (`Teenager dashboard` / `Barangay dashboard` not observed within test timeouts). Same failure mode as existing `barangay_incoming_request_cards_device_test.dart` on this workstation. Likely Firestore profile load / redirect to **Account not provisioned** after Auth. |
+| Integration test harness `case_lifecycle_emulator_device_test.dart` | `emulator-5554`, emulators + seed | **NOT RE-RUN (2026-11-01 verification)** | Prior failure: Auth sign-in completes; app does not reach role home within timeouts. Harness updated: `_signIn` polls for `Teenager dashboard` / `Barangay dashboard` / `MOPH dashboard` and surfaces **Account not provisioned** with seed hint. Device run blocked on verification agent (`adb` not available). |
 | Server-side lifecycle path | `run-case-lifecycle-integration-tests.mjs` | **PASS** | 7/7 (see MVR V1–V5) |
 
 **Blocker for UI closeout:** Device/integration Flutter harness cannot complete sign-in → profile → role home on the isolated Android emulator in this environment. Manual operator walkthrough on the same stack is recommended once device Firestore connectivity is confirmed (Emulator UI shows `users/{uid}` reads after app sign-in).

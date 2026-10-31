@@ -10,6 +10,7 @@ import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/core/router/app_router.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_category.dart';
 import 'package:sibol_app/main_common.dart';
+import 'support/wait_for_widget.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -45,8 +46,7 @@ void main() {
 
     // 1 — Teen submits assistance request.
     await _signIn(tester, 'teen.demo@sibol.local', teenPassword);
-    await tester.pumpAndSettle(const Duration(seconds: 15));
-    expect(find.text('Teenager dashboard'), findsOneWidget);
+    await pumpUntilFound(tester, find.text('Teenager dashboard'));
     await tester.tap(find.widgetWithText(ElevatedButton, 'New support request'));
     await tester.pumpAndSettle(const Duration(seconds: 10));
     expect(find.text('New support request'), findsOneWidget);
@@ -280,7 +280,29 @@ Future<void> _signIn(
   } else {
     await tester.tap(submit);
   }
-  await tester.pumpAndSettle(const Duration(seconds: 20));
+  await _waitForRoleHomeAfterSignIn(tester, email);
+}
+
+Future<void> _waitForRoleHomeAfterSignIn(
+  WidgetTester tester,
+  String email,
+) async {
+  final deadline = DateTime.now().add(const Duration(seconds: 45));
+  while (DateTime.now().isBefore(deadline)) {
+    await tester.pump(const Duration(milliseconds: 500));
+    if (find.text('Account not provisioned').evaluate().isNotEmpty) {
+      fail(
+        'Signed in as $email but Firestore profile is missing. '
+        'Run ./shared/scripts/seed-emulator-demo.sh against canonical emulators.',
+      );
+    }
+    if (find.text('Teenager dashboard').evaluate().isNotEmpty ||
+        find.text('Barangay dashboard').evaluate().isNotEmpty ||
+        find.text('MOPH dashboard').evaluate().isNotEmpty) {
+      return;
+    }
+  }
+  fail('Role home not reached after sign-in as $email');
 }
 
 Future<void> _signOut(WidgetTester tester, GoRouter router) async {
