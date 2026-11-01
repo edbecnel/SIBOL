@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:sibol_app/features/teenager/presentation/providers/assistance_request_providers.dart';
 import 'package:sibol_app/features/disclosure/presentation/widgets/teen_disclosure_decision_panel.dart';
+import 'package:sibol_app/features/teenager/presentation/widgets/teen_non_emergency_notice.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';

@@ -2,8 +2,10 @@
 
 **Implementation handover UUID:** `d4a8c261-7e35-4d92-9b60-f1c73a80e524`  
 **Verification handover UUID:** `b8e2c64d-7a91-4c53-9f06-d325a80e71bc`  
+**Auth remediation handover UUID:** `d9c4a721-5e83-4f16-a6b2-0e7d935c481a`  
 **Starting HEAD (implementation):** `ea3fdd71581df49138e9cacb4db0f36b96be9c64`  
 **Starting HEAD (verification):** `f12c808e010505660d2d6a743b1fbf4f49b29294`  
+**Starting HEAD (auth remediation):** `de1e079e0224c1cead53f528eef119baf9df8c02`  
 **Status:** **IMPLEMENTED — ACCEPTANCE PENDING**
 
 ## Summary
@@ -40,9 +42,16 @@ Extended consent integration coverage: cross-teen decision denial, expired/super
 - Integration test sign-in helper: role-home polling and correct MOPH home title (`MOPH dashboard`).
 - Offline unit tests for referral queue payload shape and sync callable shape.
 
+## Remediation (Firebase emulator auth — 2026-11-01)
+
+- **Root cause:** Android debug builds initialized Firebase with production `sibol-286d0` from `google-services.json` while Dart targeted mixed options → Firestore client requests hit wrong project namespace → **Account not ready** despite seeded profiles.
+- **Fix:** `EmulatorFirebaseOptions` (synthetic app id + demo `projectId`); committed debug-only `android/app/src/debug/google-services.json`; `initializeSibolFirebase()` deletes wrong default app when `USE_FIREBASE_EMULATORS=true`; manifest disables Firebase auto-init; Settings sign-out uses `go(welcome)` when stack empty.
+- **Device verification:** `integration_test/emulator_auth_gates_device_test.dart` **pass** on `emulator-5554` with `.env.emulator.local` passwords (auth export backup alone is insufficient for Barangay — see MVR FAIL-AUTH-004).
+- **Gate E:** `consent_referral_emulator_device_test.dart` primary scenario **not pass** (Barangay inbox missing submitted request token — MVR FAIL-CONSENT-001).
+
 ## Acceptance pending
 
-- Full role-based Flutter emulator walkthrough for consent flows (handover §6) — **not executed** (no `adb`/device run this session; CASE-LIFECYCLE role-home still unverified on device).
+- Full consent/referral Flutter device walkthrough (handover §6 Gate E) — **attempted, not pass**.
 - Flutter UI legal-gate walkthrough — **not executed** (Functions gate-off covered).
 - Legal review of notice wording and category catalog before production activation.
 - PO framework PDF committed as normative reference after revision verification (D8).

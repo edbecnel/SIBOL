@@ -110,7 +110,9 @@ class _AssistanceRequestFormScreenState
           done.serverRequestId != null) {
         if (mounted) context.go(Routes.teenAssistanceDetail(done.serverRequestId!));
       } else if (done.state == PendingOperationState.failedPermanent) {
-        setState(() => _formError = done.lastError ?? 'Submission failed.');
+        if (mounted) {
+          setState(() => _formError = done.lastError ?? 'Submission failed.');
+        }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -124,7 +126,7 @@ class _AssistanceRequestFormScreenState
         }
       }
     } catch (e) {
-      setState(() => _formError = e.toString());
+      if (mounted) setState(() => _formError = e.toString());
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

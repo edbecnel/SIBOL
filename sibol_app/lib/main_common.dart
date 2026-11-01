@@ -13,7 +13,11 @@ import 'package:sibol_app/config/emulator_firebase_options.dart';
 import 'package:sibol_app/config/env_config.dart';
 import 'package:sibol_app/config/firebase_options.dart';
 
-Future<void> mainCommon() async {
+bool _emulatorEndpointsConfigured = false;
+bool _sibolApplicationStarted = false;
+
+/// Firebase + emulator wiring (safe to call once per process).
+Future<void> initializeSibolFirebase() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await SystemChrome.setPreferredOrientations([
@@ -25,13 +29,51 @@ Future<void> mainCommon() async {
     throw UnsupportedError('Flutter Web is not authorized for SIBOL.');
   }
 
-  await Firebase.initializeApp(
-    options: EnvConfig.useEmulators
-        ? EmulatorFirebaseOptions.currentPlatform
-        : DefaultFirebaseOptions.currentPlatform,
-  );
+  if (EnvConfig.useEmulators && Firebase.apps.isNotEmpty) {
+    final existing = Firebase.app();
+    if (existing.options.projectId != EmulatorFirebaseOptions.projectId) {
+      await existing.delete();
+      _emulatorEndpointsConfigured = false;
+    }
+  }
+
+  if (Firebase.apps.isEmpty) {
+    try {
+      await Firebase.initializeApp(
+        options: EnvConfig.useEmulators
+            ? EmulatorFirebaseOptions.currentPlatform
+            : DefaultFirebaseOptions.currentPlatform,
+      );
+    } on FirebaseException catch (e) {
+      if (e.code != 'duplicate-app') rethrow;
+      if (EnvConfig.useEmulators) {
+        final existing = Firebase.app();
+        if (existing.options.projectId != EmulatorFirebaseOptions.projectId) {
+          await existing.delete();
+          _emulatorEndpointsConfigured = false;
+          await Firebase.initializeApp(
+            options: EmulatorFirebaseOptions.currentPlatform,
+          );
+        }
+      }
+    }
+  }
+
+  if (Firebase.apps.isEmpty) {
+    throw StateError('Firebase did not initialize.');
+  }
 
   if (EnvConfig.useEmulators) {
+    final projectId = Firebase.app().options.projectId;
+    if (projectId != EmulatorFirebaseOptions.projectId) {
+      throw StateError(
+        'Emulator run requires project ${EmulatorFirebaseOptions.projectId}; '
+        'found $projectId.',
+      );
+    }
+  }
+
+  if (EnvConfig.useEmulators && !_emulatorEndpointsConfigured) {
     final host = EmulatorHosts.firebase;
     await FirebaseAuth.instance.useAuthEmulator(host, EmulatorConfig.authPort);
     FirebaseFirestore.instance.useFirestoreEmulator(
@@ -42,12 +84,23 @@ Future<void> mainCommon() async {
       host,
       EmulatorConfig.functionsPort,
     );
+    _emulatorEndpointsConfigured = true;
   }
 
-  // After emulator wiring; persistence remains enabled for offline QA paths.
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
   );
+}
 
+void runSibolApplication() {
+  if (_sibolApplicationStarted) {
+    return;
+  }
   runApp(const ProviderScope(child: SibolApp()));
+  _sibolApplicationStarted = true;
+}
+
+Future<void> mainCommon() async {
+  await initializeSibolFirebase();
+  runSibolApplication();
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "demo-sibol-emulator",
+    "project_id": "demo-sibol-emulator",
+    "storage_bucket": "demo-sibol-emulator.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:demo-sibol-emulator:android:emulator-demo",
+        "android_client_info": {
+          "package_name": "com.most.sibol.sibol_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsHqvJPo-z9UKax3lhEnm9lEMVrPkFg2w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

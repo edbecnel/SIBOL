@@ -30,6 +30,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Dart [mainCommon] owns Firebase.initializeApp (demo vs production options). -->
+        <meta-data
+            android:name="firebase_core_auto_init_enabled"
+            android:value="false" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

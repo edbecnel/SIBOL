@@ -16,10 +16,13 @@
 ```bash
 cd sibol_app
 source ../.env.emulator.local
-flutter test integration_test/case_lifecycle_emulator_device_test.dart -d emulator-5554 \
+flutter test integration_test/emulator_auth_gates_device_test.dart -d emulator-5554 \
+  --dart-define=USE_FIREBASE_EMULATORS=true \
   --dart-define=SIBOL_DEVICE_TEST_TEEN_PASSWORD="$SIBOL_EMULATOR_PASSWORD_TEEN" \
   --dart-define=SIBOL_DEVICE_TEST_BARANGAY_PASSWORD="$SIBOL_EMULATOR_PASSWORD_BARANGAY_STAFF" \
   --dart-define=SIBOL_DEVICE_TEST_MOPH_PASSWORD="$SIBOL_EMULATOR_PASSWORD_MOPH_STAFF"
+
+# Or use shared/scripts/run-consent-referral-device-test.sh (sources .env.emulator.local when present)
 ```
 
 ## Walkthrough steps
@@ -50,10 +53,12 @@ flutter test integration_test/case_lifecycle_emulator_device_test.dart -d emulat
 | Item | Environment | Result | Evidence |
 |------|-------------|--------|----------|
 | Operator manual walkthrough (steps 1–13) | Canonical emulators + seeded demo | **NOT EXECUTED** | — |
-| Integration test harness `case_lifecycle_emulator_device_test.dart` | `emulator-5554`, emulators + seed | **NOT RE-RUN (2026-11-01 verification)** | Prior failure: Auth sign-in completes; app does not reach role home within timeouts. Harness updated: `_signIn` polls for `Teenager dashboard` / `Barangay dashboard` / `MOPH dashboard` and surfaces **Account not provisioned** with seed hint. Device run blocked on verification agent (`adb` not available). |
+| Auth Gates A–D (`emulator_auth_gates_device_test.dart`) | `emulator-5554`, emulators + `.env.emulator.local` | **PASS (2026-11-01)** | Teen / Barangay / MOPH dashboards; demo Firestore namespace |
+| Integration test harness `case_lifecycle_emulator_device_test.dart` | Same stack | **NOT RE-RUN** | Role-home blocker cleared by auth remediation; lifecycle UI walkthrough still open |
+| Consent device test `consent_referral_emulator_device_test.dart` | Same stack | **FAIL (2026-11-01)** | Barangay incoming list missing teen submission after UI submit (FAIL-CONSENT-001) |
 | Server-side lifecycle path | `run-case-lifecycle-integration-tests.mjs` | **PASS** | 7/7 (see MVR V1–V5) |
 
-**Blocker for UI closeout:** Device/integration Flutter harness cannot complete sign-in → profile → role home on the isolated Android emulator in this environment. Manual operator walkthrough on the same stack is recommended once device Firestore connectivity is confirmed (Emulator UI shows `users/{uid}` reads after app sign-in).
+**Blocker for UI closeout:** Consent/referral device E2E (Gate E) and manual operator steps 1–13 remain open. Role-home authentication is **verified** on device.
 
 ## Sign-off
 

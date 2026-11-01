@@ -75,7 +75,13 @@ class SettingsScreen extends ConsumerWidget {
                   return;
                 }
                 await ref.read(authControllerProvider.notifier).signOut();
-                if (context.mounted) context.pop();
+                if (context.mounted) {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go(Routes.welcome);
+                  }
+                }
               },
             ),
           ],
