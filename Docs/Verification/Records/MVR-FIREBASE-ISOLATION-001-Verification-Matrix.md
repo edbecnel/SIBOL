@@ -51,16 +51,54 @@ After `flutter build ios --simulator --debug -t lib/main_gate_f_probe.dart --dar
 - `build/ios/iphonesimulator/Runner.app/GoogleService-Info.plist`: **absent**
 - `rg sibol-286d0` on Debug `Runner.app`: **no matches** in bundled resources
 
-### Gate F runtime attempt (single launch, bounded)
+### Gate F runtime attempt (single launch, bounded — 2026-11-01 final)
+
+#### Diagnosis of prior attempt (`/tmp/sibol-gate-f-run.log`, 2026-11-01 09:47:56)
+
+| Check | Evidence |
+|-------|----------|
+| Command | `flutter run -d CF1B6EDD-BB2B-4FC9-BFC7-5506817EC01B -t lib/main_gate_f_probe.dart --dart-define=USE_FIREBASE_EMULATORS=true --no-pub` (tee to log) |
+| Exit | Wrapper sent **SIGINT ~124s**; not a Flutter-reported success |
+| Xcode build | **Completed** (~17.7s) |
+| Installation / native start | **Partial** (Impeller log); **no** `Syncing files` / VM Service URL |
+| New `.ips` | **`Runner-2026-11-01-094757.ips`** at 09:47:57 (1s after log mtime) |
+| VM Service | **Never available** |
+| Dart `main` | **Did not reach probe** (crash before Dart) |
+| Missing markers | **Native startup crash** — `+[FIRApp configure]` at `FLTFirebaseCorePlugin.register` (bundled plist era, pre-`570785b` omit fix) |
+
+**Classification:** **Native startup crash** (not merely missing log capture).
+
+#### Final bounded attempt (post-`570785b`, `/tmp/gate-f-final-run.log`)
+
+| Item | Value |
+|------|--------|
+| Build | `flutter build ios --simulator --debug …` **25s**; bundle **no** `GoogleService-Info.plist`; **no** `sibol-286d0` |
+| Launch | `flutter run … --use-application-binary=build/ios/iphonesimulator/Runner.app` |
+| Runtime wall | **~150s+** (watchdog); VM attach **failed** (`Connection refused` on 127.0.0.1, attempt #50+) |
+| New `.ips` | **`Runner-2026-11-01-095303.ips`** at 09:53:03 |
+| Crash site | **`FLTFirebaseCorePlugin.initializeApp`** ← Dart `Firebase.initializeApp` with `EmulatorFirebaseOptions` (synthetic `1:demo-sibol-emulator:ios:emulator-demo`) → `FIRApp addAppToAppDictionary` **SIGABRT** |
+| Probe markers | **None** in Flutter log |
+| Dart probe | **Did not complete** (Firebase init abort) |
+
+**Classification:** **Dart entry-point / Firebase.initializeApp failure** on iOS (native SDK rejects synthetic options). VM Service attachment failure is a **secondary symptom** of the crash/hang.
+
+| Item | Value |
+|------|--------|
+| Outcome | **FAILED VERIFICATION** — no runtime proof of Auth/Firestore/Functions on emulators |
+
+**Correction applied this cycle:** Probe switched `debugPrint` → `print` for Gate markers (local WIP; **not** verified end-to-end). **No** Firebase config change committed (would require PA-approved iOS options strategy and a new authorized launch).
+
+**Emulator endpoints (canonical):** Auth `127.0.0.1:9099`, Firestore `127.0.0.1:8195`, Functions `127.0.0.1:5001` — confirmed listening.
+
+### Gate F runtime attempt (earlier single launch, pre-final diagnosis)
 
 | Item | Value |
 |------|--------|
 | Command | `flutter run -d CF1B6EDD-BB2B-4FC9-BFC7-5506817EC01B -t lib/main_gate_f_probe.dart --dart-define=USE_FIREBASE_EMULATORS=true` |
 | Build phase | ~124s wall (includes Xcode rebuild ~18s) |
-| Probe markers | **Not observed** (`SIBOL_GATE_F_PROJECT_ID`, `SIBOL_GATE_F_FIRESTORE_OK` absent in `/tmp/sibol-gate-f-run.log`) |
-| Outcome | **FAILED VERIFICATION** — no runtime proof of emulator routing; prior crash signature on bundled plist builds. Post-correction bundle omits plist; **one authorized re-run required** for PA acceptance. |
+| Probe markers | **Not observed** |
+| Outcome | Superseded by diagnosis above (`094757.ips`) |
 
-**Emulator endpoints (canonical):** Auth `127.0.0.1:9099`, Firestore `127.0.0.1:8195`, Functions `127.0.0.1:5001` — confirmed listening before launch attempt.
 
 ### Gate F negative security (non-network, post-fix)
 
@@ -96,7 +134,7 @@ No test intentionally initializes production Firebase on iOS.
 
 ## Known limitations
 
-1. **Gate F iOS runtime** — Single bounded `flutter run` did not emit probe logs; acceptance requires one PA-authorized re-run on simulator with final omit-plist bundle.
+1. **Gate F iOS runtime** — **Failed.** Omit-plist packaging works statically; iOS Firebase SDK still aborts on Dart `initializeApp` with synthetic `EmulatorFirebaseOptions` (`095303.ips`). PA must approve next iOS Firebase options strategy (without production network) before another launch.
 2. **Production network proof on iOS** — Not instrumented this cycle; emulators were local; no packet capture.
 3. **Release production path** — Unchanged (Release copies gitignored production plist).
 4. **Application testing gate** — Remains **CLOSED** (PA decision).
