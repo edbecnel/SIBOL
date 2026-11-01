@@ -11,8 +11,11 @@ if [[ "${CONFIGURATION}" == "Release" ]]; then
     exit 1
   fi
   cp "${SRC}/GoogleService-Info.plist" "${DEST}"
+  echo "Firebase plist for Release: $(/usr/libexec/PlistBuddy -c 'Print :PROJECT_ID' "${DEST}")"
 else
-  cp "${SRC}/GoogleService-Info-Debug.plist" "${DEST}"
+  # Debug/Profile: omit GoogleService-Info.plist so FlutterFire does not call
+  # FirebaseApp.configure() at plugin registration (firebase_core 5.x ignores
+  # firebase_core_auto_init_enabled on iOS). Dart [EmulatorFirebaseOptions] init only.
+  rm -f "${DEST}"
+  echo "Firebase plist omitted for ${CONFIGURATION} (Dart emulator init; template GoogleService-Info-Debug.plist is not bundled)"
 fi
-
-echo "Firebase plist for ${CONFIGURATION}: $(/usr/libexec/PlistBuddy -c 'Print :PROJECT_ID' "${DEST}")"

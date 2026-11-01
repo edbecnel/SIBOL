@@ -12,7 +12,8 @@ void main() {
   test('emulator Firebase options stay on demo project (not sibol-286d0)', () {
     final options = EmulatorFirebaseOptions.currentPlatform;
     expect(options.projectId, 'demo-sibol-emulator');
-    expect(options.appId, isNot(contains('1057794781295')));
     expect(options.projectId, isNot(contains('286d0')));
+    expect(options.appId, isNot(contains('1057794781295')));
+    expect(options.messagingSenderId, 'demo-sibol-emulator');
   });
 }

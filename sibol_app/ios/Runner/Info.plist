@@ -68,5 +68,7 @@
 	</array>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+	<key>firebase_core_auto_init_enabled</key>
+	<false/>
 </dict>
 </plist>

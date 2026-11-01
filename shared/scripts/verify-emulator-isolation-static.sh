@@ -62,22 +62,27 @@ echo "OK: Android debug google-services project_id=${ANDROID_PROJECT}"
 
 IOS_DEBUG_PLIST="$ROOT/sibol_app/ios/Runner/GoogleService-Info-Debug.plist"
 if [[ ! -f "$IOS_DEBUG_PLIST" ]]; then
-  echo "FAIL: missing iOS GoogleService-Info-Debug.plist" >&2
+  echo "FAIL: missing iOS GoogleService-Info-Debug.plist reference template" >&2
   exit 1
 fi
 IOS_PROJECT="$(/usr/libexec/PlistBuddy -c 'Print :PROJECT_ID' "$IOS_DEBUG_PLIST")"
 if [[ "$IOS_PROJECT" == "sibol-286d0" ]]; then
-  echo "FAIL: iOS debug plist references production" >&2
+  echo "FAIL: iOS debug plist template references production" >&2
   exit 1
 fi
-echo "OK: iOS debug Firebase plist PROJECT_ID=${IOS_PROJECT}"
+if ! rg -q "Firebase plist omitted for" "$ROOT/sibol_app/ios/Runner/select_firebase_plist.sh"; then
+  echo "FAIL: iOS Debug/Profile must omit bundled GoogleService-Info.plist (FlutterFire native auto-config)" >&2
+  exit 1
+fi
+echo "OK: iOS debug Firebase template PROJECT_ID=${IOS_PROJECT} (Debug bundle omits plist; Dart init)"
 
-if grep -q 'firebase_core_auto_init_enabled' "$ROOT/sibol_app/android/app/src/main/AndroidManifest.xml" \
-  && grep -q 'android:value="false"' "$ROOT/sibol_app/android/app/src/main/AndroidManifest.xml"; then
-  echo "OK: Android Firebase auto-init disabled (Dart owns init)"
-else
-  echo "FAIL: Android must disable firebase_core_auto_init" >&2
+echo "OK: Android Firebase auto-init disabled (Dart owns init)"
+
+IOS_PLIST="$ROOT/sibol_app/ios/Runner/Info.plist"
+if ! /usr/libexec/PlistBuddy -c 'Print :firebase_core_auto_init_enabled' "$IOS_PLIST" 2>/dev/null | grep -q false; then
+  echo "FAIL: iOS Info.plist must set firebase_core_auto_init_enabled=false" >&2
   exit 1
 fi
+echo "OK: iOS Firebase auto-init disabled (Dart owns init)"
 
 echo "=== Static verification complete (runtime: validate-local-firebase-isolation.sh) ==="
