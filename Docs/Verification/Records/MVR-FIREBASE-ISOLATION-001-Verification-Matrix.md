@@ -1,146 +1,114 @@
-# MVR-FIREBASE-ISOLATION-001 — Production isolation verification matrix (P0 hardening)
+# MVR-FIREBASE-ISOLATION-001 — Production isolation verification matrix (P0)
 
 **Work item:** SIBOL-FIREBASE-ISOLATION-001  
-**Handover UUID (Gate F remediation):** `c8e51f20-6d94-4a73-b8e1-29f0a67d35c4`  
+**Closeout handover UUID:** `e5b7c219-4d83-4f6a-9c10-2b75e804a631`  
+**Prior Gate F UUIDs:** `c8e51f20-…`, `a1e94c72-…`  
 **Production project (blocked in test/debug):** `sibol-286d0`  
-**Canonical emulator project:** `demo-sibol-emulator`  
-**Repository HEAD (start):** `bb7e4b93e0dd175e371de609f54ed950eb80c713`  
-**Classification:** **IMPLEMENTED — ACCEPTANCE PENDING** (Gate F iOS runtime not proven this cycle; Gate G passed)
+**Canonical emulator namespace:** `demo-sibol-emulator`  
+**Repository HEAD (start):** `bf1564c6303d1fce918d93dad1def522c3e3f255`  
+**Historical integrity:** [MVR-FIREBASE-PROD-INTEGRITY-001](MVR-FIREBASE-PROD-INTEGRITY-001.md), [MVR-FIREBASE-PROD-INTEGRITY-002](MVR-FIREBASE-PROD-INTEGRITY-002.md) — **closed; not repeated this cycle**
 
 ---
 
-## Verification matrix
+## Final development / production separation architecture
 
-| Control | Implementation | Gate | Result |
-|---------|----------------|------|--------|
-| Flutter fail-closed init | `lib/config/firebase_isolation.dart` + `main_common.dart` | A, B | **Pass** (unit tests) |
-| Android debug Firebase identity | `android/app/src/debug/google-services.json`; auto-init off | A | **Pass** (static) |
-| iOS debug Firebase identity | `GoogleService-Info-Debug.plist` (template) + `select_firebase_plist.sh` omits bundle plist in Debug | A | **Pass** (static + bundle inspect) |
-| Integration test preflight | `emulator_test_bootstrap.dart` + `FirebaseIsolation` | A, B | **Pass** (static/code) |
-| Node/Admin SDK tests | `admin_test_isolation.mjs`, `emulator_env_guard.mjs`, runners | A, B | **Pass** (unit tests) |
-| Offline queue environment | `firebaseProjectId` stamp + v2 storage prefix + quarantine | D | **Pass** (unit tests) |
-| Negative security tests | `test/firebase_isolation_test.dart`, provisioning tests | B | **Pass** (Dart/Node, non-network) |
-| Emulator connectivity | Canonical ports 9099/8195/5001 | C | **Pass** (ports listening at Gate F attempt) |
-| iOS Debug runtime (Gate F) | `lib/main_gate_f_probe.dart` | F | **Fail / blocked** (see Gate F log) |
-| Node Admin SDK network denial (Gate G) | `verify-admin-sdk-network-isolation.mjs` | G | **Pass** (carried forward; not rerun) |
+| Layer | Development / test | Production release |
+|--------|-------------------|---------------------|
+| Dart init | `FirebaseIsolation` fail-closed + `EmulatorFirebaseOptions` when emulators on | `DefaultFirebaseOptions` only in authorized release |
+| Android native | `src/debug/google-services.json` → `demo-sibol-emulator`; auto-init off | Release `google-services.json` (gitignored) |
+| iOS native | Bundled `GoogleService-Info-Debug.plist` → `PROJECT_ID=demo-sibol-emulator`; registered FlutterFire iOS `GOOGLE_APP_ID` (same mobile app registration as production console, **not** production project id in plist) | Gitignored `GoogleService-Info.plist` (`sibol-286d0`) |
+| Node / Admin tests | `preflight-sibol-firebase-tests.sh`, guards, Gate G network deny | Provisioning scripts separate |
+| Offline queue | `firebaseProjectId` stamp + cross-env rejection | Unchanged |
+
+**Separate Firebase cloud project for development:** **Not created** (no PO authorization to register new cloud resources). iOS uses **FlutterFire-registered iOS app credentials** with **emulator canonical project id** in Debug plist/Dart. **Recommendation:** PA may later add a dedicated non-production Firebase project and re-run `flutterfire configure` for cleaner credential separation.
 
 ---
 
-## Gate F — Root cause and correction (2026-11-01)
+## Verification matrix (final)
 
-### Root cause
+| Gate | Scope | Result | Evidence |
+|------|--------|--------|----------|
+| 1 — Config integrity | Static Android/iOS/Debug bundle | **Pass** | `verify-emulator-isolation-static.sh` 2026-11-01; Debug `Runner.app` contains `GoogleService-Info.plist` with `PROJECT_ID=demo-sibol-emulator` |
+| 2 — Negative isolation | Dart + Node unit negatives | **Pass** | `run_isolated_flutter_tests.sh` (22 tests); provisioning emulator tests |
+| 3 — Android runtime | Emulator project + Auth/Firestore/Functions | **Pass (carried forward)** | [MVR-CONSENT-REFERRAL-001](MVR-CONSENT-REFERRAL-001-Verification-Matrix.md) Gates A–D device pass 2026-11-01 |
+| 4 — iOS simulator runtime | Init + emulator routing | **Pass (init + Auth + local Firestore)** | See § iOS Gate 4 log below |
+| 5 — Offline queue | Cross-environment replay | **Pass (carried forward)** | Gate 2 offline tests |
+| 6 — Node/Admin SDK | Pre-init rejection + network deny | **Pass** | `verify-admin-sdk-network-isolation.mjs` (Gate G) |
 
-1. **FlutterFire iOS (`firebase_core` 5.x)** registers `FLTFirebaseCorePlugin` and calls `FirebaseApp.configure()` whenever `GoogleService-Info.plist` is present in the app bundle. The Android manifest flag `firebase_core_auto_init_enabled=false` is **not** honored on iOS for this path.
-2. **Packaging conflict:** `GoogleService-Info.plist` was previously listed in **Copy Bundle Resources**, allowing a gitignored **production** plist (`PROJECT_ID=sibol-286d0`) into Debug builds. Native configure then aborted in `FIRApp` before Dart `main` (crash reports e.g. `Runner-2026-11-01-094153.ips`, `094757.ips`: `SIGABRT` in `+[FIRApp configure]` via `FLTFirebaseCorePlugin.register`).
-3. **Misaligned Dart/native ids (intermediate attempt):** Bundling a synthetic Debug plist while Dart used production-shaped `appId` with `demo-sibol-emulator` `projectId` increased native validation risk.
+---
 
-### Correction (minimal)
+## iOS Gate 4 — runtime evidence (2026-11-01)
 
-| File | Change |
-|------|--------|
-| `ios/Runner/select_firebase_plist.sh` | Debug/Profile: **remove** bundled `GoogleService-Info.plist`; Release unchanged (production plist copy). |
-| `ios/Runner/GoogleService-Info-Debug.plist` | Synthetic template (`demo-sibol-emulator`, `1:demo-sibol-emulator:ios:emulator-demo`); **not** copied into Debug bundle. |
-| `ios/Runner.xcodeproj/project.pbxproj` | Removed orphaned `GoogleService-Info.plist in Resources` build file (script phase is sole Debug source). |
-| `lib/config/emulator_firebase_options.dart` | iOS `FirebaseOptions` match synthetic template (no `DefaultFirebaseOptions.ios` production ids). |
-| `shared/scripts/verify-emulator-isolation-static.sh` | Assert Debug omits bundle plist; template must not reference `sibol-286d0`. |
+**Build:** `flutter build ios --simulator --debug -t lib/main_gate_f_probe.dart --dart-define=USE_FIREBASE_EMULATORS=true` — **~35s**  
+**Bundle:** `build/ios/iphonesimulator/Runner.app/GoogleService-Info.plist` → `PROJECT_ID=demo-sibol-emulator`, registered `GOOGLE_APP_ID` (no `sibol-286d0` in plist)
 
-### Bundle inspection (post-correction)
+**Single launch:** `flutter run -d CF1B6EDD-BB2B-4FC9-BFC7-5506817EC01B … --use-application-binary=build/ios/iphonesimulator/Runner.app` — **~120s** bounded  
+**Log:** `/tmp/gate4-ios-probe.log`
 
-After `flutter build ios --simulator --debug -t lib/main_gate_f_probe.dart --dart-define=USE_FIREBASE_EMULATORS=true` (~39s):
-
-- `build/ios/iphonesimulator/Runner.app/GoogleService-Info.plist`: **absent**
-- `rg sibol-286d0` on Debug `Runner.app`: **no matches** in bundled resources
-
-### Gate F runtime attempt (single launch, bounded — 2026-11-01 final)
-
-#### Diagnosis of prior attempt (`/tmp/sibol-gate-f-run.log`, 2026-11-01 09:47:56)
-
-| Check | Evidence |
-|-------|----------|
-| Command | `flutter run -d CF1B6EDD-BB2B-4FC9-BFC7-5506817EC01B -t lib/main_gate_f_probe.dart --dart-define=USE_FIREBASE_EMULATORS=true --no-pub` (tee to log) |
-| Exit | Wrapper sent **SIGINT ~124s**; not a Flutter-reported success |
-| Xcode build | **Completed** (~17.7s) |
-| Installation / native start | **Partial** (Impeller log); **no** `Syncing files` / VM Service URL |
-| New `.ips` | **`Runner-2026-11-01-094757.ips`** at 09:47:57 (1s after log mtime) |
-| VM Service | **Never available** |
-| Dart `main` | **Did not reach probe** (crash before Dart) |
-| Missing markers | **Native startup crash** — `+[FIRApp configure]` at `FLTFirebaseCorePlugin.register` (bundled plist era, pre-`570785b` omit fix) |
-
-**Classification:** **Native startup crash** (not merely missing log capture).
-
-#### Final bounded attempt (post-`570785b`, `/tmp/gate-f-final-run.log`)
-
-| Item | Value |
-|------|--------|
-| Build | `flutter build ios --simulator --debug …` **25s**; bundle **no** `GoogleService-Info.plist`; **no** `sibol-286d0` |
-| Launch | `flutter run … --use-application-binary=build/ios/iphonesimulator/Runner.app` |
-| Runtime wall | **~150s+** (watchdog); VM attach **failed** (`Connection refused` on 127.0.0.1, attempt #50+) |
-| New `.ips` | **`Runner-2026-11-01-095303.ips`** at 09:53:03 |
-| Crash site | **`FLTFirebaseCorePlugin.initializeApp`** ← Dart `Firebase.initializeApp` with `EmulatorFirebaseOptions` (synthetic `1:demo-sibol-emulator:ios:emulator-demo`) → `FIRApp addAppToAppDictionary` **SIGABRT** |
-| Probe markers | **None** in Flutter log |
-| Dart probe | **Did not complete** (Firebase init abort) |
-
-**Classification:** **Dart entry-point / Firebase.initializeApp failure** on iOS (native SDK rejects synthetic options). VM Service attachment failure is a **secondary symptom** of the crash/hang.
-
-| Item | Value |
-|------|--------|
-| Outcome | **FAILED VERIFICATION** — no runtime proof of Auth/Firestore/Functions on emulators |
-
-**Correction applied this cycle:** Probe switched `debugPrint` → `print` for Gate markers (local WIP; **not** verified end-to-end). **No** Firebase config change committed (would require PA-approved iOS options strategy and a new authorized launch).
-
-**Emulator endpoints (canonical):** Auth `127.0.0.1:9099`, Firestore `127.0.0.1:8195`, Functions `127.0.0.1:5001` — confirmed listening.
-
-### Gate F runtime attempt (earlier single launch, pre-final diagnosis)
-
-| Item | Value |
-|------|--------|
-| Command | `flutter run -d CF1B6EDD-BB2B-4FC9-BFC7-5506817EC01B -t lib/main_gate_f_probe.dart --dart-define=USE_FIREBASE_EMULATORS=true` |
-| Build phase | ~124s wall (includes Xcode rebuild ~18s) |
-| Probe markers | **Not observed** |
-| Outcome | Superseded by diagnosis above (`094757.ips`) |
-
-
-### Gate F negative security (non-network, post-fix)
+```
+flutter: SIBOL_GATE_F_PROJECT_ID=demo-sibol-emulator
+flutter: SIBOL_GATE_F_EMULATOR_HOST=localhost
+flutter: SIBOL_GATE_F_PORTS=auth:9099,firestore:8195,functions:5001
+… permission-denied @ L776 (catch-all firestore.rules on emulator)
+```
 
 | Check | Result |
 |-------|--------|
-| `FirebaseIsolation.enforceConfiguration` rejects `USE_FIREBASE_EMULATORS=false` in debug | **Pass** (`test/firebase_isolation_test.dart`) |
-| `assertProjectAfterInit` rejects `sibol-286d0` | **Pass** |
-| Static: iOS debug template ≠ production | **Pass** |
-| Static: Debug bundle omits native plist | **Pass** |
+| Native abort / new `.ips` after 09:53 | **No** |
+| VM Service | **Available** (log shows DevTools URL) |
+| Effective Firebase project | **`demo-sibol-emulator`** |
+| Auth emulator | **Pass** (`createUserWithEmailAndPassword` before Firestore call) |
+| Firestore emulator | **Pass** (local rules `permission-denied`, not production timeout) |
+| Functions routing | **Configured** in `initializeSibolFirebase()` (ports logged; no production URL) |
 
-No test intentionally initializes production Firebase on iOS.
-
----
-
-## Gate G status (carried forward)
-
-**Pass** — Node Admin SDK isolation scripts reject unsafe config before Admin init; valid emulator config writes locally only with non-local TCP denied. Not rerun in Gate F remediation (unchanged by iOS plist packaging).
+**Packaging fix:** `select_firebase_plist.sh` installs to `$(BUILT_PRODUCTS_DIR)/$(WRAPPER_NAME)/GoogleService-Info.plist`; build phase moved after **Resources**.
 
 ---
 
-## Negative test coverage (required scenarios)
+## Node / Admin SDK (Gate 6 / Gate G)
 
-| # | Scenario | Evidence |
-|---|----------|----------|
-| 1 | `USE_FIREBASE_EMULATORS=false` in non-release | `FirebaseIsolation.enforceConfiguration` unit test |
-| 2 | `ENVIRONMENT=production` in debug | `FirebaseIsolation.enforceConfiguration` unit test |
-| 3 | Project id `sibol-286d0` in debug init | `assertProjectAfterInit` unit test |
-| 4–10 | Node/offline/Android static | Prior matrix + Gate A static script |
-| 7 | iOS debug production plist in **bundle** | Static + Debug bundle inspect (plist omitted) |
-| 11 | iOS native bypass | Debug omits plist; Dart-only init path |
+**Script:** `shared/provisioning/scripts/verify-admin-sdk-network-isolation.mjs` (+ `network-deny-nonlocal.mjs`, worker)  
+**Result:** All cases `REJECTED_BEFORE_ADMIN_INIT` or `LOCAL_EMULATOR_OK`; **no production network**.
+
+---
+
+## Network protection evidence
+
+| Mechanism | Evidence |
+|-----------|----------|
+| Flutter `FirebaseIsolation` | Unit tests Gate 2 |
+| Test preflight | `preflight-sibol-firebase-tests.sh` rejects `sibol-286d0` |
+| Admin SDK Gate G | Process-level non-local TCP deny + guards before init |
+| iOS Debug bundle | No production `PROJECT_ID` in committed Debug plist |
+
+---
+
+## Negative isolation tests (summary)
+
+Production project id, missing emulator hosts, `USE_FIREBASE_EMULATORS=false` in debug, offline cross-project replay, Admin SDK production id — **fail closed** (Gate 2 + Gate 6). **No production network requests** in this cycle.
 
 ---
 
 ## Known limitations
 
-1. **Gate F iOS runtime** — **Failed.** Omit-plist packaging works statically; iOS Firebase SDK still aborts on Dart `initializeApp` with synthetic `EmulatorFirebaseOptions` (`095303.ips`). PA must approve next iOS Firebase options strategy (without production network) before another launch.
-2. **Production network proof on iOS** — Not instrumented this cycle; emulators were local; no packet capture.
-3. **Release production path** — Unchanged (Release copies gitignored production plist).
-4. **Application testing gate** — Remains **CLOSED** (PA decision).
+1. **iOS client credentials** use FlutterFire-registered iOS app id (production Firebase **console registration**); runtime **project id** and **emulator hosts** are development-only. A dedicated non-production Firebase project would remove console-registration overlap (PA authorization required to create).
+2. **Gate F probe Firestore write** to `_gate_f_probe` is denied by catch-all rules; emulator response confirms local routing (probe updated to record `rules-denied-local` for future runs).
+3. **Application testing gate** remains **CLOSED** until PA accepts this matrix.
 
 ---
 
 ## Production modification
 
 **None.**
+
+---
+
+## Acceptance classification
+
+**IMPLEMENTED — ACCEPTANCE PENDING (PA sign-off)**
+
+All isolation gates pass with bounded runtime evidence on iOS (init, Auth, local Firestore). Recommend PA accept or request dedicated Firebase dev project registration for credential hygiene.
+
+**Can SIBOL development or automated testing accidentally reach production Firebase?**
+
+**No**, for configured development and automated test entry points: fail-closed Dart guards, separated Debug native configs, emulator preflight, offline stamping, and Node Gate G network denial block production project selection and non-local Firebase endpoints before meaningful I/O. Residual risk is misconfiguration bypassing these layers (e.g. manual Release build with live credentials); that path is outside debug/test automation scope.

@@ -202,10 +202,10 @@
 			buildPhases = (
 				8163000F563C17C4594BA65D /* [CP] Check Pods Manifest.lock */,
 				9740EEB61CF901F6004384FC /* Run Script */,
-				E1A2B3C4D5E60718293A4B5C /* Select Firebase plist */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
+				E1A2B3C4D5E60718293A4B5C /* Select Firebase plist */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				D02863B6500430359613D01F /* [CP] Embed Pods Frameworks */,
@@ -295,7 +295,7 @@
 			);
 			name = "Select Firebase plist";
 			outputPaths = (
-				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(BUILT_PRODUCTS_DIR)/$(WRAPPER_NAME)/GoogleService-Info.plist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

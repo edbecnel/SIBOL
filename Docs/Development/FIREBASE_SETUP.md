@@ -2,7 +2,16 @@
 
 > **Status:** Active (project `sibol-286d0`)  
 > **Owner:** Engineering  
-> **Last updated:** 2026-10-20
+> **Last updated:** 2026-11-01
+
+## Development vs production (emulator isolation)
+
+| Build | Firebase project id in client | Native config |
+|-------|------------------------------|---------------|
+| Debug / profile + emulators | `demo-sibol-emulator` | Android: `android/app/src/debug/google-services.json`; iOS: `ios/Runner/GoogleService-Info-Debug.plist` copied into Debug bundle via `select_firebase_plist.sh` |
+| Release (authorized) | `sibol-286d0` | Gitignored platform files from `flutterfire configure` |
+
+iOS Debug uses **registered FlutterFire iOS app credentials** with **`PROJECT_ID=demo-sibol-emulator`** in the Debug plist (see MVR-FIREBASE-ISOLATION-001). Do not copy production `GoogleService-Info.plist` into Debug builds.
 
 ## Canonical configuration
 

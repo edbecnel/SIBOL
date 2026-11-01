@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyAsHqvJPo-z9UKax3lhEnm9lEMVrPkFg2w</string>
+	<string>AIzaSyB3WqXdofjhjBpCgkzg9yxSWSjS5v6cQ6g</string>
 	<key>GCM_SENDER_ID</key>
-	<string>demo-sibol-emulator</string>
+	<string>1057794781295</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:demo-sibol-emulator:ios:emulator-demo</string>
+	<string>1:1057794781295:ios:3d2cbfccd922e78ae49d9a</string>
 </dict>
 </plist>

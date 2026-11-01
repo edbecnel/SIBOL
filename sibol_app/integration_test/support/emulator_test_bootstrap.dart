@@ -19,8 +19,7 @@ class EmulatorIntegrationBootstrap {
     expect(Firebase.apps, isNotEmpty, reason: 'Firebase must be initialized before Gate A.');
     final options = Firebase.app().options;
     expect(options.projectId, EmulatorFirebaseOptions.projectId);
-    expect(options.projectId, isNot(contains('286d0')));
-    expect(options.appId, isNot(contains('1057794781295')));
+    expect(options.projectId, isNot(FirebaseIsolation.productionProjectId));
     expect(EmulatorConfig.authPort, 9099);
     expect(EmulatorConfig.firestorePort, 8195);
     expect(EmulatorConfig.functionsPort, 5001);

@@ -70,11 +70,15 @@ if [[ "$IOS_PROJECT" == "sibol-286d0" ]]; then
   echo "FAIL: iOS debug plist template references production" >&2
   exit 1
 fi
-if ! rg -q "Firebase plist omitted for" "$ROOT/sibol_app/ios/Runner/select_firebase_plist.sh"; then
-  echo "FAIL: iOS Debug/Profile must omit bundled GoogleService-Info.plist (FlutterFire native auto-config)" >&2
+if ! rg -q "GoogleService-Info-Debug.plist" "$ROOT/sibol_app/ios/Runner/select_firebase_plist.sh"; then
+  echo "FAIL: iOS Debug must copy GoogleService-Info-Debug.plist into the app bundle" >&2
   exit 1
 fi
-echo "OK: iOS debug Firebase template PROJECT_ID=${IOS_PROJECT} (Debug bundle omits plist; Dart init)"
+if [[ "$IOS_PROJECT" != "demo-sibol-emulator" ]]; then
+  echo "FAIL: iOS debug plist PROJECT_ID must be demo-sibol-emulator (got ${IOS_PROJECT})" >&2
+  exit 1
+fi
+echo "OK: iOS debug Firebase PROJECT_ID=${IOS_PROJECT} (Debug bundle uses GoogleService-Info-Debug.plist)"
 
 echo "OK: Android Firebase auto-init disabled (Dart owns init)"
 

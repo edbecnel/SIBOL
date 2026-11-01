@@ -3,7 +3,9 @@
 set -euo pipefail
 
 SRC="${SRCROOT}/Runner"
-DEST="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleService-Info.plist"
+# Install into the finished .app bundle (TARGET_BUILD_DIR path alone is not always packaged).
+DEST="${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/GoogleService-Info.plist"
+mkdir -p "$(dirname "${DEST}")"
 
 if [[ "${CONFIGURATION}" == "Release" ]]; then
   if [[ ! -f "${SRC}/GoogleService-Info.plist" ]]; then
@@ -13,9 +15,20 @@ if [[ "${CONFIGURATION}" == "Release" ]]; then
   cp "${SRC}/GoogleService-Info.plist" "${DEST}"
   echo "Firebase plist for Release: $(/usr/libexec/PlistBuddy -c 'Print :PROJECT_ID' "${DEST}")"
 else
-  # Debug/Profile: omit GoogleService-Info.plist so FlutterFire does not call
-  # FirebaseApp.configure() at plugin registration (firebase_core 5.x ignores
-  # firebase_core_auto_init_enabled on iOS). Dart [EmulatorFirebaseOptions] init only.
-  rm -f "${DEST}"
-  echo "Firebase plist omitted for ${CONFIGURATION} (Dart emulator init; template GoogleService-Info-Debug.plist is not bundled)"
+  DEBUG_PLIST="${SRC}/GoogleService-Info-Debug.plist"
+  if [[ ! -f "${DEBUG_PLIST}" ]]; then
+    echo "error: Debug/Profile builds require ${DEBUG_PLIST}" >&2
+    exit 1
+  fi
+  cp "${DEBUG_PLIST}" "${DEST}"
+  PROJECT_ID="$(/usr/libexec/PlistBuddy -c 'Print :PROJECT_ID' "${DEST}")"
+  if [[ "${PROJECT_ID}" == "sibol-286d0" ]]; then
+    echo "error: Debug Firebase plist must not reference production project" >&2
+    exit 1
+  fi
+  if [[ "${PROJECT_ID}" != "demo-sibol-emulator" ]]; then
+    echo "error: Debug Firebase plist PROJECT_ID must be demo-sibol-emulator (got ${PROJECT_ID})" >&2
+    exit 1
+  fi
+  echo "Firebase plist for ${CONFIGURATION}: PROJECT_ID=${PROJECT_ID}"
 fi

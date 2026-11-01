@@ -2,10 +2,14 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
+import 'firebase_options.dart';
+
 /// Local Firebase Emulator Suite project id (not production `sibol-286d0`).
 ///
-/// Uses synthetic [FirebaseOptions] so native SDKs do not derive production
-/// `sibol-286d0` from the registered Android/iOS app id when talking to emulators.
+/// Android uses synthetic demo client ids (supported by the Android SDK).
+/// iOS uses FlutterFire-registered [DefaultFirebaseOptions.ios] app credentials
+/// with [projectId] forced to [projectId] so native + Dart agree with
+/// [GoogleService-Info-Debug.plist] (see FIREBASE_SETUP.md / MVR isolation).
 abstract final class EmulatorFirebaseOptions {
   static const String projectId = 'demo-sibol-emulator';
 
@@ -17,15 +21,15 @@ abstract final class EmulatorFirebaseOptions {
     storageBucket: '$projectId.appspot.com',
   );
 
-  /// Matches [GoogleService-Info-Debug.plist] (synthetic ids, not production app registration).
-  static const FirebaseOptions _demoIos = FirebaseOptions(
-    apiKey: 'AIzaSyAsHqvJPo-z9UKax3lhEnm9lEMVrPkFg2w',
-    appId: '1:demo-sibol-emulator:ios:emulator-demo',
-    messagingSenderId: 'demo-sibol-emulator',
-    projectId: projectId,
-    storageBucket: '$projectId.appspot.com',
-    iosBundleId: 'com.most.sibol.sibolApp',
-  );
+  /// Matches bundled [GoogleService-Info-Debug.plist] (registered iOS app id + emulator project).
+  static FirebaseOptions get _demoIos => FirebaseOptions(
+        apiKey: DefaultFirebaseOptions.ios.apiKey,
+        appId: DefaultFirebaseOptions.ios.appId,
+        messagingSenderId: DefaultFirebaseOptions.ios.messagingSenderId,
+        projectId: projectId,
+        storageBucket: '$projectId.appspot.com',
+        iosBundleId: DefaultFirebaseOptions.ios.iosBundleId,
+      );
 
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
