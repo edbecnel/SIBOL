@@ -5,6 +5,7 @@
 **Prior record:** [MVR-FIREBASE-PROD-INTEGRITY-001.md](./MVR-FIREBASE-PROD-INTEGRITY-001.md) (Cloud Logging; Firestore ops **INDETERMINATE**)  
 **Production project:** `sibol-286d0` (default Firestore database `(default)`)  
 **Repository HEAD (start):** `7203f254b39f2fd578caa365953c388fb535a705`  
+**Repository HEAD (end):** `40ccf558e5053e743051bf0a57d38baeb5e09e9b`  
 **Investigation date:** 2026-11-01  
 **Classification:** **DATABASE CHANGED SINCE BASELINE**; **NO EVIDENCE** of Cursor Nov 1 testing writes on compared diffs
 
