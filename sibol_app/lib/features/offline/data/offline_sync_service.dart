@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,7 +14,8 @@ import 'package:sibol_app/features/offline/data/offline_sync_error.dart';
 import 'package:sibol_app/features/offline/data/pending_operation_store.dart';
 import 'package:sibol_app/features/offline/domain/offline_sync_summary.dart';
 import 'package:sibol_app/features/offline/domain/pending_operation.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:sibol_app/features/offline/domain/offline_firebase_environment.dart';
 
 class OfflineSyncService {
   OfflineSyncService({
@@ -22,17 +24,26 @@ class OfflineSyncService {
     required FirebaseFirestore firestore,
     required FirebaseAuth auth,
     Connectivity? connectivity,
+    String? Function()? resolveActiveFirebaseProjectId,
   })  : _store = store,
         _functions = functions,
         _firestore = firestore,
         _auth = auth,
-        _connectivity = connectivity ?? Connectivity();
+        _connectivity = connectivity ?? Connectivity(),
+        _resolveActiveFirebaseProjectId =
+            resolveActiveFirebaseProjectId ?? _defaultActiveFirebaseProjectId;
 
   final PendingOperationPersistence _store;
   final FirebaseFunctions _functions;
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
   final Connectivity _connectivity;
+  final String? Function() _resolveActiveFirebaseProjectId;
+
+  static String? _defaultActiveFirebaseProjectId() {
+    if (Firebase.apps.isEmpty) return null;
+    return Firebase.app().options.projectId;
+  }
 
   static const maxAttempts = 8;
 
@@ -47,6 +58,15 @@ class OfflineSyncService {
     final current = _authenticatedUid();
     if (current == null || current != operation.ownerUid) {
       throw StateError('Cannot queue operations for another signed-in account.');
+    }
+    final activeProject = _resolveActiveFirebaseProjectId();
+    if (activeProject != null &&
+        operation.firebaseProjectId != null &&
+        operation.firebaseProjectId != activeProject) {
+      throw StateError(
+        'Cannot enqueue offline operation for ${operation.firebaseProjectId} '
+        'while active Firebase project is $activeProject.',
+      );
     }
     await _store.upsert(operation);
   }
@@ -149,6 +169,38 @@ class OfflineSyncService {
     required String authenticatedUid,
   }) async {
     if (op.ownerUid != authenticatedUid) return;
+
+    final activeProject = _resolveActiveFirebaseProjectId();
+    if (OfflineFirebaseEnvironment.isLegacyUnstamped(op.firebaseProjectId)) {
+      await _store.upsert(
+        op.copyWith(
+          state: PendingOperationState.failedPermanent,
+          lastError:
+              'Legacy offline entry lacks Firebase environment stamp; quarantined for manual review.',
+        ),
+      );
+      return;
+    }
+    if (activeProject == null) {
+      await _store.upsert(
+        op.copyWith(
+          state: PendingOperationState.failedPermanent,
+          lastError:
+              'Offline replay blocked: Firebase environment not initialized.',
+        ),
+      );
+      return;
+    }
+    if (op.firebaseProjectId != activeProject) {
+      await _store.upsert(
+        op.copyWith(
+          state: PendingOperationState.failedPermanent,
+          lastError:
+              'Offline entry belongs to ${op.firebaseProjectId}; active Firebase project is $activeProject.',
+        ),
+      );
+      return;
+    }
 
     if (op.attemptCount >= maxAttempts) {
       await _store.upsert(

@@ -23,11 +23,16 @@ class PendingOperation {
     required this.state,
     required this.createdAt,
     required this.payload,
+    this.firebaseProjectId,
     this.lastAttemptAt,
     this.attemptCount = 0,
     this.lastError,
     this.serverRequestId,
   });
+
+  /// Originating Firebase project (`demo-sibol-emulator` or production).
+  /// Null marks legacy entries before environment stamping (quarantined on replay).
+  final String? firebaseProjectId;
 
   final String operationId;
   final String ownerUid;
@@ -46,6 +51,7 @@ class PendingOperation {
     int? attemptCount,
     String? lastError,
     String? serverRequestId,
+    String? firebaseProjectId,
   }) {
     return PendingOperation(
       operationId: operationId,
@@ -54,6 +60,7 @@ class PendingOperation {
       state: state ?? this.state,
       createdAt: createdAt,
       payload: payload,
+      firebaseProjectId: firebaseProjectId ?? this.firebaseProjectId,
       lastAttemptAt: lastAttemptAt ?? this.lastAttemptAt,
       attemptCount: attemptCount ?? this.attemptCount,
       lastError: lastError ?? this.lastError,
@@ -68,6 +75,7 @@ class PendingOperation {
         'state': state.name,
         'createdAt': createdAt.toIso8601String(),
         'payload': payload,
+        if (firebaseProjectId != null) 'firebaseProjectId': firebaseProjectId,
         'lastAttemptAt': lastAttemptAt?.toIso8601String(),
         'attemptCount': attemptCount,
         'lastError': lastError,
@@ -82,6 +90,7 @@ class PendingOperation {
       state: PendingOperationState.values.byName(json['state'] as String),
       createdAt: DateTime.parse(json['createdAt'] as String),
       payload: Map<String, String>.from(json['payload'] as Map),
+      firebaseProjectId: json['firebaseProjectId'] as String?,
       lastAttemptAt: json['lastAttemptAt'] == null
           ? null
           : DateTime.parse(json['lastAttemptAt'] as String),

@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:sibol_app/config/emulator_firebase_options.dart';
 import 'package:sibol_app/features/offline/data/offline_sync_service.dart';
 import 'package:sibol_app/features/offline/domain/pending_operation.dart';
 import 'support/memory_pending_operation_store.dart';
@@ -45,6 +46,7 @@ void main() {
       firestore: MockFirebaseFirestore(),
       auth: auth,
       connectivity: connectivity,
+      resolveActiveFirebaseProjectId: () => EmulatorFirebaseOptions.projectId,
     );
   });
 
@@ -56,6 +58,7 @@ void main() {
       state: PendingOperationState.waitingToSubmit,
       createdAt: DateTime.utc(2026, 3, 1),
       payload: {'requestId': 'req-1', 'orgId': 'barangay03'},
+      firebaseProjectId: EmulatorFirebaseOptions.projectId,
     );
   }
 
@@ -157,6 +160,7 @@ void main() {
         'referralPurposeCode': 'hospital_coordination',
         'coordinationNeedCodes': 'schedule_coordination',
       },
+      firebaseProjectId: EmulatorFirebaseOptions.projectId,
     );
   }
 
@@ -229,6 +233,7 @@ void main() {
           'coordinationNeedCodes': 'schedule_coordination',
           'authorizationId': 'auth-expired',
         },
+        firebaseProjectId: EmulatorFirebaseOptions.projectId,
       ),
     );
     await service.syncForUser('user-a');

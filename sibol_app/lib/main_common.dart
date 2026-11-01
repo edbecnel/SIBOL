@@ -11,6 +11,7 @@ import 'package:sibol_app/config/emulator_config.dart';
 import 'package:sibol_app/config/emulator_hosts.dart';
 import 'package:sibol_app/config/emulator_firebase_options.dart';
 import 'package:sibol_app/config/env_config.dart';
+import 'package:sibol_app/config/firebase_isolation.dart';
 import 'package:sibol_app/config/firebase_options.dart';
 
 bool _emulatorEndpointsConfigured = false;
@@ -29,7 +30,12 @@ Future<void> initializeSibolFirebase() async {
     throw UnsupportedError('Flutter Web is not authorized for SIBOL.');
   }
 
-  if (EnvConfig.useEmulators && Firebase.apps.isNotEmpty) {
+  FirebaseIsolation.enforceBeforeFirebaseInit();
+
+  final useEmulators =
+      EnvConfig.useEmulators || !FirebaseIsolation.authorizedProductionReleaseClient;
+
+  if (useEmulators && Firebase.apps.isNotEmpty) {
     final existing = Firebase.app();
     if (existing.options.projectId != EmulatorFirebaseOptions.projectId) {
       await existing.delete();
@@ -40,13 +46,13 @@ Future<void> initializeSibolFirebase() async {
   if (Firebase.apps.isEmpty) {
     try {
       await Firebase.initializeApp(
-        options: EnvConfig.useEmulators
+        options: useEmulators
             ? EmulatorFirebaseOptions.currentPlatform
             : DefaultFirebaseOptions.currentPlatform,
       );
     } on FirebaseException catch (e) {
       if (e.code != 'duplicate-app') rethrow;
-      if (EnvConfig.useEmulators) {
+      if (useEmulators) {
         final existing = Firebase.app();
         if (existing.options.projectId != EmulatorFirebaseOptions.projectId) {
           await existing.delete();
@@ -63,17 +69,9 @@ Future<void> initializeSibolFirebase() async {
     throw StateError('Firebase did not initialize.');
   }
 
-  if (EnvConfig.useEmulators) {
-    final projectId = Firebase.app().options.projectId;
-    if (projectId != EmulatorFirebaseOptions.projectId) {
-      throw StateError(
-        'Emulator run requires project ${EmulatorFirebaseOptions.projectId}; '
-        'found $projectId.',
-      );
-    }
-  }
+  FirebaseIsolation.assertProjectAfterInit(Firebase.app().options.projectId);
 
-  if (EnvConfig.useEmulators && !_emulatorEndpointsConfigured) {
+  if (useEmulators && !_emulatorEndpointsConfigured) {
     final host = EmulatorHosts.firebase;
     await FirebaseAuth.instance.useAuthEmulator(host, EmulatorConfig.authPort);
     FirebaseFirestore.instance.useFirestoreEmulator(

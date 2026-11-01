@@ -4,10 +4,16 @@
  * Does not write to Firestore. Output: JSON map path -> content fingerprint.
  */
 import { createHash } from "node:crypto";
+import { assertAdminSdkTestIsolation } from "../src/admin_test_isolation.mjs";
 import { initializeApp, getApps, deleteApp } from "firebase-admin/app";
 import { getFirestore, Timestamp, GeoPoint, DocumentReference } from "firebase-admin/firestore";
 
-const PROJECT = process.env.FIRESTORE_COMPARE_PROJECT || "sibol-286d0";
+assertAdminSdkTestIsolation({ allowAuthorizedProductionReadonly: true });
+
+const PROJECT = process.env.FIRESTORE_COMPARE_PROJECT || process.env.FIREBASE_PROJECT_ID;
+if (!PROJECT) {
+  throw new Error("ISOLATION: Set FIRESTORE_COMPARE_PROJECT for inventory runs.");
+}
 const EMULATOR = process.env.FIRESTORE_EMULATOR_HOST;
 
 function stableValue(value) {

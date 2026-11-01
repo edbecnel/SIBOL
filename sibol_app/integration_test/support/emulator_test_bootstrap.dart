@@ -5,6 +5,7 @@ import 'package:sibol_app/config/emulator_config.dart';
 import 'package:sibol_app/config/emulator_firebase_options.dart';
 import 'package:sibol_app/config/emulator_hosts.dart';
 import 'package:sibol_app/config/env_config.dart';
+import 'package:sibol_app/config/firebase_isolation.dart';
 import 'package:sibol_app/main_common.dart';
 
 /// Ensures Firebase + UI start once per integration test process.
@@ -13,6 +14,7 @@ class EmulatorIntegrationBootstrap {
   static bool _sessionReady = false;
 
   static void assertGateAConfiguration() {
+    FirebaseIsolation.assertIntegrationTestPreflight();
     expect(EnvConfig.useEmulators, isTrue, reason: 'USE_FIREBASE_EMULATORS must be true.');
     expect(Firebase.apps, isNotEmpty, reason: 'Firebase must be initialized before Gate A.');
     final options = Firebase.app().options;
