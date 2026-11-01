@@ -1,7 +1,7 @@
 # MVR-FIREBASE-ISOLATION-001 — Production isolation verification matrix (P0)
 
 **Work item:** SIBOL-FIREBASE-ISOLATION-001  
-**Closeout handover UUID:** `e5b7c219-4d83-4f6a-9c10-2b75e804a631`  
+**Closeout handover UUID:** `f2b8e641-7c39-4a85-9d16-6e30c4f71892` (Functions runtime) · `e5b7c219-…` (architecture)  
 **Prior Gate F UUIDs:** `c8e51f20-…`, `a1e94c72-…`  
 **Production project (blocked in test/debug):** `sibol-286d0`  
 **Canonical emulator namespace:** `demo-sibol-emulator`  
@@ -31,7 +31,7 @@
 | 1 — Config integrity | Static Android/iOS/Debug bundle | **Pass** | `verify-emulator-isolation-static.sh` 2026-11-01; Debug `Runner.app` contains `GoogleService-Info.plist` with `PROJECT_ID=demo-sibol-emulator` |
 | 2 — Negative isolation | Dart + Node unit negatives | **Pass** | `run_isolated_flutter_tests.sh` (22 tests); provisioning emulator tests |
 | 3 — Android runtime | Emulator project + Auth/Firestore/Functions | **Pass (carried forward)** | [MVR-CONSENT-REFERRAL-001](MVR-CONSENT-REFERRAL-001-Verification-Matrix.md) Gates A–D device pass 2026-11-01 |
-| 4 — iOS simulator runtime | Init + emulator routing | **Pass (init + Auth + local Firestore)** | See § iOS Gate 4 log below |
+| 4 — iOS simulator runtime | Init + Auth + Firestore + **Functions** emulators | **Pass** | § iOS Gate 4 + § iOS Functions runtime (2026-11-01) |
 | 5 — Offline queue | Cross-environment replay | **Pass (carried forward)** | Gate 2 offline tests |
 | 6 — Node/Admin SDK | Pre-init rejection + network deny | **Pass** | `verify-admin-sdk-network-isolation.mjs` (Gate G) |
 
@@ -59,9 +59,33 @@ flutter: SIBOL_GATE_F_PORTS=auth:9099,firestore:8195,functions:5001
 | Effective Firebase project | **`demo-sibol-emulator`** |
 | Auth emulator | **Pass** (`createUserWithEmailAndPassword` before Firestore call) |
 | Firestore emulator | **Pass** (local rules `permission-denied`, not production timeout) |
-| Functions routing | **Configured** in `initializeSibolFirebase()` (ports logged; no production URL) |
+| Functions emulator | **Pass** — `healthCheck` callable via `localhost:5001` (see § iOS Functions runtime) |
 
 **Packaging fix:** `select_firebase_plist.sh` installs to `$(BUILT_PRODUCTS_DIR)/$(WRAPPER_NAME)/GoogleService-Info.plist`; build phase moved after **Resources**.
+
+---
+
+## iOS Functions runtime — Gate 4 completion (2026-11-01)
+
+**Callable:** `healthCheck` (`shared/functions/src/index.ts` — returns `{ ok: true, service: "sibol-functions", tranche: 1 }`)  
+**Emulator:** `127.0.0.1:5001` under project `demo-sibol-emulator` (canonical `firebase.json` profile)
+
+| Item | Value |
+|------|--------|
+| Build | `flutter build ios --simulator --debug -t lib/main_gate_f_probe.dart --dart-define=USE_FIREBASE_EMULATORS=true` — **25s** |
+| Launch | `flutter run -d CF1B6EDD-BB2B-4FC9-BFC7-5506817EC01B … --use-application-binary=build/ios/iphonesimulator/Runner.app` |
+| Runtime to markers | **~10s** (single launch; log `/tmp/gate-f-functions-ios.log`) |
+| Crash / timeout | **None** |
+| Production network | **Not observed** |
+
+```
+flutter: SIBOL_GATE_F_PROJECT_ID=demo-sibol-emulator
+flutter: SIBOL_GATE_F_PORTS=auth:9099,firestore:8195,functions:5001
+flutter: SIBOL_GATE_F_AUTH_OK=true
+flutter: SIBOL_GATE_F_FIRESTORE_EMULATOR_OK=rules-denied-local
+flutter: SIBOL_GATE_F_FUNCTIONS_HEALTH={service: sibol-functions, tranche: 1, ok: true} host=localhost:5001
+flutter: SIBOL_GATE_F_FUNCTIONS_OK=true
+```
 
 ---
 
@@ -105,10 +129,12 @@ Production project id, missing emulator hosts, `USE_FIREBASE_EMULATORS=false` in
 
 ## Acceptance classification
 
-**IMPLEMENTED — ACCEPTANCE PENDING (PA sign-off)**
+**COMPLETE — VERIFIED** (emulator-only development and automated test scope)
 
-All isolation gates pass with bounded runtime evidence on iOS (init, Auth, local Firestore). Recommend PA accept or request dedicated Firebase dev project registration for credential hygiene.
+All six isolation gates pass, including iOS **Cloud Functions** routing to the local emulator at `127.0.0.1:5001` via `healthCheck`.
 
 **Can SIBOL development or automated testing accidentally reach production Firebase?**
 
-**No**, for configured development and automated test entry points: fail-closed Dart guards, separated Debug native configs, emulator preflight, offline stamping, and Node Gate G network denial block production project selection and non-local Firebase endpoints before meaningful I/O. Residual risk is misconfiguration bypassing these layers (e.g. manual Release build with live credentials); that path is outside debug/test automation scope.
+**No**, for configured debug/test and Node automation entry points (fail-closed guards, separated Debug native configs, emulator preflight, offline stamping, Gate G network denial). Manual authorized Release builds remain a separate, non-automated path.
+
+**Application testing gate:** Documented separately; remains **CLOSED** until PA accepts this matrix (isolation acceptance does not independently reopen functional testing).

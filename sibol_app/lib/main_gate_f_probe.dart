@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_functions/firebase_functions.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:sibol_app/config/emulator_config.dart';
 import 'package:sibol_app/config/emulator_firebase_options.dart';
@@ -51,6 +51,21 @@ Future<void> main() async {
     } else {
       rethrow;
     }
+  }
+
+  final health =
+      await FirebaseFunctions.instance.httpsCallable('healthCheck').call();
+  final healthData = health.data;
+  // ignore: avoid_print
+  print(
+    'SIBOL_GATE_F_FUNCTIONS_HEALTH=$healthData '
+    'host=${EmulatorHosts.firebase}:${EmulatorConfig.functionsPort}',
+  );
+  if (healthData is Map && healthData['ok'] == true) {
+    // ignore: avoid_print
+    print('SIBOL_GATE_F_FUNCTIONS_OK=true');
+  } else {
+    throw StateError('Unexpected healthCheck payload: $healthData');
   }
 
   runApp(
