@@ -7,8 +7,10 @@ import 'package:intl/intl.dart';
 import 'package:sibol_app/core/constants/route_constants.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/barangay_open_case_from_assistance_action.dart';
 import 'package:sibol_app/features/coordination/presentation/providers/coordination_providers.dart';
+import 'package:sibol_app/features/coordination/presentation/providers/coordination_providers.dart';
 import 'package:sibol_app/features/disclosure/presentation/widgets/barangay_disclosure_request_panel.dart';
 import 'package:sibol_app/features/coordination/presentation/widgets/barangay_moph_referral_action.dart';
+import 'package:sibol_app/features/teen_communication/presentation/widgets/barangay_teen_communication_panel.dart';
 import 'package:sibol_app/core/providers/firebase_providers.dart';
 import 'package:sibol_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:sibol_app/features/teenager/domain/assistance_request_status.dart';
@@ -329,6 +331,17 @@ class _BarangayIncomingRequestDetailScreenState
                     if (isAcknowledged) ...[
                       const SizedBox(height: 24),
                       BarangayOpenCaseFromAssistanceAction(request: request),
+                      const SizedBox(height: 24),
+                      BarangayTeenCommunicationPanel(
+                        assistanceRequestId: widget.requestId,
+                        coordinationThread: ref
+                            .watch(
+                              assistanceCoordinationThreadProvider(
+                                widget.requestId,
+                              ),
+                            )
+                            .value,
+                      ),
                     ],
                   ],
                 );

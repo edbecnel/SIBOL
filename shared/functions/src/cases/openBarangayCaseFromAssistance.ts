@@ -11,6 +11,7 @@ import {
 } from "../authz/assert";
 import { isValidOrgId, membershipIdFor } from "../authz/identifiers";
 import { COLLECTIONS } from "../coordination/constants";
+import { coordinationStatusAllowsCaseOpen } from "../coordination/caseReferralLinkage";
 import {
   claimUserIdempotency,
   completeUserIdempotencyInTransaction,
@@ -194,6 +195,41 @@ export async function runOpenBarangayCaseFromAssistance(
         );
       }
 
+      const registryRef = db
+        .collection(COLLECTIONS.barangayCoordinationRegistry)
+        .doc(assistanceRequestId);
+      const registrySnap = await tx.get(registryRef);
+      if (!registrySnap.exists) {
+        throw new HttpsError(
+          "failed-precondition",
+          "A hospital coordination referral must exist before opening a formal case.",
+        );
+      }
+      const threadId = registrySnap.data()?.threadId;
+      if (typeof threadId !== "string" || !threadId) {
+        throw new HttpsError(
+          "failed-precondition",
+          "Referral linkage is incomplete.",
+        );
+      }
+      const threadRef = db
+        .collection(COLLECTIONS.caseCoordinationThreads)
+        .doc(threadId);
+      const threadSnap = await tx.get(threadRef);
+      if (!threadSnap.exists) {
+        throw new HttpsError("not-found", "Coordination referral not found.");
+      }
+      const coordinationStatus = threadSnap.data()?.coordinationStatus;
+      if (
+        typeof coordinationStatus !== "string" ||
+        !coordinationStatusAllowsCaseOpen(coordinationStatus)
+      ) {
+        throw new HttpsError(
+          "failed-precondition",
+          "Hospital receipt must be acknowledged before opening a formal case.",
+        );
+      }
+
       const teenUid = assistance.teenUid;
       if (typeof teenUid !== "string" || teenUid.length < 1) {
         throw new HttpsError(
@@ -251,6 +287,7 @@ export async function runOpenBarangayCaseFromAssistance(
         dateOfBirth,
         teenUid,
         assistanceRequestId,
+        coordinationThreadId: threadId,
         openedByUid: authUid,
         openedAt: now,
         assignedCoordinatorUid,
@@ -282,6 +319,12 @@ export async function runOpenBarangayCaseFromAssistance(
       tx.set(caseRef, caseDoc);
 
       tx.update(assistanceRef, { caseId });
+
+      tx.update(threadRef, {
+        caseId,
+        assistanceRequestId,
+        updatedAt: now,
+      });
 
       appendLifecycleEventInTransaction(tx, db, caseId, {
         eventType: LifecycleEventType.caseOpened,

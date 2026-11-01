@@ -10,6 +10,7 @@ import {
   orgId,
   seedAcknowledgedAssistance,
   seedBaseOrgs,
+  seedCoordinationReferralForAssistance,
   site,
 } from "./helpers/coordination_seed.mjs";
 
@@ -52,6 +53,13 @@ before(async () => {
     .set(membershipDoc(orgId, barangayUid, ["case.write", "case.read"]));
   await seedAcknowledgedAssistance(db, assistanceId, { teenUid, barangayUid });
 
+  await seedCoordinationReferralForAssistance(db, assistanceId, {
+    teenUid,
+    barangayUid,
+    coordinationStatus: "received",
+    threadId,
+  });
+
   const { runOpenBarangayCaseFromAssistance } = await import(
     "../lib/cases/openBarangayCaseFromAssistance.js"
   );
@@ -61,13 +69,7 @@ before(async () => {
   });
   caseId = opened.caseId;
 
-  await db.collection("barangayCoordinationRegistry").doc(assistanceId).set({
-    threadId,
-    orgId,
-    createdAt: now,
-  });
-  await db.collection("caseCoordinationThreads").doc(threadId).set({
-    orgId,
+  await db.collection("caseCoordinationThreads").doc(threadId).update({
     assistanceRequestId: assistanceId,
     coordinationStatus: "received",
     phase: "submitted",

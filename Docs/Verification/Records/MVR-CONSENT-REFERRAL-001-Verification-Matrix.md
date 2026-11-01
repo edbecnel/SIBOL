@@ -71,7 +71,7 @@ cd sibol_app && source ../.env.emulator.local && flutter test integration_test/e
 | FAIL-AUTH-002 | Integration bootstrap | Duplicate `[core/duplicate-app]` / `[core/no-app]` from conflicting init | Single `EmulatorIntegrationBootstrap.launchAppOnce`; `prepareEmulatorIntegrationSession` alias | Gates A–D | **Resolved** |
 | FAIL-AUTH-003 | Gate A project guard | Native pre-init before Dart | Same as FAIL-AUTH-001 | `values.xml` `project_id=demo-sibol-emulator` on debug build | **Resolved** |
 | FAIL-AUTH-004 | Gate C barangay sign-in | Auth export backup password ≠ live emulator seed (`INVALID_PASSWORD` on Auth emulator for `barangay.demo@sibol.local`) | Device scripts use `.env.emulator.local` (`SIBOL_EMULATOR_PASSWORD_*`) with export fallback | Auth emulator HTTP sign-in + Gates A–D | **Resolved** |
-| FAIL-CONSENT-001 | Gate E `consent_referral_emulator_device_test.dart` | Barangay **Incoming requests** missing teen submission token after UI submit (server confirmation / inbox propagation) | Harness sign-out + Functions API key format fix applied; **workflow still failing** | Test run 2026-11-01 — fails at `find.textContaining(runToken)` | **Pending** |
+| FAIL-CONSENT-001 | Gate E `consent_referral_emulator_device_test.dart` | Barangay **Incoming requests** missing teen submission token after UI submit | **Fixed (code):** incoming list shows description preview; device test reordered for COMM-ORD-1 | Inbox card + test harness update 2026-11-01 | **Re-verify on device** |
 
 ## Role-home blocker (CASE-LIFECYCLE-001 V10 dependency)
 

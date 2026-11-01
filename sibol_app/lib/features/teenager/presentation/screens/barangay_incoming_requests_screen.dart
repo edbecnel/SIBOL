@@ -13,6 +13,12 @@ import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
 class BarangayIncomingRequestsScreen extends ConsumerWidget {
   const BarangayIncomingRequestsScreen({super.key});
 
+  static String _descriptionPreview(String description) {
+    final trimmed = description.trim();
+    if (trimmed.length <= 120) return trimmed;
+    return '${trimmed.substring(0, 117)}…';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final requestsAsync = ref.watch(barangayIncomingRequestsProvider);
@@ -56,6 +62,7 @@ class BarangayIncomingRequestsScreen extends ConsumerWidget {
                         title: Text(request.category.label),
                         subtitle: Text(
                           '${assistanceIncomingRequestCardAccountEmailLine(request.submitterAccountEmail)}\n'
+                          '${_descriptionPreview(request.description)}\n'
                           'Ref: ${request.requestId}\n'
                           'Submitted ${dateFmt.format(request.createdAt)}\n'
                           'Status: ${request.status.label}',

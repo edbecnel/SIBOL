@@ -15,6 +15,7 @@ import {
   assertMophTransitionAllowed,
   CoordinationStatus,
   phaseForCoordinationStatus,
+  TERMINAL_COORDINATION_STATUSES,
 } from "./coordinationStatus";
 
 export type UpdateMophCoordinationStatusInput = {
@@ -177,6 +178,13 @@ export async function runUpdateMophCoordinationStatus(
       phase,
       updatedAt: now,
       lastStaffEventAt: now,
+      ...(TERMINAL_COORDINATION_STATUSES.has(targetStatus)
+        ? {
+            pendingTeenOutcomePublication: true,
+            teenOutcomeConfirmedAt: null,
+            teenOutcomeConfirmedByUid: null,
+          }
+        : {}),
     });
 
     const body =

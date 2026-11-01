@@ -275,6 +275,11 @@ export async function runCreateCoordinationReferral(
     const now = new Date();
     const eventRef = threadRef.collection("staffEvents").doc();
 
+    const existingCaseId =
+      typeof assistance.caseId === "string" && assistance.caseId.length > 0
+        ? assistance.caseId
+        : undefined;
+
     tx.set(threadRef, {
       barangay: assignedBarangay,
       orgId: assistanceOrgId,
@@ -284,6 +289,8 @@ export async function runCreateCoordinationReferral(
       referralPurposeCode,
       coordinationNeedCodes,
       disclosureMode,
+      assistanceRequestId,
+      ...(existingCaseId ? { caseId: existingCaseId } : {}),
       ...(authorizationId ? { authorizationId } : {}),
       ...(authorizationNoticeVersion
         ? { authorizationNoticeVersion }

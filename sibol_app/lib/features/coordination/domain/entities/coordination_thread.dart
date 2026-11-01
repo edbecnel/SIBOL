@@ -18,6 +18,9 @@ class CoordinationThread extends Equatable {
     required this.updatedAt,
     required this.lastStaffEventAt,
     required this.createdByUid,
+    this.pendingTeenOutcomePublication,
+    this.teenOutcomeConfirmedAt,
+    this.caseId,
   });
 
   final String threadId;
@@ -33,6 +36,11 @@ class CoordinationThread extends Equatable {
   final DateTime updatedAt;
   final DateTime lastStaffEventAt;
   final String createdByUid;
+  final bool? pendingTeenOutcomePublication;
+  final DateTime? teenOutcomeConfirmedAt;
+  final String? caseId;
+
+  bool get isTerminal => coordinationStatus?.isTerminal ?? false;
 
   @override
   List<Object?> get props => [
@@ -49,5 +57,8 @@ class CoordinationThread extends Equatable {
         updatedAt,
         lastStaffEventAt,
         createdByUid,
+        pendingTeenOutcomePublication,
+        teenOutcomeConfirmedAt,
+        caseId,
       ];
 }

@@ -44,6 +44,7 @@
 | SIBOL-P0-IDENTITY-CARD-001 | Incoming Requests card account email | **Engineering complete** — PA/PO acceptance gate | [Execution report](SIBOL_P0_IDENTITY_CARD_001_EXECUTION_REPORT.md) |
 | SIBOL-CASE-LIFECYCLE-001 | Barangay case lifecycle + MOPH coordination callables | **Implemented** — Functions pass; device V10 pending | [Implementation spec](SIBOL_CASE_LIFECYCLE_001_IMPLEMENTATION_SPEC.md), [MVR](../Verification/Records/MVR-CASE-LIFECYCLE-001-Verification-Matrix.md) |
 | SIBOL-CONSENT-REFERRAL-001 | Consent-controlled MOPH disclosure + structured coordination | **IMPLEMENTED — ACCEPTANCE PENDING** | [Plan](SIBOL_CONSENT_REFERRAL_001_PLAN.md), [Report](SIBOL_CONSENT_REFERRAL_001_IMPLEMENTATION_REPORT.md), [MVR](../Verification/Records/MVR-CONSENT-REFERRAL-001-Verification-Matrix.md) |
+| SIBOL-COMM-WORKFLOW-001 | Communication workflow completion (ordering, teen comms, history) | **IMPLEMENTED — ACCEPTANCE PENDING** | [Execution report](SIBOL_COMM_WORKFLOW_001_EXECUTION_REPORT.md), [ADR-0007](../Architecture/ADRs/ADR-0007-COMM-Workflow-Ordering.md) |
 
 ## Prototype development boundary
 

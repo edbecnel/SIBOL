@@ -53,6 +53,10 @@ import {
   runRecordTeenDisclosureDecision,
   runWithdrawDisclosureAuthorization,
 } from "./disclosure/exportHandlers";
+import {
+  runConfirmTeenCoordinationOutcome,
+  runPublishTeenAssistanceCommunication,
+} from "./teenCommunication/exportHandlers";
 import { runGetReferenceManifest } from "./geo/referenceManifest";
 
 admin.initializeApp();
@@ -375,6 +379,32 @@ export const regBarangayRespondToMophInformationRequest = onCall(async (request)
   const db = admin.firestore();
   try {
     return await runBarangayRespondToMophInformationRequest(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regPublishTeenAssistanceCommunication = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runPublishTeenAssistanceCommunication(
+      db,
+      request.auth?.uid,
+      (request.data ?? {}) as Record<string, unknown>,
+    );
+  } catch (err) {
+    mapAuthzToHttps(err);
+  }
+});
+
+export const regConfirmTeenCoordinationOutcome = onCall(async (request) => {
+  const db = admin.firestore();
+  try {
+    return await runConfirmTeenCoordinationOutcome(
       db,
       request.auth?.uid,
       (request.data ?? {}) as Record<string, unknown>,

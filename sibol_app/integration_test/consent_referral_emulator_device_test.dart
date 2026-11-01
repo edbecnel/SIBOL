@@ -108,13 +108,14 @@ void main() {
     await tester.tap(primaryButton('Request information'));
     await auth.signOutCurrentUser();
 
-    // Barangay — structured information response + case work.
+    // Barangay — structured information response + case work (after MOPH received).
     await auth.signInAsBarangay(credentials.barangayPassword);
     auth.router.go(Routes.barangayIncomingRequests);
+    await pumpUntilFound(tester, find.textContaining(runToken));
     await tester.tap(find.textContaining(runToken).first);
+    await pumpUntilFound(tester, find.text('MOPH disclosure authorization'));
     await tester.tap(primaryButton('Open Barangay case'));
-    await pumpUntilFound(tester, find.text('Case details'));
-    auth.router.pop();
+    await pumpUntilFound(tester, find.textContaining('Hospital receipt'));
     await tester.tap(primaryButton('Refer to MOPH coordination'));
     await pumpUntilFound(
       tester,
@@ -130,6 +131,21 @@ void main() {
     await auth.signInAsMoph(credentials.mophPassword);
     await tester.tap(find.byType(ListTile).first);
     await pumpUntilFound(tester, find.text('Coordination referral'));
+    await tester.tap(primaryButton('Mark received'));
+    await pumpUntilFound(tester, find.textContaining('Coordination status'));
+    await auth.signOutCurrentUser();
+
+    await auth.signInAsBarangay(credentials.barangayPassword);
+    auth.router.go(Routes.barangayIncomingRequests);
+    await tester.tap(find.textContaining(runToken).first);
+    await tester.tap(primaryButton('Open Barangay case'));
+    await pumpUntilFound(tester, find.text('Case details'));
+    auth.router.pop();
+    await auth.signOutCurrentUser();
+
+    await auth.signInAsMoph(credentials.mophPassword);
+    await tester.tap(find.byType(ListTile).first);
+    await pumpUntilFound(tester, find.text('Coordination referral'));
     await tester.tap(primaryButton('Mark coordination complete'));
     await auth.signOutCurrentUser();
 
@@ -137,7 +153,10 @@ void main() {
     await auth.signInAsTeenager(credentials.teenPassword);
     auth.router.go(Routes.teenAssistanceList);
     await tester.tap(find.textContaining(runToken).first);
-    await pumpUntilFound(tester, find.textContaining('Progress:'));
+    await pumpUntilFound(
+      tester,
+      find.textContaining('Updates from your Barangay'),
+    );
     expect(find.textContaining('legal_name'), findsNothing);
     await auth.signOutCurrentUser();
   });

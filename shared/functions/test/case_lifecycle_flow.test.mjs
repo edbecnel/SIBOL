@@ -104,18 +104,7 @@ after(async () => {
 });
 
 describe("CASE-LIFECYCLE-001 emulator flow", () => {
-  it("runs open → referral → MOPH/Barangay coordination → resolve/close with audit", async () => {
-    const open = await runOpenBarangayCaseFromAssistance(db, barangayUid, {
-      assistanceRequestId: assistanceId,
-      idempotencyKey: "flow-open-1",
-    });
-    assert.ok(open.caseId);
-
-    await runTransitionBarangayCaseStatus(db, barangayUid, {
-      caseId: open.caseId,
-      targetStatus: "inProgress",
-    });
-
+  it("runs referral → MOPH received → open case → coordination → resolve/close with audit", async () => {
     const referral = await runCreateCoordinationReferral(
       db,
       barangayUid,
@@ -127,6 +116,18 @@ describe("CASE-LIFECYCLE-001 emulator flow", () => {
       threadId: referral.threadId,
       targetStatus: "received",
     });
+
+    const open = await runOpenBarangayCaseFromAssistance(db, barangayUid, {
+      assistanceRequestId: assistanceId,
+      idempotencyKey: "flow-open-1",
+    });
+    assert.ok(open.caseId);
+
+    await runTransitionBarangayCaseStatus(db, barangayUid, {
+      caseId: open.caseId,
+      targetStatus: "inProgress",
+    });
+
     await runUpdateMophCoordinationStatus(db, mophUid, {
       threadId: referral.threadId,
       targetStatus: "additionalInformationRequested",

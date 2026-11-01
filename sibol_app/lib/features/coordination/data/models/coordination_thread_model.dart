@@ -19,6 +19,9 @@ class CoordinationThreadModel {
     required this.updatedAt,
     required this.lastStaffEventAt,
     required this.createdByUid,
+    this.pendingTeenOutcomePublication,
+    this.teenOutcomeConfirmedAt,
+    this.caseId,
   });
 
   final String threadId;
@@ -34,6 +37,9 @@ class CoordinationThreadModel {
   final DateTime updatedAt;
   final DateTime lastStaffEventAt;
   final String createdByUid;
+  final bool? pendingTeenOutcomePublication;
+  final DateTime? teenOutcomeConfirmedAt;
+  final String? caseId;
 
   factory CoordinationThreadModel.fromFirestore(
     String threadId,
@@ -53,6 +59,12 @@ class CoordinationThreadModel {
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
       lastStaffEventAt: (data['lastStaffEventAt'] as Timestamp).toDate(),
       createdByUid: data['createdByUid'] as String,
+      pendingTeenOutcomePublication:
+          data['pendingTeenOutcomePublication'] as bool?,
+      teenOutcomeConfirmedAt: data['teenOutcomeConfirmedAt'] is Timestamp
+          ? (data['teenOutcomeConfirmedAt'] as Timestamp).toDate()
+          : null,
+      caseId: data['caseId'] as String?,
     );
   }
 
@@ -76,6 +88,9 @@ class CoordinationThreadModel {
       updatedAt: updatedAt,
       lastStaffEventAt: lastStaffEventAt,
       createdByUid: createdByUid,
+      pendingTeenOutcomePublication: pendingTeenOutcomePublication,
+      teenOutcomeConfirmedAt: teenOutcomeConfirmedAt,
+      caseId: caseId,
     );
   }
 }

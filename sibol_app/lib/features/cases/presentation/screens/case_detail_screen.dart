@@ -15,6 +15,7 @@ import 'package:sibol_app/features/cases/domain/case_identity_presentation.dart'
 import 'package:sibol_app/features/cases/domain/case_subject_kind.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/case_lifecycle_panel.dart';
 import 'package:sibol_app/features/cases/presentation/widgets/case_follow_up_timeline.dart';
+import 'package:sibol_app/features/cases/presentation/widgets/barangay_case_workflow_history_panel.dart';
 import 'package:sibol_app/shared/widgets/app_error_widget.dart';
 import 'package:sibol_app/shared/widgets/app_loading_indicator.dart';
 import 'package:sibol_app/shared/widgets/fictional_data_banner.dart';
@@ -144,7 +145,7 @@ class CaseDetailScreen extends ConsumerWidget {
 }
 
 /// Read-only case fields for barangay review (T2-1).
-class CaseDetailBody extends StatelessWidget {
+class CaseDetailBody extends ConsumerWidget {
   const CaseDetailBody({
     super.key,
     required this.record,
@@ -161,7 +162,7 @@ class CaseDetailBody extends StatelessWidget {
   final VoidCallback onAddFollowUp;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final dateFmt = DateFormat.yMMMd();
     final dateTimeFmt = DateFormat.yMMMd().add_jm();
 
@@ -227,6 +228,10 @@ class CaseDetailBody extends StatelessWidget {
           value: CasePresentationLabels.lifecycleStatus(record.caseStatus),
         ),
         CaseLifecyclePanel(record: record),
+        if (record.isAssistanceLinkedCase) ...[
+          const SizedBox(height: 16),
+          BarangayCaseWorkflowHistoryPanel(caseRecord: record),
+        ],
         _DetailTile(
           label: 'Aggregate report',
           value: CasePresentationLabels.aggregateReportInclusion(

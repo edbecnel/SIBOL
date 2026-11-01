@@ -1,7 +1,7 @@
 import { after, before, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { initializeApp, deleteApp, getApps } from "firebase-admin/app";
-import { getFirestore, Timestamp } from "firebase-admin/firestore";
+import { getFirestore } from "firebase-admin/firestore";
 import { runOpenBarangayCaseFromAssistance } from "../lib/cases/openBarangayCaseFromAssistance.js";
 import { assertFunctionsIntegrationEmulatorEnv } from "./helpers/emulator_env_guard.mjs";
 import {
@@ -9,6 +9,7 @@ import {
   orgId,
   seedAcknowledgedAssistance,
   seedBaseOrgs,
+  seedCoordinationReferralForAssistance,
   site,
 } from "./helpers/coordination_seed.mjs";
 
@@ -18,6 +19,8 @@ const barangayUid = "barangayCaseOpenUid12345678901";
 const assistanceId = "assist-open-case-001";
 const assistanceReplayId = "assist-open-case-replay";
 const assistanceConcurrentId = "assist-open-case-concurrent";
+const assistanceNoReferralId = "assist-open-case-no-ref";
+const assistanceNotReceivedId = "assist-open-case-not-received";
 
 let db;
 
@@ -27,7 +30,7 @@ before(async () => {
     initializeApp({ projectId });
   }
   db = getFirestore();
-  const now = Timestamp.now();
+  const now = (await import("firebase-admin/firestore")).Timestamp.now();
   await seedBaseOrgs(db);
   await db.collection("users").doc(teenUid).set({
     role: "teen",
@@ -58,6 +61,37 @@ before(async () => {
     teenUid,
     barangayUid,
   });
+  await seedAcknowledgedAssistance(db, assistanceNoReferralId, {
+    teenUid,
+    barangayUid,
+  });
+  await seedAcknowledgedAssistance(db, assistanceNotReceivedId, {
+    teenUid,
+    barangayUid,
+  });
+  await seedCoordinationReferralForAssistance(db, assistanceId, {
+    teenUid,
+    barangayUid,
+    coordinationStatus: "received",
+  });
+  await seedCoordinationReferralForAssistance(db, assistanceReplayId, {
+    teenUid,
+    barangayUid,
+    coordinationStatus: "received",
+    threadId: "thread-replay",
+  });
+  await seedCoordinationReferralForAssistance(db, assistanceConcurrentId, {
+    teenUid,
+    barangayUid,
+    coordinationStatus: "received",
+    threadId: "thread-concurrent",
+  });
+  await seedCoordinationReferralForAssistance(db, assistanceNotReceivedId, {
+    teenUid,
+    barangayUid,
+    coordinationStatus: "submitted",
+    threadId: "thread-not-received",
+  });
 });
 
 after(async () => {
@@ -67,7 +101,31 @@ after(async () => {
 });
 
 describe("openBarangayCaseFromAssistance", () => {
-  it("creates case, binding, and lifecycle event", async () => {
+  it("rejects case open without referral registry", async () => {
+    await assert.rejects(
+      () =>
+        runOpenBarangayCaseFromAssistance(db, barangayUid, {
+          assistanceRequestId: assistanceNoReferralId,
+          idempotencyKey: `no-ref-${Date.now()}`,
+        }),
+      (err) => err.code === "failed-precondition",
+    );
+  });
+
+  it("rejects case open before MOPH receipt acknowledgment", async () => {
+    await assert.rejects(
+      () =>
+        runOpenBarangayCaseFromAssistance(db, barangayUid, {
+          assistanceRequestId: assistanceNotReceivedId,
+          idempotencyKey: `not-received-${Date.now()}`,
+        }),
+      (err) =>
+        err.code === "failed-precondition" &&
+        String(err.message).includes("Hospital receipt"),
+    );
+  });
+
+  it("creates case, binding, thread linkage, and lifecycle event", async () => {
     const key = `open-${Date.now()}`;
     const result = await runOpenBarangayCaseFromAssistance(db, barangayUid, {
       assistanceRequestId: assistanceId,
@@ -85,6 +143,12 @@ describe("openBarangayCaseFromAssistance", () => {
     const caseSnap = await db.collection("cases").doc(result.caseId).get();
     assert.equal(caseSnap.data()?.caseStatus, "open");
     assert.equal(caseSnap.data()?.assistanceRequestId, assistanceId);
+    assert.equal(caseSnap.data()?.coordinationThreadId, `thread-${assistanceId}`);
+
+    const thread = (
+      await db.collection("caseCoordinationThreads").doc(`thread-${assistanceId}`).get()
+    ).data();
+    assert.equal(thread?.caseId, result.caseId);
 
     const events = await db
       .collection("cases")

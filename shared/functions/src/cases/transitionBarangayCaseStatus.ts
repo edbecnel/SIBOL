@@ -14,6 +14,11 @@ import { COLLECTIONS } from "../coordination/constants";
 import {
   TERMINAL_COORDINATION_STATUSES,
 } from "../coordination/coordinationStatus";
+import {
+  readTeenCommIdempotencyInTransaction,
+  writeTeenMessageInTransaction,
+} from "../teenCommunication/appendTeenMessage";
+import { TeenCommTemplateCode } from "../teenCommunication/constants";
 import { appendLifecycleEventInTransaction } from "./appendLifecycleEvent";
 import {
   CASE_COLLECTION,
@@ -190,6 +195,35 @@ export async function runTransitionBarangayCaseStatus(
 
     const currentStatus = caseDoc.caseStatus as string;
     const now = new Date();
+    const assistanceRequestId = caseDoc.assistanceRequestId as string;
+
+    let teenCommReplay: { messageId: string; idempotent: boolean } | null = null;
+    let teenCommThreadId: string | undefined;
+    if (
+      targetStatus === CaseLifecycleStatus.inProgress &&
+      currentStatus === CaseLifecycleStatus.open
+    ) {
+      const idempotencyKey = `case-in-progress-${caseId}`;
+      teenCommReplay = await readTeenCommIdempotencyInTransaction(
+        tx,
+        db,
+        orgId,
+        idempotencyKey,
+      );
+      if (!teenCommReplay) {
+        const registrySnap = await tx.get(
+          db
+            .collection(COLLECTIONS.barangayCoordinationRegistry)
+            .doc(assistanceRequestId),
+        );
+        if (
+          registrySnap.exists &&
+          typeof registrySnap.data()?.threadId === "string"
+        ) {
+          teenCommThreadId = registrySnap.data()!.threadId as string;
+        }
+      }
+    }
 
     const updates: Record<string, unknown> = {
       caseStatus: targetStatus,
@@ -273,6 +307,27 @@ export async function runTransitionBarangayCaseStatus(
       newStatus: targetStatus,
       reasonOrOutcome,
     });
+
+    if (
+      targetStatus === CaseLifecycleStatus.inProgress &&
+      currentStatus === CaseLifecycleStatus.open &&
+      !teenCommReplay
+    ) {
+      const teenUid = caseDoc.teenUid;
+      if (typeof teenUid === "string" && teenUid.length > 0) {
+        writeTeenMessageInTransaction(tx, db, {
+          assistanceRequestId,
+          teenUid,
+          orgId,
+          templateCode: TeenCommTemplateCode.caseWorkStarted,
+          idempotencyKey: `case-in-progress-${caseId}`,
+          publisherRole: "system",
+          caseId,
+          threadId: teenCommThreadId,
+          createdAt: now,
+        });
+      }
+    }
 
     return { caseId, caseStatus: targetStatus };
   });

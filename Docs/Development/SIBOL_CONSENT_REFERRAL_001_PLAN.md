@@ -20,7 +20,7 @@
 
 | ID | Decision | Architecture implication |
 |----|----------|---------------------------|
-| **D1** | **E1 workflow** | UI guides: authorization → referral → MOPH `received` → case open. **Server** enforces disclosure authorization. Case open remains allowed after acknowledgment **without** requiring MOPH `received`. |
+| **D1** | **E1 workflow** | **Superseded for case-open ordering by COMM-ORD-1 / [ADR-0007](../Architecture/ADRs/ADR-0007-COMM-Workflow-Ordering.md).** UI guides authorization → referral → MOPH `received` → case open. **Server** enforces disclosure authorization for identifying paths and **MOPH receipt before case open**. |
 | **D2** | **Declined authorization** | Does **not** close assistance or block Barangay-only case management. Minimum-information MOPH referral permitted only when content stays within minimum-information boundary (R1) and lawful basis permits; **no** authorized identifying attachment. |
 | **D3** | **Category catalog** | Versioned `disclosureCategoryCatalogVersion` + explicit category codes; initial candidates: `legal_name`, `date_of_birth_or_age`, `contact_phone`, `contact_email`, `other_essential` (requires individual justification + teen approval of that category only). Never auto-authorize all fields. |
 | **D4** | **Minors / guardian** | Pluggable `decisionAuthority` model; no universal guardian rule or teen-only rule. Unresolved legal capacity → **fail closed** for consent-dependent disclosure. |

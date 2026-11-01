@@ -768,6 +768,32 @@ service cloud.firestore {
       }
     }
 
+    function teenCommAssistanceData(assistanceRequestId) {
+      return get(/databases/$(database)/documents/teenAssistanceRequests/$(assistanceRequestId)).data;
+    }
+
+    function barangayCanReadTeenAssistanceCommunications(assistanceRequestId) {
+      return userRole() == 'barangay'
+          && exists(/databases/$(database)/documents/teenAssistanceRequests/$(assistanceRequestId))
+          && documentHasOrgId(teenCommAssistanceData(assistanceRequestId))
+          && capabilityGranted(
+              teenCommAssistanceData(assistanceRequestId).orgId, 'case.read');
+    }
+
+    match /teenAssistanceCommunications/{assistanceRequestId} {
+      match /messages/{messageId} {
+        allow read: if (isTeen()
+            && teenCommAssistanceData(assistanceRequestId).teenUid == request.auth.uid)
+            || barangayCanReadTeenAssistanceCommunications(assistanceRequestId);
+
+        allow create, update, delete: if false;
+      }
+    }
+
+    match /teenCommunicationIdempotency/{docId} {
+      allow read, write: if false;
+    }
+
     match /staffProvisioningOperations/{operationId} {
       allow read, write: if false;
     }

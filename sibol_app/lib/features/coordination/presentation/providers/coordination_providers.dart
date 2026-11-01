@@ -108,3 +108,10 @@ final assistanceReferralExistsProvider =
       .watch(coordinationRepositoryProvider)
       .watchReferralExistsForAssistanceRequest(assistanceRequestId);
 });
+
+final assistanceCoordinationThreadProvider =
+    StreamProvider.family<CoordinationThread?, String>((ref, assistanceRequestId) {
+  return ref
+      .watch(coordinationRepositoryProvider)
+      .watchThreadForAssistanceRequest(assistanceRequestId);
+});

@@ -31,14 +31,16 @@ flutter test integration_test/emulator_auth_gates_device_test.dart -d emulator-5
 |------|-------|--------|-------------------|
 | 1 | Teen | Submit assistance request | Request appears Barangay incoming list |
 | 2 | Barangay | Acknowledge request | Status acknowledged |
-| 3 | Barangay | Tap **Open Barangay case** on request detail | Snackbar success; navigates to case detail; status **open** |
-| 4 | Barangay | Tap **Open Barangay case** again | “Already linked” / view case; same `caseId` |
-| 5 | Barangay | **Start case work** | Status **inProgress** |
-| 6 | Barangay | Submit MOPH referral from request | Referral visible under submitted referrals |
-| 7 | MOPH | Mark received → request information | Status awaiting Barangay |
-| 8 | Barangay | **Provide information to hospital** on referral detail | Status information provided |
-| 9 | MOPH | Mark coordination complete | Terminal coordination status |
-| 10 | Barangay | Mark resolved → close case | Case **closed**; lifecycle timeline shows events |
+| 3 | Barangay | Request disclosure (if identifying referral needed) | Authorization panel visible |
+| 4 | Barangay | Submit MOPH referral from request | Referral visible under submitted referrals |
+| 5 | MOPH | Mark received | Coordination status received |
+| 6 | Barangay | Tap **Open Barangay case** on request detail | Snackbar success; navigates to case detail; status **open** |
+| 7 | Barangay | Tap **Open Barangay case** again | “Already linked” / view case; same `caseId` |
+| 8 | Barangay | **Start case work** | Status **inProgress**; teen receives generic case update |
+| 9 | MOPH | Request information → Barangay responds | Status information provided |
+| 10 | MOPH | Mark coordination complete | Terminal coordination status |
+| 11 | Barangay | Confirm outcome for teenager | Teen timeline shows neutral outcome template |
+| 12 | Barangay | Mark resolved → close case | Case **closed**; lifecycle timeline shows events |
 | 11 | Negative | MOPH user at wrong hospital opens referral | Access denied / not visible |
 | 12 | Negative | Edit lifecycle fields on case edit screen for linked case | Firestore rules reject (if attempted) |
 
